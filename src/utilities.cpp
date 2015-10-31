@@ -76,7 +76,7 @@ void print_binary(FILE *fp,int n, int bits){
 /*CONVERSION BINARY -> INT FUNCTION*/
 /*Following function simply converts char binary into int decimal.*/
 int conv_int(char* string, int index){
-	int num = 0,i,val = 1,cnt = 0;
+	int num = 0,i,val = 1;
 
 	for(i=strlen(string)-1;i>= 0;i--){
 		if(string[i] == '1') num += val;
@@ -121,7 +121,7 @@ int logarithm2(int n){
 /*Following function swap two encoding in a complete solution and compute the
 new weight function, if it's less than previous one, the new encodings is kept.*/
 boolean try_swap_fun(int ic,int jc,int cpog_count,int bits){
-	int i,j,k,bit_diff,ones,tmp;
+	int tmp;
 	float wg = 0,wg_swapped = 0;
 
 	wg = compute_weight(cpog_count, bits, counter);
@@ -142,13 +142,12 @@ boolean try_swap_fun(int ic,int jc,int cpog_count,int bits){
 }
 
 double compute_weight(int cpog_count,int bits,int index){
-	int i,j,k,bit_diff,ones,tmp;
+	int i,j,ones;
 	double wg = 0;
 
 	for(i=0;i<cpog_count-1;i++){
 		for(j=i+1;j<cpog_count;j++){
 			//COMPUTE HAMMING DISTANCE
-			bit_diff = perm[index][i] ^ perm[index][j];
 			ones = compute_HD(perm[index][i],i, perm[index][j],j,bits,cpog_count);
 			wg += weight_function(opt_diff[i][j],ones);
 		}
@@ -159,8 +158,7 @@ double compute_weight(int cpog_count,int bits,int index){
 }
 
 int compute_HD(int n1,int i, int n2,int j,int bits,int cpog_count){
-	int result = 0;
-	int k, ones,bit_diff,q;
+	int ones,bit_diff,q;
 	char *number;
 
 	ones = 0;
@@ -225,10 +223,10 @@ int compute_HD(int n1,int i, int n2,int j,int bits,int cpog_count){
 
 int check_correctness(int cpog_count, int tot_enc, int bits){
 
-	int result = 0, *opcodes,i,p, ext,bin,k,tmp, it = 0, limit, res_back;
+	int result = 0, *opcodes,i,k, it = 0, limit, res_back;
 	opcodes = (int*) calloc(tot_enc, sizeof(int));
 	char *number;
-	boolean ins = FALSE, out = FALSE;
+	boolean ins = FALSE;
 
 	// INSERTING PREDEFINED OP-CODES
 	for(i=0;i<cpog_count;i++){
@@ -372,7 +370,7 @@ int filter_encodings(int n_cpog, int bits, int tot_enc){
 	int index_filter = 0;
 	int present = 0, *opcodes;
 	char *number;
-	boolean ins = FALSE, out = FALSE;
+	boolean out = FALSE;
 
 	opcodes = (int*) calloc(tot_enc, sizeof(int));
 

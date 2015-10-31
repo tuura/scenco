@@ -7,14 +7,13 @@
 /*SIMULATED ANNEALING*/
 /*This function tunes the solution by using simulated annealing method.*/
 void start_simulated_annealing(int cpog_count, int tot_enc, int bits){
-	int i,m,n,tmp,start,it,num,err;
+	int i,m,n,tmp,start,it;
 	double proba;
 	double alpha =0.996;
 	double temperature;
 	double epsilon = 0.1;
 	double delta;
-	double weight_current, weight_next,area;
-	FILE *fp,*fpi;
+	double weight_current, weight_next;
 
 #ifdef ACT_PERCENTAGE
 	float act,total,res,res_back = 101;
@@ -32,7 +31,6 @@ void start_simulated_annealing(int cpog_count, int tot_enc, int bits){
 	for(i=0;i<num_perm;i++){
 		temperature = 10.0;
 		it = 0;
-		num = 0;
 		
 		// DEBUG PRINTING FOR STATISTCS ABOUT SIMULATED ANNEALING
 		/*if((fp = fopen("results/simulated_annealing_fun_opt_5.txt","w")) == NULL){

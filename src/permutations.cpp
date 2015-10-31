@@ -6,7 +6,7 @@
 /*C++ PERMUTATION FUNCTION*/
 /*It uses c++ function in order to compute each disposition.*/
 void permutation_stdalgo(int n, int tot){
-	long int i,j;
+	long int i,j = 0;
 
 	int *enco;
 	enco = (int *) malloc(sizeof(int) * tot);
@@ -60,8 +60,7 @@ void permutation(int *sol,int k,int *enc,int n, int tot){
 for each CPOG.*/
 void rand_permutation(int n, int tot){
 	long int i = 0,j;
-	int c, d,tmp,cnt = 0,start;
-	boolean ins;
+	int start;
 	std::vector<int> enco;
 
 #ifdef ACT_PERCENTAGE
@@ -109,12 +108,12 @@ void rand_permutation(int n, int tot){
 /*Following function finds all possible permutations for all available encoding
 for each CPOG.*/
 void best_permutations(int cpog_count, int tot_enc,int bits){
-	int min = MAX_WEIGHT,k, ext,bin, index,l;
-	int i,j,c = 0,i_min,j_min,enc1 = 0,enc2 = 0,inc,p = 0,n;
+	int min = MAX_WEIGHT,k;
+	int i,j,c = 0,i_min,j_min,enc1 = 0,enc2 = 0,inc,p = 0,n = 1;
 	int *full = NULL, *encod = NULL, **matrix_ass;
 	int v_min_i[MAX_CPOG], v_min_j[MAX_CPOG];
-	int *solution = NULL, *tmp = NULL;
-	boolean ins, out = FALSE, insertable;
+	int *solution = NULL;
+	boolean ins, out = FALSE;
 	char *number;
 #ifdef ACT_STOP
 	int fails = 0;
@@ -415,12 +414,12 @@ void best_permutations(int cpog_count, int tot_enc,int bits){
 /*Following function finds rando permutations for all available encoding
 for each CPOG which fit the customisation set by user.*/
 void rand_permutations_constraints_v2(int cpog_count, int tot_enc,int bits){
-	int min = MAX_WEIGHT,k, ext,bin, index,l;
-	int i,j,c = 0,i_min,j_min,enc1 = 0,enc2 = 0,inc,p = 0,n;
+	int min = MAX_WEIGHT,k;
+	int i,j,c = 0,i_min,j_min,enc1 = 0,enc2 = 0,inc,p = 0,n = 1;
 	int *full = NULL, *encod = NULL, **matrix_ass;
 	int v_min_i[MAX_CPOG], v_min_j[MAX_CPOG];
-	int *solution = NULL, *tmp = NULL;
-	boolean ins, out = FALSE, insertable;
+	int *solution = NULL;
+	boolean ins, out = FALSE;
 	char *number;
 #ifdef ACT_STOP
 	int fails = 0;

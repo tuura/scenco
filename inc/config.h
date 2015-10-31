@@ -9,6 +9,9 @@
 #define MAX_WEIGHT	100000000//Used for finding min weight
 #define MAX_LOG		10000	//2^(MAX_LOG) as max number of log_2 computable
 #define MAX_LINE	1000000	//Max line length of files
+#define FILENAME_LENGTH	300
+#define ESPRESSO_LINELENGTH 10000
+#define COMMANDS_LENGTH 1000
 #define MAX_NAME	10000	//Max length name for each node
 #define MAX_VERT	10000	//Max number of vertices of CPOG
 #define MAX_BOOL	1500	//Max length of boolean equation

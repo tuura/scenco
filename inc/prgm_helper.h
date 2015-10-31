@@ -12,5 +12,6 @@ void print_help(char*);
 int manage_data_base(int,float,int,float,int,int*);
 int read_set_encoding(int, int*);
 void removeTempFiles();
+void print_version();
 
 #endif

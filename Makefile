@@ -3,7 +3,7 @@ CC =g++
 PROJECT_NAME :=SCENCO
 
 # Compilation and linking flags.
-CC_FLAGS = -c -MMD -MP -O3 -m32
+CC_FLAGS = -c -MMD -MP -O3 -m32 -Wall
 LD_FLAGS = -m32 -static
 
 # Target 

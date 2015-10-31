@@ -8,7 +8,7 @@
 /*Following function write in some file in a format compatible with abc tool (Developed by Berkeley
 University), in order to get statistics about area of encoder. Moreover it calls abc tool.*/
 int equations_abc(int cpog_count, int bits){
-	int i,c,k,j,min_bits;
+	int i,c,k,j,min_bits = 1;
 	float k2;
 	boolean ins = FALSE;
 	FILE *fp = NULL, *pp = NULL;
@@ -442,9 +442,8 @@ void write_conditions(FILE *fp,int cpog_count,int i,int p,int q,int bits,int co)
 }
 
 int equations_abc_cpog_size(int cpog_count, int bits){
-	int i,c,k,j,min_bits;
+	int i,c,k,j;
 	float k2;
-	boolean ins = FALSE;
 	FILE *fp = NULL, *pp = NULL;
 	char *file_name = NULL,*file_name_abc = NULL, *string, *line, command[MAX_LINE],name[MAX_LINE];
 	char dump1[MAX_NAME],dump2[MAX_NAME],dump3[MAX_NAME];
@@ -456,9 +455,6 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 
 	line = (char*) malloc(sizeof(char) * MAX_LINE);
 	string = (char*) malloc(sizeof(char) * MAX_NAME);
-
-	if(decode_flag)
-		min_bits = logarithm2(cpog_count);
 
 	for(c=0;c<counter;c++){
 		//DEFINE FILE NAMES
@@ -512,12 +508,15 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 		fprintf(fp,"OUTORDER =");
 		for(k=0;k<nv;k++)
 			for(j=0; j<nv; j++)
-				if(cpog[k][j].type == 'v')
-					if((cpog[k][j].fun[c][0] != '0' && cpog[k][j].fun[c][0] != '1') || cpog[k][j].condition)
+				if(cpog[k][j].type == 'v'){
+					if((cpog[k][j].fun[c][0] != '0' && cpog[k][j].fun[c][0] != '1') || cpog[k][j].condition){
 						fprintf(fp," %s",cpog[k][j].source);
-				else
-					if(cpog[k][j].fun[c][0] != '0' && cpog[k][j].fun[c][0] != '1')
+					}
+				} else {
+					if(cpog[k][j].fun[c][0] != '0' && cpog[k][j].fun[c][0] != '1'){
 						fprintf(fp, " %s->%s", cpog[k][j].source, cpog[k][j].dest);
+					}
+				}
 		fprintf(fp,";\n");
 
 
@@ -564,14 +563,6 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			}
 
 			/*WRITING DOWN SCRIPT FILE*/
-			/*fprintf(fp,"read_eqn %s\n",file_name);
-			fprintf(fp,"strash\n");
-			fprintf(fp,"refactor\n");
-			fprintf(fp,"write_eqn tmp\n");
-			fprintf(fp,"read_eqn tmp\n");
-			fprintf(fp,"sop\n");
-			fprintf(fp,"print_gates\n");
-			fprintf(fp,"quit");*/
 			fprintf(fp,"read_eqn %s\n",file_name_abc);
 			fprintf(fp,"read_library ");
 			fprintf(fp, "%s", LIBRARY_FILE);

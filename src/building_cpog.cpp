@@ -50,7 +50,7 @@ bool ME(int scenario, int event1, int event2)
 
 bool check(string s)
 {
-	for(int i = 0; i < s.size(); i++)
+	for(unsigned int i = 0; i < s.size(); i++)
 		if (!isalpha(s[i]) && !isdigit(s[i]) && s[i] != '_' && s[i] != '-') return false;
 	return true;
 }
@@ -147,7 +147,7 @@ bool encode(int vertex, int limit, int next)
 {
 	if (next > limit) return false;
 	
-	if (vertex == cgv.size()) return true;
+	if (vertex == ((int)cgv.size()) ) return true;
 	
 	for(int select = 0; select < 2; select++)
 	{
@@ -172,7 +172,7 @@ bool encode2(int vertex, int limit, int next)
 {
 	if (next > limit) return false;
 	
-	if (vertex == cgv.size()) return true;
+	if (vertex == ((int)cgv.size()) ) return true;
 	
 	for(int select = 0; select < 2; select++)
 	{

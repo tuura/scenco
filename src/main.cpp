@@ -55,7 +55,7 @@ string aConditions[eventsLimit][eventsLimit];
 bool alternative = false;
 
 int main(int argc, char **argv){
-	char *command, *statistics;
+	char *command;
 	int bits = 0, j = 0, k=0, err=0, cpog_count = 0, len_sequence = 0,min_bits = 0;
 	int *sol, *enc, count_min = 0, count_max = 0,c = 0;
 	float ma,MA,mfma,mfMA, max = 0, min = MAX_WEIGHT;
@@ -132,7 +132,7 @@ int main(int argc, char **argv){
 	fclose(fp);
 
 	k = 0;
-	for(j = 0; j< strlen(CURRENT_PATH) -1; j++){
+	for(j = 0; j< ((int)strlen(CURRENT_PATH) - 1); j++){
 		if(CURRENT_PATH[j] != '\\')
 			CURRENT_PATH[k++] = CURRENT_PATH[j]; 
 	}
@@ -412,10 +412,10 @@ int main(int argc, char **argv){
 	cge.resize(cgv.size());
 	literal.resize(cgv.size());
 	bestLiteral.resize(cgv.size());
-	for(int i = 0; i < cgv.size(); i += 2) { bestLiteral[i] = i / 2; bestLiteral[i + 1] = -1;}
+	for(unsigned int i = 0; i < cgv.size(); i += 2) { bestLiteral[i] = i / 2; bestLiteral[i + 1] = -1;}
 	
-	for(int i = 0; i < cgv.size(); i++)
-	for(int j = 0; j < cgv.size(); j++)
+	for(unsigned int i = 0; i < cgv.size(); i++)
+	for(unsigned int j = 0; j < cgv.size(); j++)
 	{
 		string a = cgv[i];
 		string b = cgv[j];
@@ -441,7 +441,7 @@ int main(int argc, char **argv){
 		{
 			int limit = (L + R) / 2;
 		
-			for(int i = 0; i < cgv.size(); i++) literal[i] = -1;
+			for(unsigned int i = 0; i < cgv.size(); i++) literal[i] = -1;
 		
 			printf(" [%d]", cnt++);
 		
@@ -499,7 +499,7 @@ int main(int argc, char **argv){
 				if (encodings[i].inverted) f = "!" + f;		
 			}		
 		
-			for(int j = 0; j < constraints[s].size(); j++)
+			for(unsigned int j = 0; j < constraints[s].size(); j++)
 			{
 				int a = constraints[s][j].first;
 				int b = constraints[s][j].second;
@@ -644,7 +644,7 @@ int main(int argc, char **argv){
 		}
 		/*if(num_perm > MAX_MEMORY){
 			//num_perm = 100000000; max number of encodings
-			/*printf(".statistics \n");
+			printf(".statistics \n");
 			printf("Since there are too many possibilities, CPOG programmer will evaluate: ");
 			num_perm = MAX_ENCODINGS; //MAX_ENCODINGS;
 			printf("%ld encodings will be evaluated.\n\n",num_perm);
@@ -1015,6 +1015,7 @@ int main(int argc, char **argv){
 	}
 
 	/*CONVERT TRUTH TABLES INTO BOOLEAN FUNCTION*/
+	// TODO figure out why at some point it explodes
 	printf("Convert truth table into boolean functions of vertices and edges:\n");
 	if((err = boolean_function(max,bits,cpog_count,0)!= 0)){
 		printf(".error \n");
@@ -1350,8 +1351,6 @@ int main(int argc, char **argv){
 			}
 		}
 		if(mode == 2){
-			//fclose(fp);
-			free(statistics);
 			printf("Maximum error = %.2f.\n", ((mfMA/ma) -1) *100);
 			printf("Minimum error = %.2f.\n", ((mfma/ma) -1) *100);
 			printf("Average error = %.2f.\n", ( ((avg/i_avg)/ma) -1) *100);

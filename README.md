@@ -3,16 +3,20 @@
 # DESCRIPTION #
 SCENCO is a tool for supporting encoding and synthesis of Conditional Partial 
 Order Graphs models.
-Most updated version: Scenco v1.3
+Most updated version: ScEnco v1.3.1
 
 # CHANGELOG #
+Changelog Scenco v1.3.1 - 31/10/2015
+-All warning removed
+-Add parameter for printing out version of ScEnco
+
 Changelog Scenco v1.3 - 31/10/2015
 -Fixed bug: temporary name file created to feed ABC tool
 -heuristic search: algorithm for associating opcodes to partial orders before
  simulated annealing skipped. Now first assignment is random
 -Removed functions for the synthesis of one single encoding at a time
 -Removed simulated annealing algorithm without heuristic function
--All warnings removed. Code refactored. Code commented removed
+-Some warnings removed. Code refactored. Code commented removed
 
 Changelog Scenco v1.2.1 - 28/10/2015
 -Fixed bug: Single Literal Encoding run always at the beginning of the program

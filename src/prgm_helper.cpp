@@ -50,8 +50,12 @@ int parse_arg(int argc, char *argv[]){
 
 		}
 		//HELP OF PROGRAM
-		if(!strcmp(argv[cur], "-h")){
+		if(!strcmp(argv[cur], "-h") || !strcmp(argv[cur], "-help")){
 			print_help(argv[0]);
+			return 4;
+		}
+		if(!strcmp(argv[cur], "-version")){
+			print_version();
 			return 4;
 		}
 		//UNFIX FIRST ENCODING
@@ -111,7 +115,7 @@ int parse_arg(int argc, char *argv[]){
 				i=0; j=0;
 
 				// FIX THE PATH FOR __linux VERSION
-				while(i < strlen(ESPRESSO_PATH)){
+				while(((unsigned int)i) < strlen(ESPRESSO_PATH)){
 					if(ESPRESSO_PATH[i] != ' '){
 						supp[j++] = ESPRESSO_PATH[i];
 					}else{
@@ -149,7 +153,7 @@ int parse_arg(int argc, char *argv[]){
 				i=0; j=0;
 
 				// FIX THE PATH FOR __linux VERSION
-				while(i < strlen(FOLDER_NAME)){
+				while(((unsigned int)i) < strlen(FOLDER_NAME)){
 					if(FOLDER_NAME[i] != ' '){
 						supp[j++] = FOLDER_NAME[i];
 					}else{
@@ -218,7 +222,7 @@ int parse_arg(int argc, char *argv[]){
 				i=0; j=0;
 
 				// FIX THE PATH FOR __linux VERSION
-				while(i < strlen(LIBRARY_FILE)){
+				while(((unsigned int)i) < strlen(LIBRARY_FILE)){
 					if(LIBRARY_FILE[i] != ' '){
 						supp[j++] = LIBRARY_FILE[i];
 					}else{
@@ -298,19 +302,25 @@ void print_help(char *prog_name){
 	printf("\t\tmin: select encodings minimise function.\n");
 	printf("\t\tall: do not do any selection on encoding generated.\n");
 	printf("\t\tman [cust_enc.txt]: followed by name of file contains custom encodings, encode CPOG with them.\n");
-	printf("\t-h: show help of the tool.\n");
+	printf("\t-h/help: show help of the tool.\n");
 	printf("\t-r [num_encs]: activate random generation mode, and how many encodings generate.\n");
 	printf("\t-set [cust_enc.txt]: followed by name of file contains custom encodings, encode selected POG with them.\n");
 	printf("\t-top [num_encs]: activate clever encoding generation, you must specify number of encodings to generate.\n");
 	printf("\t-u: do not fix first element during permutations.\n");
-	printf("\t-v: select the verbose mode of the tool.\n\n");
+	printf("\t-v: selects the verbose mode of the tool.\n");
+	printf("\t-version: prints version of ScEnco.\n\n");
 	//EXAMPLE
 	printf("Example: ");
 	printf("%s arm_m0.cpog -m min -top 1000\n", prog_name);
 	printf("It would generate 1000 \"clever\" encodings and will select for mapping just ones minimising function.\n\n");
 	printf("%s was developed by Newcastle University (School of Electrical and Electronic and Computer Engineering).\n", prog_name);
 	printf("Developers: Alessandro de Gennaro - Andrey Mokhov\n\n");
-	printf("ScEnco version: 1.3\n\n");
+	print_version();
+	return;
+}
+
+void print_version(){
+	printf("ScEnco version: 1.3.1\n");
 	return;
 }
 
@@ -411,7 +421,7 @@ int manage_data_base(int count_max,float max,int count_min,float min, int cpog_c
 /*This function reads the encoding set by designer in order to fix them.*/
 int read_set_encoding(int cpog_count, int *bits){
 	FILE *fp = NULL;
-	int i,j,k;
+	int i,k;
 	char number[MAX_NAME];
 	boolean acq = FALSE;
 
@@ -419,9 +429,6 @@ int read_set_encoding(int cpog_count, int *bits){
 	custom_perm = (int*) malloc(sizeof(int) * cpog_count);
 	custom_perm_back = (int*) malloc(sizeof(int) * cpog_count);
 	DC_custom = (boolean*) calloc(cpog_count,sizeof(boolean));
-	j=0;
-
-	
 
 	for (i=0;i<cpog_count;i++){
 		if( (fscanf(fp,"%s", number) == EOF)){
@@ -478,6 +485,7 @@ int read_set_encoding(int cpog_count, int *bits){
 	}
 
 	fclose(fp);
+	return 0;
 	
 }
 

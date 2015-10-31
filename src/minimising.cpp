@@ -8,7 +8,7 @@
 /*Following function uses espresso program (developed by Berkeley University) for finding 
 and minimising logic functions, with respect encoding considered.*/
 int boolean_function(int max,int bits, int cpog_count,int co){
-	char* file_out, *command,line[MAX_LINE];
+	char* file_out, *command,line[MAX_BOOL];
 	int i=0,j=0,p=0,n=0,t=0,k=0,val;
 	FILE *fp,*pp;
 #ifdef ACT_PERCENTAGE
@@ -16,8 +16,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 	printf("Percentage till complete:\n");
 #endif
 	/*NAME OF THE FILES FOR CALLING ESPRESSO PROGRAM*/
-	file_out = (char*) malloc(sizeof(char) * MAX_LINE);
-	command = (char*) malloc(sizeof(char) * MAX_LINE);
+	command = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
 
 	/*FILE_TEMP NAME*/
 	file_out = strdup(TMP_FILE);
@@ -86,24 +85,38 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						fclose(fp);
 
 						/*DEBUG STOPPING: information about espresso output*/
-						/*if(j == 1) {
-							printf("CALLING ESPRESSO: %s\n", command);
-							system(command);
-							return 2;
-						}*/
+						/*printf("CALLING ESPRESSO: %s\n", command);
+						system(command);
+						return 2;*/
 				
 						/*CALLING ESPRESSO FRAMEWORK*/
 						if( (pp = popen(command,"r")) == NULL){
-							printf("Error on calling espresso program.\n");
+							printf("Error on calling espresso program: %s.\n", command);
+							return 3;
+						}
+
+						char c;
+						printf("ESPRESSO OUTPUT:");
+						while(!feof(pp)){
+							c = fgetc(pp);
+							printf("%c",c);
+						}
+						printf("ESPRESSO FINE");
+						fflush(stdout);
+						fclose (pp);
+
+						if( (pp = popen(command,"r")) == NULL){
+							printf("Error on calling espresso program: %s.\n", command);
 							return 3;
 						}
 
 						/*READING FIRST OUTPUT LINE OF ESPRESSO*/
-						if(fgets(line,MAX_LINE,pp) == NULL){
+						if(fgets(line,MAX_BOOL,pp) == NULL){
 							printf("%s\n",command);
 							printf("Error on reading espresso output.\n");
 							return 3;
 						}
+
 						t = 0;
 						while(line[t++] != '=');
 						t++;
@@ -127,7 +140,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 									t++;
 									break;
 								case '\n':
-									if(fgets(line,MAX_LINE,pp) == NULL){
+									if(fgets(line,MAX_BOOL,pp) == NULL){
 										printf("Error on reading espresso output.\n");
 										return 3;
 									}
@@ -210,12 +223,27 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 			
 						/*CALLING ESPRESSO FRAMEWORK*/
 						if( (pp = popen(command,"r")) == NULL){
-							printf("Error on calling espresso program.\n");
+							printf("Error on calling espresso program: %s.\n", command);
 							return 6;
 						}
 
+						char c;
+						printf("ESPRESSO OUTPUT:");
+						while(!feof(pp)){
+							c = fgetc(pp);
+							printf("%c",c);
+						}
+						printf("ESPRESSO FINE");
+						fflush(stdout);
+						fclose (pp);
+
+						if( (pp = popen(command,"r")) == NULL){
+							printf("Error on calling espresso program: %s.\n", command);
+							return 3;
+						}
+
 						/*READING FIRST OUTPUT LINE OF ESPRESSO*/
-						if(fgets(line,MAX_LINE,pp) == NULL){
+						if(fgets(line,MAX_BOOL,pp) == NULL){
 							printf("Error on reading espresso output.\n");
 							return 3;
 						}
@@ -239,7 +267,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 								t++;
 								break;
 							case '\n':
-								if(fgets(line,MAX_LINE,pp) == NULL){
+								if(fgets(line,MAX_BOOL,pp) == NULL){
 									printf("Error on reading espresso output.\n");
 									return 3;
 								}
@@ -279,11 +307,12 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 	}
 #ifdef ACT_PERCENTAGE	
 	printf("100\n");
+	fflush(stdout);
 #endif
 
 	/*REMOVING TMP FILE AND FREE USELESS STRINGS*/
 	free(command);
-	command = (char*) malloc(sizeof(char) * MAX_LINE);
+	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
 #ifdef __linux
 	sprintf(command,"rm -f ");
 #else
@@ -318,15 +347,15 @@ int decide(char* function){
 and minimising logic functions of the decoder needed if the number of bit for encoding
 CPOG is not minimum.*/
 int decoder_minimisation(int bits, int cpog_count){
-	char* file_out, *command,line[MAX_LINE];
+	char* file_out, *command,line[MAX_BOOL];
 	int i=0,j=0,n=0,t=0,k=0,min_bits,min_tot_enc;
 	FILE *fp,*pp;
 #ifdef ACT_PERCENTAGE
 	printf("Percentage till complete:\n");
 #endif
 	/*NAME OF THE FILES FOR CALLING ESPRESSO PROGRAM*/
-	file_out = (char*) malloc(sizeof(char) * MAX_NAME);
-	command = (char*) malloc(sizeof(char) * MAX_LINE);
+	file_out = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
+	command = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
 
 	/*FILE_TEMP NAME*/
 	file_out = strdup(TMP_FILE);
@@ -380,12 +409,13 @@ int decoder_minimisation(int bits, int cpog_count){
 
 		/*CALLING ESPRESSO FRAMEWORK*/
 		if( (pp = popen(command,"r")) == NULL){
-			printf("Error on calling espresso program.\n");
+			
+			printf("Error on calling espresso program: %s.\n", command);
 			return 3;
 		}
 
 		/*READING FIRST OUTPUT LINE OF ESPRESSO*/
-		if(fgets(line,MAX_LINE,pp) == NULL){
+		if(fgets(line,MAX_BOOL,pp) == NULL){
 			printf("Error on reading espresso output.\n");
 			return 3;
 		}
@@ -412,7 +442,7 @@ int decoder_minimisation(int bits, int cpog_count){
 					t++;
 					break;
 				case '\n':
-					if(fgets(line,MAX_LINE,pp) == NULL){
+					if(fgets(line,MAX_BOOL,pp) == NULL){
 						printf("Error on reading espresso output.\n");
 						return 3;
 					}
@@ -434,7 +464,7 @@ int decoder_minimisation(int bits, int cpog_count){
 
 	/*REMOVING TMP FILE AND FREE USELESS STRINGS*/
 	free(command);
-	command = (char*) malloc(sizeof(char) * MAX_LINE);
+	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
 #ifdef __linux
 	sprintf(command,"rm -f ");
 #else

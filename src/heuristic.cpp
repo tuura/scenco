@@ -8,43 +8,17 @@
 /*Following function computes both the maximum and minimum weight for each encoding permutation
 following SSD criterion.*/
 float area_encodings_ssd(int cpog, int bits, float *max,int tot_enc,int v){
-        int i = 0, j = 0, k = 0,l = 0, ones = 0, bit_diff;
-	int *encodings, HD_const = 0;
+        int i = 0, j = 0, k = 0, ones = 0;
 	float wg = 0.0,min = MAX_WEIGHT;
-	encodings = (int*) malloc(sizeof(int) * tot_enc);
 
         for(i = 0; i<counter; i++){
                 wg = 0.0;
                 for(j = 0; j<cpog-1; j++)
                         for(k = j+1; k < cpog; k++){
 				//COMPUTE HAMMING DISTANCE
-				//bit_diff = perm[index][i] ^ perm[index][j];
 				ones = compute_HD(perm[i][j],j, perm[i][k],k,bits,cpog);
 				wg += weight_function(opt_diff[j][k],ones);
 			}
-
-		/*CONSIDERING SPARE ENCODINGS*/
-		/*if(cpog != tot_enc){
-			for(j=0;j<cpog;j++)
-				encodings[j] = 0;
-			for(j=0;j<cpog;j++)
-				encodings[perm[i][j]] = 1;
-			for(j=0;j<cpog-1;j++)
-				for(k = j+1; k < cpog; k++){
-					if(encodings[j] == 0 && encodings[k] == 0){
-						bit_diff = j ^ k;
-				                ones = 0;
-				                for(l = 0; l<bits; l++){
-				                        if(bit_diff & 1) ones++;
-				                        bit_diff >>= 1;
-				                }
-						HD_const += ones;
-					}
-				}
-			wg += HD_const;
-		}*/
-
-                //printf("%d) MF = %d\n", i+1, wg);
                 weights[i] = wg;
                 if(wg < min) min = wg;
                 if(wg > (*max)) (*max) = wg;
@@ -63,7 +37,7 @@ float  weight_function(int Mij,int HDij){
 void HD_min_v2(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *sol,int i_min,int j_min,int cpog_count){
 	int i,j,ones,bit_diff,l;
 	long long int min = MAX_WEIGHT;
-	int n,r,k,p,where;
+	int n = 1,r = 1,k,p,where;
 	int vi[MAX_CPOG],vj[MAX_CPOG],vres[MAX_CPOG];
 	float wg = 0;
 	
@@ -231,9 +205,9 @@ void HD_min_v2(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *
 /*It returns minimum encoding available among available ones.*/
 /*v3: try every possible combination minimising funcion*/
 void HD_min_v3(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *sol,int i_min,int j_min,int cpog_count){
-	int i,j,ones,bit_diff,l;
+	int i,j,ones,l;
 	long long int min = MAX_WEIGHT;
-	int n,r,k,p,q,where;
+	int r = 1,k,p,where;
 	int *vi, *vj;
 	float wg = 0;
 	
@@ -358,11 +332,9 @@ void HD_min_v3(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *
 }
 
 void random_opcode_choice_v2(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *sol,int i_min,int j_min,int cpog_count){
-	int i,j,ones,bit_diff,l;
-	long long int min = MAX_WEIGHT;
-	int n,r,k,p,q,where;
+	int i,j,l;
+	int r,p,where;
 	int *vi, *vj;
-	float wg = 0;
 	
 	vi = (int *) malloc(sizeof(int) * (tot_enc * tot_enc));
 	vj = (int *) malloc(sizeof(int) * (tot_enc * tot_enc));
@@ -372,7 +344,6 @@ void random_opcode_choice_v2(int *encod,int tot_enc,int *enc1,int *enc2,int bits
 		
 		//LOOK FOR ENCDODING WITH MINIMUM HAMMING DISTANCE
 		//AMONG AVAILABLE ONES
-		min = MAX_WEIGHT;
 		r = 0;
 		for(i=0;i<tot_enc-1;i++){
 			for(j=i+1;j<tot_enc;j++){
