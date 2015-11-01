@@ -8,8 +8,8 @@
 /*Following function uses espresso program (developed by Berkeley University) for finding 
 and minimising logic functions, with respect encoding considered.*/
 int boolean_function(int max,int bits, int cpog_count,int co){
-	char* file_out, *command,line[MAX_BOOL];
-	int i=0,j=0,p=0,n=0,t=0,k=0,val;
+	char *file_out, *command, c;
+	int i=0,j=0,p=0,n=0,k=0,val;
 	FILE *fp,*pp;
 #ifdef ACT_PERCENTAGE
 	float act,total,res,res_back = 101;
@@ -20,17 +20,6 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 
 	/*FILE_TEMP NAME*/
 	file_out = strdup(TMP_FILE);
-
-	/*CONSTRUCTION ESPRESSO COMMAND*/
-
-	/*k = 0;
-	for(j = 0; j< strlen(ESPRESSO_PATH) -1; j++){
-		if(ESPRESSO_PATH != ' '){
-			ESPRESSO_PATH[k++] = ESPRESSO_PATH[j];
-		}else{
-			
-		}
-	}*/
 
 #ifdef __linux
 	strcpy(command, ESPRESSO_PATH);
@@ -95,63 +84,38 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 							return 3;
 						}
 
-						char c;
-						printf("ESPRESSO OUTPUT:");
-						while(!feof(pp)){
-							c = fgetc(pp);
-							printf("%c",c);
-						}
-						printf("ESPRESSO FINE");
-						fflush(stdout);
-						fclose (pp);
-
-						if( (pp = popen(command,"r")) == NULL){
-							printf("Error on calling espresso program: %s.\n", command);
-							return 3;
-						}
-
-						/*READING FIRST OUTPUT LINE OF ESPRESSO*/
-						if(fgets(line,MAX_BOOL,pp) == NULL){
-							printf("%s\n",command);
-							printf("Error on reading espresso output.\n");
-							return 3;
-						}
-
-						t = 0;
-						while(line[t++] != '=');
-						t++;
+						/*READING ESPRESSO OUTPUT*/
+						while( (c = fgetc(pp)) != '=');
+						c = fgetc(pp);
 						n = 0;
 
-						/*DEBUG PRINTING: constant index values*/
-						/*printf("p=%d J=%d i=%d\n", p, j , i);
-						printf("%s\n",line);*/
-
-						while(line[t] != ';')
-							switch(line[t]){
+						while( c != ';'){
+							switch(c){
 								case '&':
 									cpog[p][j].fun[i][n++] = '*';
-									t++;
+									c = fgetc(pp);
 									break;
 								case '|':
 									cpog[p][j].fun[i][n++] = '+';
-									t++;
+									c = fgetc(pp);
 									break;
 								case ' ':
-									t++;
+									c = fgetc(pp);
 									break;
 								case '\n':
-									if(fgets(line,MAX_BOOL,pp) == NULL){
+									if( feof(pp) ){
 										printf("Error on reading espresso output.\n");
 										return 3;
 									}
-									t = 0;
-									while(line[t] != ' ') t++;
+									while( (c = fgetc(pp)) != ' ');
 									break;
 								default:
-									cpog[p][j].fun[i][n++] = line[t++];
-							}		
+									cpog[p][j].fun[i][n++] = c;
+									c = fgetc(pp);
+							}
+						}
 						cpog[p][j].fun[i][n] = '\0';
-						/*DEBUG PRINTING: function read*/				
+						/*DEBUG PRINTING: function read*/
 						//printf("%s\n\n",cpog[p][j].fun[i]);
 						if (!strcmp(cpog[p][j].fun[i], "()")) strcpy(cpog[p][j].fun[i], "1");
 						if (!strcmp(cpog[p][j].fun[i], "")) strcpy(cpog[p][j].fun[i], "0");
@@ -227,56 +191,36 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 							return 6;
 						}
 
-						char c;
-						printf("ESPRESSO OUTPUT:");
-						while(!feof(pp)){
-							c = fgetc(pp);
-							printf("%c",c);
-						}
-						printf("ESPRESSO FINE");
-						fflush(stdout);
-						fclose (pp);
-
-						if( (pp = popen(command,"r")) == NULL){
-							printf("Error on calling espresso program: %s.\n", command);
-							return 3;
-						}
-
 						/*READING FIRST OUTPUT LINE OF ESPRESSO*/
-						if(fgets(line,MAX_BOOL,pp) == NULL){
-							printf("Error on reading espresso output.\n");
-							return 3;
-						}
-						t = 0;
-
-						/*DEBUG PRINTING: constant index values*/
-						/*printf("p=%d J=%d i=%d\n", p, j , i);
-						printf("%s\n",line);*/
-
-						while(line[t++] != '=');
-						t++;					
+						while( (c = fgetc(pp)) != '=');
+						c = fgetc(pp);
 						n = 0;
-						while(line[t] != ';')
-							switch(line[t]){
-							case '&':
-								cpog[p][p].fun_cond[i][n++] = '*';
-								t++;
-								break;
-							case '|':
-								cpog[p][p].fun_cond[i][n++] = '+';
-								t++;
-								break;
-							case '\n':
-								if(fgets(line,MAX_BOOL,pp) == NULL){
-									printf("Error on reading espresso output.\n");
-									return 3;
-								}
-								t = 0;
-								while(line[t] != ' ') t++;
-								break;
-							default:
-								cpog[p][p].fun_cond[i][n++] = line[t++];
+
+						while( c != ';'){
+							switch(c){
+								case '&':
+									cpog[p][j].fun[i][n++] = '*';
+									c = fgetc(pp);
+									break;
+								case '|':
+									cpog[p][j].fun[i][n++] = '+';
+									c = fgetc(pp);
+									break;
+								case ' ':
+									c = fgetc(pp);
+									break;
+								case '\n':
+									if( feof(pp) ){
+										printf("Error on reading espresso output.\n");
+										return 3;
+									}
+									while( (c = fgetc(pp)) != ' ');
+									break;
+								default:
+									cpog[p][j].fun[i][n++] = c;
+									c = fgetc(pp);
 							}
+						}
 						cpog[p][p].fun_cond[i][n] = '\0';
 						if (!strcmp(cpog[p][p].fun_cond[i], "()")) strcpy(cpog[p][p].fun_cond[i], "1");
 						if (!strcmp(cpog[p][p].fun_cond[i], "")) strcpy(cpog[p][p].fun_cond[i], "0");	
@@ -311,12 +255,10 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 #endif
 
 	/*REMOVING TMP FILE AND FREE USELESS STRINGS*/
-	free(command);
-	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
 #ifdef __linux
-	sprintf(command,"rm -f ");
+	strcpy(command,"rm -f ");
 #else
-	sprintf(command,"del ");
+	strcpy(command,"del ");
 #endif
 	strcat(command, file_out);
 	if(system(command) != 0){

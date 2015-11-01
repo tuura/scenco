@@ -84,8 +84,8 @@ int difference_matrix(int cpog_count, int len_sequence){
 /*Following function read encoding constraints of every vertex and edge of CPOG*/
 int read_cons(char *file_cons,int cpog_count,int *num_vert){
 	FILE *fp = NULL;
-	char string[MAX_LINE], name[MAX_NAME];
-	int i = 0, j = 0, len = 0, v_tmp = 0, n_tmp = 0, p = 0;
+	char name[MAX_NAME], c;
+	int i = 0, j = 0, v_tmp = 0, n_tmp = 0, p = 0;
 	boolean ins; 
 
 	if( (fp = fopen(file_cons, "r")) == NULL){
@@ -93,7 +93,7 @@ int read_cons(char *file_cons,int cpog_count,int *num_vert){
 		return 1;
 
 	}
-	if( fscanf(fp,"%s", string) == EOF){
+	if( feof(fp) ){
 		printf("File is empty. Please, introduce another file.\n");
 		return 1;
 	}
@@ -102,42 +102,47 @@ int read_cons(char *file_cons,int cpog_count,int *num_vert){
 		return 1;
 	}
 	fp = fopen(file_cons, "r");
-	while( fgets(string, MAX_LINE, fp) != NULL){
-		len = strlen(string);
-		for(i = (cpog_count + 8); i<len; i++){
+	while( !feof(fp) ){
+		for(i = 0 ; i < cpog_count+8; i++) c = fgetc(fp);
+		c = fgetc(fp);
+		int h = 0;
+		while( c != '\n' && c != EOF){
+			if (h != 0) c = fgetc(fp);
+			h++;
 
-			switch(string[i]){
+			switch(c){
 				case ' ':
 					/*Parsing space characters*/
 					break;
 				case '(':
 					/*Parsing edges*/
-					while(string[i] != ')') i++;
-					i++;
+					while( (c = fgetc(fp)) != ')');
+					c = fgetc(fp);
 					break;
 				default:
 					/*Parsing vertices name*/
 					n_tmp = 0;
-					while( (!isspace(string[i])) && string[i] != ':' && string[i] != EOF){
-						name[n_tmp++] = string[i++];
+					while( (!isspace(c)) && c != ':' && c != EOF){
+						name[n_tmp++] = c;
+						c = fgetc(fp);
 					}
 					name[n_tmp] = '\0';
-					if(string[i] == ':')
-						while( string[i] != ' ' && string[i] != EOF){
+					if(c == ':')
+						while( c != ' ' && c != EOF){
 					/*Taking into account nested conditions on vertices*/
-							if(string[i] == '('){
+							if(c == '('){
 								p++;
-								i++;
+								c = fgetc(fp);
 								while(p){
-									while(string[i] != ')'){
-										if(string[i] == '(') p++;
-										i++;
+									while(c != ')'){
+										if(c== '(') p++;
+										c = fgetc(fp);
 									}
 									p--;
-									i++;
+									c = fgetc(fp);
 								}
 							}else
-								i++;
+								c = fgetc(fp);
 						}
 					ins = TRUE;
 					for(j=0;j<v_tmp;j++)
@@ -149,8 +154,8 @@ int read_cons(char *file_cons,int cpog_count,int *num_vert){
 						/*DEBUG PRINTING: adding vertex*/
 						//printf("%s inserted\n", name);
 					}
-					while((!isspace(string[i])) && string[i] != EOF)
-						i++;
+					while((!isspace(c)) && c != EOF)
+						c = fgetc(fp);
 					break;
 			}
 		}
@@ -164,48 +169,58 @@ int read_cons(char *file_cons,int cpog_count,int *num_vert){
 /*Following function read again constraints file in order to definetly acquire CPOG.*/
 void parsing_cpog(char* file_cons,int cpog_count,int num_vert){
 	FILE *fp = NULL;
-	char string[MAX_LINE], name[MAX_NAME];
+	char name[MAX_NAME], c;
 	char source[MAX_NAME], dest[MAX_NAME], *truth, cond[MAX_NAME];
-	int i = 0, j = 0,k=0, len = 0, n_tmp = 0, p = 0;
+	int i = 0, j = 0,k=0, n_tmp = 0, p = 0;
 	boolean ins, condit;
 
 	truth = (char*) malloc(sizeof(char) * (cpog_count + 1));
 	fp = fopen(file_cons, "r");
-	while( fgets(string, MAX_LINE, fp) != NULL){
-		sscanf(string,"%s",truth);
+	while(  !feof(fp) ){
+		if(fscanf(fp,"%s",truth) == 0){
+			printf("Error on reading the truth table inside constraints file.\n");
+			return;
+		}
 		
 		/*DEBUG PRINTING: reading truth table*/
 		//printf("%s\n", truth);
 
-		len = strlen(string);
 		
-		for(i = (cpog_count + 8); i<len; i++){
-			switch(string[i]){
+		for(i = 0 ; i < 8; i++) c = fgetc(fp);
+		c = fgetc(fp);
+		int h = 0;
+		while( c != '\n' && c != EOF){
+			if (h != 0) c = fgetc(fp);
+			h++;
+
+			switch(c){
 				case ' ':
 					/*Parsing space characters*/
 					break;
 				case '(':
 					/*PARSING EDGES*/
-					i++;
+					c = fgetc(fp);
 					/*PARSING SOURCE VERTEX*/
 					n_tmp = 0;
-					while((!isspace(string[i]))){
-						source[n_tmp] = string[i];
+					while((!isspace(c))){
+						source[n_tmp] = c;
 						n_tmp++;
-						i++;
+						c = fgetc(fp);
 					}
 					source[n_tmp] = '\0';
 
-					while(string[i] != '>') i++;
-					i++;
-					i++;
+					while( (c = fgetc(fp)) != '>');
+					c = fgetc(fp);
+					c = fgetc(fp);
 					
 					/*PARSING DESTINATION VERTEX*/
 					n_tmp = 0;
-					while(string[i] != ')')
-						dest[n_tmp++] = string[i++];
+					while(c != ')'){
+						dest[n_tmp++] = c;
+						c = fgetc(fp);
+					}
 					dest[n_tmp] = '\0';
-					i++;
+					c = fgetc(fp);
 
 					/*EDGE INFORMATION INSERTION*/
 					ins = FALSE;
@@ -227,32 +242,39 @@ void parsing_cpog(char* file_cons,int cpog_count,int num_vert){
 					
 					/*Parsing vertex name*/
 					n_tmp = 0;
-					while( (!isspace(string[i])) && string[i] != ':' && string[i] != EOF)
-						name[n_tmp++] = string[i++];
+					while( (!isspace(c)) && c != ':' && c != EOF){
+						name[n_tmp++] = c;
+						c = fgetc(fp);
+					}
 					name[n_tmp] = '\0';
 					
 					/*Parsing condition of vertex*/
 					condit = FALSE;
-					if(string[i] == ':'){
+					if(c == ':'){
 						condit = TRUE;
-						i++;
+						c = fgetc(fp);
 						n_tmp = 0;
-						while( (!isspace(string[i])) && string[i] != EOF){
+						while( (!isspace(c)) && c != EOF){
 							/*Taking into account nested conditions on vertices*/
-							if(string[i] == '('){
+							if(c == '('){
 								p++;
-								cond[n_tmp++] = string[i++];
+								cond[n_tmp++] = c;
+								c = fgetc(fp);
 								while(p){
-									while(string[i] != ')'){
-										if(string[i] == '(') p++;
-										cond[n_tmp++] = string[i++];
+									while(c != ')'){
+										if(c == '(') p++;
+										cond[n_tmp++] = c;
+										c = fgetc(fp);
 									}
 									p--;
-									cond[n_tmp++] = string[i++];
+									cond[n_tmp++] = c;
+									c = fgetc(fp);
 								}
 							}
-							else
-								cond[n_tmp++] = string[i++];
+							else{
+								cond[n_tmp++] = c;
+								c = fgetc(fp);
+							}
 						}
 						cond[n_tmp] = '\0';
 						/*DEBUG PRINTING: current reading information*/

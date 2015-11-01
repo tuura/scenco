@@ -707,7 +707,6 @@ int main(int argc, char **argv){
 	fflush(stdout);
 
 	/*FIRST READING OF ENCODING FILE*/
-	// TODO: change way the file is read. some lines can be too long MAX_LINE
 	if( (err = read_cons(file_cons, cpog_count, &num_vert)) ){
 		printf(".error \n");
 		printf("Error occured while reading constraints file, error code: %d", err);
