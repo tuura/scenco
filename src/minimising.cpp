@@ -16,7 +16,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 	printf("Percentage till complete:\n");
 #endif
 	/*NAME OF THE FILES FOR CALLING ESPRESSO PROGRAM*/
-	command = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
+	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
 
 	/*FILE_TEMP NAME*/
 	file_out = strdup(TMP_FILE);
@@ -289,15 +289,15 @@ int decide(char* function){
 and minimising logic functions of the decoder needed if the number of bit for encoding
 CPOG is not minimum.*/
 int decoder_minimisation(int bits, int cpog_count){
-	char* file_out, *command,line[MAX_BOOL];
-	int i=0,j=0,n=0,t=0,k=0,min_bits,min_tot_enc;
+	char* file_out, *command, c;
+	int i=0,j=0,n=0,k=0,min_bits,min_tot_enc;
 	FILE *fp,*pp;
 #ifdef ACT_PERCENTAGE
 	printf("Percentage till complete:\n");
 #endif
 	/*NAME OF THE FILES FOR CALLING ESPRESSO PROGRAM*/
 	file_out = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
-	command = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
+	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
 
 	/*FILE_TEMP NAME*/
 	file_out = strdup(TMP_FILE);
@@ -357,43 +357,35 @@ int decoder_minimisation(int bits, int cpog_count){
 		}
 
 		/*READING FIRST OUTPUT LINE OF ESPRESSO*/
-		if(fgets(line,MAX_BOOL,pp) == NULL){
-			printf("Error on reading espresso output.\n");
-			return 3;
-		}
-		t = 0;
-		while(line[t++] != '=');
-		t++;
+		while( (c = fgetc(pp)) != '=');
+		c = fgetc(pp);
 		n = 0;
 
-		/*DEBUG PRINTING: constant index values*/
-		/*printf("p=%d J=%d i=%d\n", p, j , i);
-		printf("%s\n",line);*/
-
-		while(line[t] != ';')
-			switch(line[t]){
+		while( c != ';'){
+			switch(c){
 				case '&':
 					decoder[i][n++] = '*';
-					t++;
+					c = fgetc(pp);
 					break;
 				case '|':
 					decoder[i][n++] = '+';
-					t++;
+					c = fgetc(pp);
 					break;
 				case ' ':
-					t++;
+					c = fgetc(pp);
 					break;
 				case '\n':
-					if(fgets(line,MAX_BOOL,pp) == NULL){
+					if( feof(pp) ){
 						printf("Error on reading espresso output.\n");
 						return 3;
 					}
-					t = 0;
-					while(line[t] != ' ') t++;
+					while( (c = fgetc(pp)) != ' ');
 					break;
 				default:
-					decoder[i][n++] = line[t++];
-			}		
+					decoder[i][n++] = c;
+					c = fgetc(pp);
+			}
+		}	
 		decoder[i][n] = '\0';
 		if (!strcmp(decoder[i], "()")) strcpy(decoder[i], "1");
 		if (!strcmp(decoder[i], "")) strcpy(decoder[i], "0");

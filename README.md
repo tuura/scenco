@@ -3,9 +3,12 @@
 # DESCRIPTION #
 SCENCO is a tool for supporting encoding and synthesis of Conditional Partial 
 Order Graphs models.
-Most updated version: ScEnco v1.3.3
+Most updated version: ScEnco v1.3.4
 
 # CHANGELOG #
+Changelog Scenco v1.3.4 - 02/11/2015
+-Fixed bug when CPOG_SIZE synthesis mode was selected
+
 Changelog Scenco v1.3.3 - 02/11/2015
 -All temp files removed
 -Fixed bug name with a couple of temporary file with same names

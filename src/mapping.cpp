@@ -474,13 +474,6 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			removeTempFiles();
 			return 1;
 		}
-		if (mkstemp(string) == -1){
-			printf(".error \n");
-			printf("Error on opening creating temporary file name in equation_abc: %s.\n", string);
-			printf(".end_error \n");
-			removeTempFiles();
-			return 1;
-		}
 		strcpy(command,"rm -f ");
 		strcat(command, string);
 		if(system(command) != 0){

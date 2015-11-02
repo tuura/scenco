@@ -993,27 +993,16 @@ int main(int argc, char **argv){
 			}
 		}
 
-	printf("DONE\n\n");
+	printf("DONE\n");
 	fflush(stdout);
 
 	/*START COUNTING TIME*/
 	//start = clock();
 	gettimeofday(&start, NULL);
 
-	/*PRINTING INFORMATION ABOUT CONVERSION*/
-	switch(mode){
-		case 0: 	printf("Converting encodings into boolean functions make function max.\n");
-			break;
-		case 1: 	printf("Converting encodings into boolean functions make function min.\n");
-			break;
-		case 3:		printf("Converting custom encodings into boolean functions.\n");
-			break;
-		default:printf("Converting all encodings into boolean functions.\n");
-	}
-
 	/*CONVERT TRUTH TABLES INTO BOOLEAN FUNCTION*/
-	// TODO figure out why at some point it explodes
-	printf("Convert truth table into boolean functions of vertices and edges:\n");
+	printf("Convert truth table into boolean functions of vertices and edges... ");
+	fflush(stdout);
 	if((err = boolean_function(max,bits,cpog_count,0)!= 0)){
 		printf(".error \n");
 		printf("Error on getting boolean function using Espresso. Error code: %d\n", err);
@@ -1021,9 +1010,13 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 6;
 	}
+	printf("DONE\n");
+	fflush(stdout);
+
 
 	/*CONVERT TRUTH TABLES INTO BOOLEAN FUNCTION OF CONDITION ONLY*/
-	printf("Convert truth table into boolean functions of condition of vertices:\n");
+	printf("Convert truth table into boolean functions of condition of vertices... ");
+	fflush(stdout);
 	if((err = boolean_function(max,bits,cpog_count,1)!= 0)){
 		printf(".error \n");
 		printf("Error on getting boolean function using Espresso. Error code: %d\n", err);
@@ -1031,9 +1024,13 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 7;
 	}
+	printf("DONE\n");
+	fflush(stdout);
 
 	min_bits = logarithm2(cpog_count);
 	if(min_bits < bits && mode ==3){
+		printf("Convert truth table into boolean functions (decoder minimisation)... ");
+		fflush(stdout);
 		decode_flag = TRUE;
 		if(decoder_minimisation(bits,cpog_count) != 0){
 			printf(".error \n");
@@ -1042,6 +1039,8 @@ int main(int argc, char **argv){
 			removeTempFiles();
 			return 8;
 		}
+		printf("DONE\n");
+		fflush(stdout);
 	}
 
 	/*PRINT INFORMATION ACQUIRED FROM CPOG WITH RESPECT ENCODING CONSIDERED*/
@@ -1128,6 +1127,8 @@ int main(int argc, char **argv){
 	/*START COUNTING TIME*/
 	gettimeofday(&start, NULL);
 
+	printf("Building final Boolean equations (uses ABC if selected)... ");
+	fflush(stdout);
 	if(!CPOG_SIZE){
 		if( (err = equations_abc(cpog_count,bits)) != 0){
 			printf(".error \n");
@@ -1145,6 +1146,8 @@ int main(int argc, char **argv){
 			return 9;
 		}
 	}
+	printf("DONE\n");
+	fflush(stdout);
 
 	// IF ABC TOOL IS NOT PRESENT OUTPUT A RANDOM ENCODING
 	if(ABCFLAG == FALSE){
