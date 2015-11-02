@@ -8,13 +8,14 @@
 #define MAX_CPOG	1000	//Max number of graphs of CPOG
 #define MAX_WEIGHT	100000000//Used for finding min weight
 #define MAX_LOG		10000	//2^(MAX_LOG) as max number of log_2 computable
-#define MAX_LINE	10000	//Max line length of files
+#define MAX_LINE	100000	//Max line length of files
 #define FILENAME_LENGTH	300
 #define ESPRESSO_LINELENGTH 10000
+#define ABC_LINELENGTH 	1000
 #define COMMANDS_LENGTH 1000
 #define MAX_NAME	10000	//Max length name for each node
 #define MAX_VERT	10000	//Max number of vertices of CPOG
-#define MAX_BOOL	1300	//Max length of boolean equation
+#define MAX_BOOL	100000	//Max length of boolean equation
 #define MAX_MEMORY	100000    //Max memory available for Workcraft
 #define MAX_ENCODINGS	1000000	//Max encodings that is possible to try
 #define MAX_RAND_ITERATIONS 20	//Number of Rand swapping for shuffling vector

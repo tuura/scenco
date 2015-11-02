@@ -12,7 +12,8 @@ int equations_abc(int cpog_count, int bits){
 	float k2;
 	boolean ins = FALSE;
 	FILE *fp = NULL, *pp = NULL;
-	char *file_name = NULL,*file_name_abc = NULL, *string, *line, command[MAX_LINE],name[MAX_LINE];
+	char *file_name = NULL, *string, *line, *abc_line;
+	char command[COMMANDS_LENGTH],name[FILENAME_LENGTH];
 	char dump1[MAX_NAME],dump2[MAX_NAME],dump3[MAX_NAME];
 	
 #ifdef ACT_PERCENTAGE
@@ -20,7 +21,8 @@ int equations_abc(int cpog_count, int bits){
 	printf("Percentage till complete:\n");
 #endif
 
-	line = (char*) malloc(sizeof(char) * MAX_LINE);
+	line = (char*) malloc(sizeof(char) * MAX_BOOL);
+	abc_line = (char*) malloc(sizeof(char) * ABC_LINELENGTH);
 	string = (char*) malloc(sizeof(char) * MAX_BOOL);
 
 	if(decode_flag)
@@ -28,7 +30,7 @@ int equations_abc(int cpog_count, int bits){
 
 	for(c=0;c<counter;c++){
 		//DEFINE FILE NAMES
-		file_name = (char*) malloc(sizeof(char) * MAX_LINE);
+		file_name = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
 		strcpy(file_name,FOLDER_NAME);
 #ifdef __linux
 		
@@ -41,23 +43,18 @@ int equations_abc(int cpog_count, int bits){
 			removeTempFiles();
 			return 1;
 		}
+		strcpy(command,"rm -f ");
+		strcat(command, string);
+		if(system(command) != 0){
+			printf("Error on removing temporary dummy file.\n");
+			return 3;
+		}
 #else
 		strcat(file_name,"\\");
 		tmpnam (string);
 #endif
 		strcat(file_name, string);
-		strcat(file_name, EXTENSION_ENCODING);
-
-		file_name_abc = (char*) malloc(sizeof(char) * MAX_LINE);
-		strcpy(file_name_abc,FOLDER_NAME);
-#ifdef __linux
-		strcat(file_name_abc,"/");
-#else
-		strcat(file_name_abc,"\\");
-#endif
-		strcat(file_name_abc, string);
-		strcat(file_name_abc, EXTENSION_ENCODING);
-		
+		strcat(file_name, EXTENSION_ENCODING);		
 
 		//OPNENING FILE
 		if( (fp = fopen(file_name,"w")) == NULL ){
@@ -260,7 +257,7 @@ int equations_abc(int cpog_count, int bits){
 			}
 
 			/*WRITING DOWN SCRIPT FILE*/
-			fprintf(fp,"read_eqn %s\n",file_name_abc);
+			fprintf(fp,"read_eqn %s\n",file_name);
 			fprintf(fp,"read_library ");
 			fprintf(fp,"%s", LIBRARY_FILE);
 			fprintf(fp,"\n");
@@ -284,16 +281,17 @@ int equations_abc(int cpog_count, int bits){
 			}
 
 			/*READING RESULTS*/
-			while(fgets(line,MAX_LINE,pp) != NULL){
-				printf("%s\n",line);
-				if(line[0] == 'T'){
-					sscanf(line,"%s%s%s%d%s%s%f", string, name, dump1, &k,dump2,dump3, &k2);
+			while(fgets(abc_line,ABC_LINELENGTH,pp) != NULL){
+				//printf("%s\n",abc_line);
+				sscanf(abc_line, "%s", string);
+				if( !strcmp(string, "TOTAL") ){
+					printf("LINEA RISULTATO : %s\n",abc_line);
+					sscanf(abc_line,"%s%s%s%d%s%s%f", string, name, dump1, &k,dump2,dump3, &k2);
 					gates[c] = k;
 					area[c] = k2;
 					printf("%d %f\n", gates[c],area[c]);
 				}
 			}
-			free(file_name);
 			fclose(pp);
 
 			/*GET BACK STARTING POSITION*/
@@ -330,6 +328,10 @@ int equations_abc(int cpog_count, int bits){
 			return 3;
 		}
 	}
+
+	free(line);
+	free(abc_line);
+	free(string);
 
 #ifdef ACT_PERCENTAGE	
 	printf("100\n");
@@ -445,7 +447,8 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 	int i,c,k,j;
 	float k2;
 	FILE *fp = NULL, *pp = NULL;
-	char *file_name = NULL,*file_name_abc = NULL, *string, *line, command[MAX_LINE],name[MAX_LINE];
+	char *file_name = NULL, *string, *line, *abc_line;
+	char command[COMMANDS_LENGTH],name[FILENAME_LENGTH];
 	char dump1[MAX_NAME],dump2[MAX_NAME],dump3[MAX_NAME];
 	
 #ifdef ACT_PERCENTAGE
@@ -453,12 +456,13 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 	printf("Percentage till complete:\n");
 #endif
 
-	line = (char*) malloc(sizeof(char) * MAX_LINE);
-	string = (char*) malloc(sizeof(char) * MAX_NAME);
+	line = (char*) malloc(sizeof(char) * MAX_BOOL);
+	abc_line = (char*) malloc(sizeof(char) * ABC_LINELENGTH);
+	string = (char*) malloc(sizeof(char) * MAX_BOOL);
 
 	for(c=0;c<counter;c++){
 		//DEFINE FILE NAMES
-		file_name = (char*) malloc(sizeof(char) * MAX_LINE);
+		file_name = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
 		strcpy(file_name,FOLDER_NAME);
 #ifdef __linux
 		strcat(file_name,"/");
@@ -470,23 +474,25 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			removeTempFiles();
 			return 1;
 		}
+		if (mkstemp(string) == -1){
+			printf(".error \n");
+			printf("Error on opening creating temporary file name in equation_abc: %s.\n", string);
+			printf(".end_error \n");
+			removeTempFiles();
+			return 1;
+		}
+		strcpy(command,"rm -f ");
+		strcat(command, string);
+		if(system(command) != 0){
+			printf("Error on removing temporary dummy file.\n");
+			return 3;
+		}
 #else
 		strcat(file_name,"\\");
 		tmpnam (string);
 #endif
 		strcat(file_name, string);
 		strcat(file_name, EXTENSION_ENCODING);
-
-		file_name_abc = (char*) malloc(sizeof(char) * MAX_LINE);
-		
-		strcpy(file_name_abc,FOLDER_NAME);		
-#ifdef __linux
-		strcat(file_name_abc,"/");
-#else
-		strcat(file_name_abc,"\\");
-#endif
-		strcat(file_name_abc, string);
-		strcat(file_name_abc, EXTENSION_ENCODING);
 
 		//OPNENING FILE
 		if( (fp = fopen(file_name,"w")) == NULL ){
@@ -563,7 +569,7 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			}
 
 			/*WRITING DOWN SCRIPT FILE*/
-			fprintf(fp,"read_eqn %s\n",file_name_abc);
+			fprintf(fp,"read_eqn %s\n",file_name);
 			fprintf(fp,"read_library ");
 			fprintf(fp, "%s", LIBRARY_FILE);
 			fprintf(fp,"\n");
@@ -585,18 +591,19 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 					printf("Error on calling abc program.\n");
 					return 3;
 			}
+			
 
 			/*READING RESULTS*/
-			while(fgets(line,MAX_LINE,pp) != NULL){
-				//printf("%s\n",line);
-				if(line[0] == 'T'){
-					sscanf(line,"%s%s%s%d%s%s%f", string, name, dump1, &k,dump2,dump3, &k2);
+			while(fgets(abc_line,ABC_LINELENGTH,pp) != NULL){
+				//printf("%s\n",abc_line);
+				sscanf(abc_line, "%s", string);
+				if( !strcmp(string, "TOTAL") ){
+					sscanf(abc_line,"%s%s%s%d%s%s%f", string, name, dump1, &k,dump2,dump3, &k2);
 					gates[c] = k;
 					area[c] = k2;
 					printf("%d %f\n", gates[c],area[c]);
 				}
 			}
-			free(file_name);
 			fclose(pp);
 
 			/*GET BACK STARTING POSITION*/
@@ -622,9 +629,9 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 	if(ABCFLAG){
 		//REMOVE SCRIPT FILES
 #ifdef __linux
-			strcpy(command,"rm -f ");
+		strcpy(command,"rm -f ");
 #else
-			strcpy(command,"del ");
+		strcpy(command,"del ");
 #endif
 		strcat(command, SCRIPT_PATH);
 		if(system(command) != 0){
@@ -632,6 +639,11 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			return 3;
 		}
 	}
+
+	free(line);
+	free(abc_line);
+	free(string);
+	free(file_name);
 
 #ifdef ACT_PERCENTAGE	
 	printf("100\n");

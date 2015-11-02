@@ -982,18 +982,16 @@ int main(int argc, char **argv){
 	printf("Memory allocation phase... ");	
 	fflush(stdout);
 	
-	//if(gen_mode != 0){
-		/*ALLOCATION MEMORY FOR ALL LOGIC FUNCTIONS CONSIDERED*/
-		for(i=0;i<nv; i++)
-			for(j=0;j<nv;j++){
-				cpog[i][j].fun = (char**) malloc(sizeof(char*) * counter);
-				cpog[i][j].fun_cond = (char**) malloc(sizeof(char*) * counter);
-				for(k=0;k<counter;k++){
-					cpog[i][j].fun[k] = (char*) malloc(sizeof(char) * MAX_BOOL);
-					cpog[i][j].fun_cond[k] = (char*) malloc(sizeof(char) * MAX_BOOL);
-				}
+	/*ALLOCATION MEMORY FOR ALL LOGIC FUNCTIONS CONSIDERED*/
+	for(i=0;i<nv; i++)
+		for(j=0;j<nv;j++){
+			cpog[i][j].fun = (char**) malloc(sizeof(char*) * counter);
+			cpog[i][j].fun_cond = (char**) malloc(sizeof(char*) * counter);
+			for(k=0;k<counter;k++){
+				cpog[i][j].fun[k] = (char*) malloc(sizeof(char) * MAX_BOOL);
+				cpog[i][j].fun_cond[k] = (char*) malloc(sizeof(char) * MAX_BOOL);
 			}
-	//}
+		}
 
 	printf("DONE\n\n");
 	fflush(stdout);

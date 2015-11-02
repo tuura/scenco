@@ -320,7 +320,7 @@ void print_help(char *prog_name){
 }
 
 void print_version(){
-	printf("ScEnco version: 1.3.2\n");
+	printf("ScEnco version: 1.3.3\n");
 	return;
 }
 
@@ -492,7 +492,7 @@ int read_set_encoding(int cpog_count, int *bits){
 // removing temporary files from the HDD
 void removeTempFiles(){
 	char *command;
-	command = (char*) malloc(sizeof(char) * MAX_LINE);
+	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
 
 #ifdef __linux
 	strcpy(command,"rm -f ");
