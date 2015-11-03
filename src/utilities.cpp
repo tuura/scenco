@@ -462,3 +462,31 @@ int filter_encodings(int n_cpog, int bits, int tot_enc){
 
 	return 0;
 }
+
+
+/*It concatenates two strings creating the right portion in the memory.*/
+char* catMem(char *str1, char *str2){
+
+	char *newStr;
+
+	newStr = (char *) malloc(sizeof(char) * (strlen(str1) + strlen(str2) + 1));
+	sprintf(newStr, "%s%s", str1, str2);
+	
+	free(str1);
+
+	return newStr;
+}
+
+/*It concatenates one string with a character creating the right portion in 
+the memory.*/
+char* catChar(char *str1, char c){
+
+	char *newStr;
+
+	newStr = (char *) malloc(sizeof(char) * (strlen(str1) + 2));
+	sprintf(newStr, "%s%c", str1, c);
+	
+	free(str1);
+
+	return newStr;
+}

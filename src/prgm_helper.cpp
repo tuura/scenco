@@ -320,7 +320,7 @@ void print_help(char *prog_name){
 }
 
 void print_version(){
-	printf("ScEnco version: 1.3.4\n");
+	printf("ScEnco version: 1.4\n");
 	return;
 }
 
@@ -492,66 +492,66 @@ int read_set_encoding(int cpog_count, int *bits){
 // removing temporary files from the HDD
 void removeTempFiles(){
 	char *command;
-	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
 
 #ifdef __linux
-	strcpy(command,"rm -f ");
-	strcat(command, TMP_FILE);
+	command = strdup("rm -f ");
+	command = catMem(command, TMP_FILE);
 	if (system(command) == -1){
 		printf("Error on removing %s.\n", TMP_FILE);
 		return;
 	}
-
-    	strcpy(command,"rm -f ");
-	strcat(command, SCRIPT_PATH);
+	free(command);
+    	command = strdup("rm -f ");
+	command = catMem(command, SCRIPT_PATH);
 	if (system(command) == -1){
 		printf("Error on removing %s.\n", SCRIPT_PATH);
 		return;
 	}
-
-	strcpy(command,"rm -f ");
-	strcat(command, TRIVIAL_ENCODING_FILE);
+	free(command);
+	command = strdup("rm -f ");
+	command = catMem(command, TRIVIAL_ENCODING_FILE);
 	if (system(command) == -1){
 		printf("Error on removing %s.\n", TRIVIAL_ENCODING_FILE);
 		return;
 	}
-
-	strcpy(command,"rm -f ");
-	strcat(command, CONSTRAINTS_FILE);
+	free(command);
+	command = strdup("rm -f ");
+	command = catMem(command, CONSTRAINTS_FILE);
 	if (system(command) == -1){
 		printf("Error on removing %s.\n", CONSTRAINTS_FILE);
 		return;
 	}
+	free(command);
 #else
-    	strcpy(command,"del ");
-	strcat(command, TMP_FILE);
+    	command = strdup("del ");
+	command = catMem(command, TMP_FILE);
 	if (system(command) == -1){
 		printf("Error on removing %s.\n", TMP_FILE);
 		return;
 	}
-
-    	strcpy(command,"del ");
-	strcat(command, SCRIPT_PATH);
+	free(command);
+    	command = strdup("del ");
+	command = catMem(command, SCRIPT_PATH);
 	if (system(command) == -1){
 		printf("Error on removing %s.\n", SCRIPT_PATH);
 		return;
 	}
-
-	strcpy(command,"del ");
-	strcat(command, TRIVIAL_ENCODING_FILE);
+	free(command);
+	command = strdup("del ");
+	command = catMem(command, TRIVIAL_ENCODING_FILE);
 	if (system(command) == -1){
 		printf("Error on removing %s.\n", TRIVIAL_ENCODING_FILE);
 		return;
 	}
-
-	strcpy(command,"del ");
-	strcat(command, CONSTRAINTS_FILE);
+	free(command);
+	command = strdup("del ");
+	command = catMem(command, CONSTRAINTS_FILE);
 	if (system(command) == -1){
 		printf("Error on removing %s.\n", CONSTRAINTS_FILE);
 		return;
 	}
+	free(command);
 #endif
 
-	free(command);
 	return;
 }

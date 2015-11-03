@@ -4,6 +4,9 @@
 	#include "D:\Projects\PRGM_WORKCRAFT\inc\mapping.h"
 #endif
 
+// disable warnings about constant chars
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
 /*FINAL EQUATIONS AND ABC FUNCTION*/
 /*Following function write in some file in a format compatible with abc tool (Developed by Berkeley
 University), in order to get statistics about area of encoder. Moreover it calls abc tool.*/
@@ -13,29 +16,27 @@ int equations_abc(int cpog_count, int bits){
 	boolean ins = FALSE;
 	FILE *fp = NULL, *pp = NULL;
 	char *file_name = NULL, *string, *line, *abc_line;
-	char command[COMMANDS_LENGTH],name[FILENAME_LENGTH];
-	char dump1[MAX_NAME],dump2[MAX_NAME],dump3[MAX_NAME];
+	char *command,name[FILENAME_LENGTH];
+	char dump1[FILENAME_LENGTH],dump2[FILENAME_LENGTH],dump3[FILENAME_LENGTH];
 	
 #ifdef ACT_PERCENTAGE
 	float act,total,res,res_back = 101;
 	printf("Percentage till complete:\n");
 #endif
 
-	line = (char*) malloc(sizeof(char) * MAX_BOOL);
 	abc_line = (char*) malloc(sizeof(char) * ABC_LINELENGTH);
-	string = (char*) malloc(sizeof(char) * MAX_BOOL);
 
 	if(decode_flag)
 		min_bits = logarithm2(cpog_count);
 
 	for(c=0;c<counter;c++){
 		//DEFINE FILE NAMES
-		file_name = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
-		strcpy(file_name,FOLDER_NAME);
+		file_name = strdup("");
+		file_name = catMem(file_name, FOLDER_NAME);
 #ifdef __linux
 		
-		strcat(file_name,"/");
-		sprintf(string,"fileXXXXXX");
+		file_name = catChar(file_name, '/');
+		string = strdup("fileXXXXXX");
 		if (mkstemp(string) == -1){
 			printf(".error \n");
 			printf("Error on opening creating temporary file name in equation_abc: %s.\n", string);
@@ -43,18 +44,23 @@ int equations_abc(int cpog_count, int bits){
 			removeTempFiles();
 			return 1;
 		}
-		strcpy(command,"rm -f ");
-		strcat(command, string);
+		command = strdup("rm -f ");
+		command = catMem(command, string);
 		if(system(command) != 0){
 			printf("Error on removing temporary dummy file.\n");
 			return 3;
 		}
+		free(command);
 #else
-		strcat(file_name,"\\");
+		file_name = catChar(file_name, "\\");
+		string = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
 		tmpnam (string);
 #endif
-		strcat(file_name, string);
-		strcat(file_name, EXTENSION_ENCODING);		
+		file_name = catMem(file_name, string);
+		line = strdup(EXTENSION_ENCODING);
+		file_name = catMem(file_name, line);
+		free(line);
+		free(string);
 
 		//OPNENING FILE
 		if( (fp = fopen(file_name,"w")) == NULL ){
@@ -99,44 +105,60 @@ int equations_abc(int cpog_count, int bits){
 		for(i=0;i<nv; i++){
 			fprintf(fp,"REQ_%s = ", cpog[i][i].source);
 			ins = FALSE;
-			strcpy(line, "");
+			line = strdup("");
 			for(j=0;j<nv;j++){
 				/*DEBUG PRINTING: Information about and*/
 				/*if(i == 1)
 					printf("%d",ins);*/
-				strcpy(string,"");
+				string = strdup("");
 				//CONDITIONS OF VERTICES
 				if(j == i){
 					if(cpog[j][i].condition){
 						if( (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][i].fun_cond[c])) && ins){
-							sprintf(string," * ");
-							strcat(line,string);
+							string = strdup(" * ");
+							line = catMem(line, string);
 						}
 						if (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][i].fun_cond[c]))
 							ins = TRUE;
 						if(!decide(cpog[j][i].fun_cond[c]) && !decide(cpog[j][i].fun[c])){
-							sprintf(string,"( ( (%s) * (%s) ) + (%s)) ",cpog[j][i].fun_cond[c],cpog[j][i].cond,cpog[j][i].fun[c]);
-							strcat(line,string);
+							string = strdup("( ( (");
+							string = catMem(string, cpog[j][i].fun_cond[c]);
+							string = catMem(string, ") * (");
+							string = catMem(string, cpog[j][i].cond);
+							string = catMem(string, ") ) + (");
+							string = catMem(string, cpog[j][i].fun[c]);
+							string = catMem(string, ")) ");
+							line = catMem(line, string);
 						}
 						if(decide(cpog[j][i].fun_cond[c]) && !decide(cpog[j][i].fun[c])){
-							sprintf(string,"( (%s) + (%s) ) ",cpog[j][i].cond,cpog[j][i].fun[c]);
-							strcat(line,string);
+							string = strdup("( (");
+							string = catMem(string, cpog[j][i].cond);
+							string = catMem(string, ") + (");
+							string = catMem(string, cpog[j][i].fun[c]);
+							string = catMem(string, ") ) ");
+							line = catMem(line, string);
 						}
 						if(!decide(cpog[j][i].fun_cond[c]) && decide(cpog[j][i].fun[c])){
-							sprintf(string,"( (%s) * (%s) ) ",cpog[j][i].cond,cpog[j][i].fun_cond[c]);
-							strcat(line,string);
+							string = strdup("( (");
+							string = catMem(string, cpog[j][i].cond);
+							string = catMem(string, ") * (");
+							string = catMem(string, cpog[j][i].fun_cond[c]);
+							string = catMem(string, ") ) ");
+							line = catMem(line, string);
 						}
 						if(decide(cpog[j][i].fun_cond[c]) && decide(cpog[j][i].fun[c]))
 							ins = FALSE;
 					}else{	
 						if(!decide(cpog[j][i].fun[c]) && ins){
-							sprintf(string," * ");		
-							strcat(line,string);
+							string = strdup(" * ");
+							line = catMem(line, string);
 						}			
 						if(!decide(cpog[j][i].fun[c])){
 							ins = TRUE;
-							sprintf(string,"(%s) ",cpog[j][i].fun[c]);
-							strcat(line,string);
+							string = strdup("(");
+							string = catMem(string, cpog[j][i].fun[c]);
+							string = catMem(string, ") ");
+							line = catMem(line, string);
 						}
 					}
 				//CONDITIONS OF EDGES
@@ -144,89 +166,157 @@ int equations_abc(int cpog_count, int bits){
 					if(decide(cpog[j][i].fun[c]) != 2){
 						if(cpog[j][j].condition){
 							if( (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][j].fun[c]) || decide(cpog[j][j].fun_cond[c]) != 3) && ins){
-								sprintf(string," * ");
-								strcat(line,string);
+								string = strdup(" * ");
+								line = catMem(line, string);
 							}
 							if (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][j].fun[c]) || decide(cpog[j][j].fun_cond[c]) != 3)
 								ins = TRUE;
 
 							if(!decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
-								sprintf(string,"(ACK_%s + !((((%s) * (%s)) + (%s)) * (%s)))",cpog[j][i].source,cpog[j][j].fun_cond[c],cpog[j][j].cond,cpog[j][j].fun[c],cpog[j][i].fun[c]);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !((((");
+								string = catMem(string, cpog[j][j].fun_cond[c]);
+								string = catMem(string, ") * (");
+								string = catMem(string, cpog[j][j].cond);
+								string = catMem(string, ")) + (");
+								string = catMem(string, cpog[j][j].fun[c]);
+								string = catMem(string, ")) * (");
+								string = catMem(string, cpog[j][i].fun[c]);
+								string = catMem(string, ")))");
+								line = catMem(line, string);
 							}
 
 							if(decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
-								sprintf(string,"(ACK_%s + !(((%s) * (%s)) + (%s)))",cpog[j][i].source,cpog[j][j].fun_cond[c],cpog[j][j].cond,cpog[j][j].fun[c]);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !(((");
+								string = catMem(string, cpog[j][j].fun_cond[c]);
+								string = catMem(string, ") * (");
+								string = catMem(string, cpog[j][j].cond);
+								string = catMem(string, ")) + (");
+								string = catMem(string, cpog[j][j].fun[c]);
+								string = catMem(string, ")))");
+								line = catMem(line, string);
 							}
 
 							if(!decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
-								sprintf(string,"(ACK_%s + !(((%s) * (%s)) * (%s)))",cpog[j][i].source,cpog[j][j].fun_cond[c],cpog[j][j].cond,cpog[j][i].fun[c]);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !(((");
+								string = catMem(string, cpog[j][j].fun_cond[c]);
+								string = catMem(string, ") * (");
+								string = catMem(string, cpog[j][j].cond);
+								string = catMem(string, ")) * (");
+								string = catMem(string, cpog[j][i].fun[c]);
+								string = catMem(string, ")))");
+								line = catMem(line, string);
 							}
 
 							if(decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
-								sprintf(string,"(ACK_%s + !((%s) * (%s)))",cpog[j][i].source,cpog[j][j].fun_cond[c],cpog[j][j].cond);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !((");
+								string = catMem(string, cpog[j][j].fun_cond[c]);
+								string = catMem(string, ") * (");
+								string = catMem(string, cpog[j][j].cond);
+								string = catMem(string, ")))");
+								line = catMem(line, string);
 							}
 
 							if(!decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
-								sprintf(string,"(ACK_%s + !((%s) * (%s)))",cpog[j][i].source,cpog[j][j].fun[c],cpog[j][i].fun[c]);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !((");
+								string = catMem(string, cpog[j][j].fun[c]);
+								string = catMem(string, ") * (");
+								string = catMem(string, cpog[j][i].fun[c]);
+								string = catMem(string, ")))");
+								line = catMem(line, string);
 							}
 
 							if(decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
-								sprintf(string,"(ACK_%s + !(%s))",cpog[j][i].source,cpog[j][j].fun[c]);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !(");
+								string = catMem(string, cpog[j][j].fun[c]);
+								string = catMem(string, "))");
+								line = catMem(line, string);
 							}
 							if(!decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
-								sprintf(string,"(ACK_%s + !(%s))",cpog[j][i].source,cpog[j][i].fun[c]);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !(");
+								string = catMem(string, cpog[j][i].fun[c]);
+								string = catMem(string, "))");
+								line = catMem(line, string);
 							}
 
 							if(decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
 								ins = TRUE;
-								sprintf(string,"(ACK_%s)",cpog[j][i].source);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catChar(string, ')');
+								line = catMem(line, string);
 							}
 						}else{
 							if(ins){
-								sprintf(string," * ");
-								strcat(line,string);
+								string = strdup(" * ");
+								line = catMem(line, string);
 							}
 
 							if (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][j].fun[c]))
 								ins = TRUE;
 
 							if(!decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c])){
-								sprintf(string,"(ACK_%s + !((%s) * (%s)))",cpog[j][i].source,cpog[j][i].fun[c], cpog[j][j].fun[c]);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !((");
+								string = catMem(string, cpog[j][i].fun[c]);
+								string = catMem(string, ") * (");
+								string = catMem(string, cpog[j][j].fun[c]);
+								string = catMem(string, ")))");
+								line = catMem(line, string);
 							}
 
 							if(decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c])){
-								sprintf(string,"(ACK_%s + !(%s))",cpog[j][i].source, cpog[j][j].fun[c]);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !(");
+								string = catMem(string, cpog[j][j].fun[c]);
+								string = catMem(string, "))");
+								line = catMem(line, string);
 							}
 
 							if(!decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c])){
-								sprintf(string,"(ACK_%s + !(%s))",cpog[j][i].source,cpog[j][i].fun[c]);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catMem(string, " + !(");
+								string = catMem(string, cpog[j][i].fun[c]);
+								string = catMem(string, "))");
+								line = catMem(line, string);
 							}
 
 							if(decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c])){
 								ins = TRUE;
-								sprintf(string,"(ACK_%s)",cpog[j][i].source);
-								strcat(line,string);
+								string = strdup("(ACK_");
+								string = catMem(string, cpog[j][i].source);
+								string = catChar(string, ')');
+								line = catMem(line, string);
 							}
 						}
 					}
 				}
+				free(string);
 			}
 			//printf("\n");
-			strcat(line,";\n");
-			if(line[0] == ';')
-				strcpy(line,"1;\n");
-			fprintf(fp,"%s", line);
+			line = catChar(line, ';');
+			if(line[0] == ';'){
+				free(line);
+				line = strdup("1;");
+			}
+			fprintf(fp,"%s\n", line);
+			free(line);
 		}
 		
 		//CLOSING FILE AND FREE NAME MEMORY
@@ -243,13 +333,13 @@ int equations_abc(int cpog_count, int bits){
 
 			/*BUILDING COMMAND CALLING ABC*/
 #ifdef __linux
-			strcpy(command,"./abc");
+			command = strdup("./abc");
 #else
-			strcpy(command,"abc.exe");
+			command = strdup("abc.exe");
 #endif
 			
-			strcat(command, " < ");
-			strcat(command, SCRIPT_PATH);
+			command = catMem(command, " < ");
+			command = catMem(command, SCRIPT_PATH);
 
 			if( (fp = fopen(SCRIPT_PATH,"w")) == NULL ){
 				printf("Error on opening script file.\n");
@@ -281,6 +371,7 @@ int equations_abc(int cpog_count, int bits){
 			}
 
 			/*READING RESULTS*/
+			string = (char*) malloc(sizeof(char) * ABC_LINELENGTH);
 			while(fgets(abc_line,ABC_LINELENGTH,pp) != NULL){
 				//printf("%s\n",abc_line);
 				sscanf(abc_line, "%s", string);
@@ -293,6 +384,8 @@ int equations_abc(int cpog_count, int bits){
 				}
 			}
 			fclose(pp);
+			free(string);
+			free(command);
 
 			/*GET BACK STARTING POSITION*/
 			if(chdir(CURRENT_PATH) != 0){
@@ -317,21 +410,20 @@ int equations_abc(int cpog_count, int bits){
 	//REMOVE SCRIPT FILES
 	if (ABCFLAG){
 #ifdef __linux
-		strcpy(command,"rm -f ");
+		command = strdup("rm -f ");
 #else
-		strcpy(command,"del ");
+		command = strdup("del ");
 #endif
 		
-		strcat(command, SCRIPT_PATH);
+		command = catMem(command,SCRIPT_PATH);
 		if(system(command) != 0){
 			printf("Error on removing script file.\n");
 			return 3;
 		}
+		free(command);
 	}
 
-	free(line);
 	free(abc_line);
-	free(string);
 
 #ifdef ACT_PERCENTAGE	
 	printf("100\n");
@@ -447,26 +539,23 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 	int i,c,k,j;
 	float k2;
 	FILE *fp = NULL, *pp = NULL;
-	char *file_name = NULL, *string, *line, *abc_line;
-	char command[COMMANDS_LENGTH],name[FILENAME_LENGTH];
-	char dump1[MAX_NAME],dump2[MAX_NAME],dump3[MAX_NAME];
+	char *file_name = NULL, string[FILENAME_LENGTH], *abc_line, *s;
+	char *command,name[FILENAME_LENGTH];
+	char dump1[FILENAME_LENGTH],dump2[FILENAME_LENGTH],dump3[FILENAME_LENGTH];
 	
 #ifdef ACT_PERCENTAGE
 	float act,total,res,res_back = 101;
 	printf("Percentage till complete:\n");
 #endif
 
-	line = (char*) malloc(sizeof(char) * MAX_BOOL);
 	abc_line = (char*) malloc(sizeof(char) * ABC_LINELENGTH);
-	string = (char*) malloc(sizeof(char) * MAX_BOOL);
 
 	for(c=0;c<counter;c++){
 		//DEFINE FILE NAMES
-		file_name = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
-		strcpy(file_name,FOLDER_NAME);
+		file_name = strdup(FOLDER_NAME);
 #ifdef __linux
-		strcat(file_name,"/");
-		sprintf(string,"fileXXXXXX");
+		file_name = catChar(file_name,'/');
+		strcpy(string, "fileXXXXXX");
 		if (mkstemp(string) == -1){
 			printf(".error \n");
 			printf("Error on opening creating temporary file name in equation_abc: %s.\n", string);
@@ -474,18 +563,21 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			removeTempFiles();
 			return 1;
 		}
-		strcpy(command,"rm -f ");
-		strcat(command, string);
+		command = strdup("rm -f ");
+		command = catMem(command, string);
 		if(system(command) != 0){
 			printf("Error on removing temporary dummy file.\n");
 			return 3;
 		}
+		free(command);
 #else
-		strcat(file_name,"\\");
+		file_name = catChar(file_name,'\\');
 		tmpnam (string);
 #endif
-		strcat(file_name, string);
-		strcat(file_name, EXTENSION_ENCODING);
+		file_name = catMem(file_name, string);
+		s = strdup(EXTENSION_ENCODING);
+		file_name = catMem(file_name, s);
+		free(s);
 
 		//OPNENING FILE
 		if( (fp = fopen(file_name,"w")) == NULL ){
@@ -549,12 +641,12 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 
 			/*BUILDING COMMAND CALLING ABC*/
 #ifdef __linux
-			strcpy(command,"./abc");
+			command = strdup("./abc");
 #else
-			strcpy(command,"abc.exe");
+			command = strdup("abc.exe");
 #endif
-			strcat(command, " < ");
-			strcat(command, SCRIPT_PATH);
+			command = catMem(command, " < ");
+			command = catMem(command, SCRIPT_PATH);
 
 			if( (fp = fopen(SCRIPT_PATH,"w")) == NULL ){
 				printf("Error on opening script file.\n");
@@ -598,13 +690,14 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 				}
 			}
 			fclose(pp);
+			free(command);
 
 			/*GET BACK STARTING POSITION*/
 			if(chdir(CURRENT_PATH) != 0){
 				printf("Error on cd command. %s\n",CURRENT_PATH);
 				return 2;
 			}
-	}
+		}
 
 #ifdef ACT_PERCENTAGE	
 		/*PRINTING PERCENTAGE ELAPSED TO COMPLETION*/
@@ -617,26 +710,25 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 		}
 		fflush(stdout);
 #endif
+		free(file_name);
 	}
 
 	if(ABCFLAG){
 		//REMOVE SCRIPT FILES
 #ifdef __linux
-		strcpy(command,"rm -f ");
+		command = strdup("rm -f ");
 #else
-		strcpy(command,"del ");
+		command = strdup("del ");
 #endif
-		strcat(command, SCRIPT_PATH);
+		command = catMem(command, SCRIPT_PATH);
 		if(system(command) != 0){
 			printf("Error on removing script file.\n");
 			return 3;
 		}
+		free(command);
 	}
 
-	free(line);
 	free(abc_line);
-	free(string);
-	free(file_name);
 
 #ifdef ACT_PERCENTAGE	
 	printf("100\n");

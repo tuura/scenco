@@ -84,8 +84,8 @@ int difference_matrix(int cpog_count, int len_sequence){
 /*Following function read encoding constraints of every vertex and edge of CPOG*/
 int read_cons(char *file_cons,int cpog_count,int *num_vert){
 	FILE *fp = NULL;
-	char name[MAX_NAME], c;
-	int i = 0, j = 0, v_tmp = 0, n_tmp = 0, p = 0;
+	char *name, c;
+	int i = 0, j = 0, v_tmp = 0, p = 0;
 	boolean ins; 
 
 	if( (fp = fopen(file_cons, "r")) == NULL){
@@ -121,12 +121,12 @@ int read_cons(char *file_cons,int cpog_count,int *num_vert){
 					break;
 				default:
 					/*Parsing vertices name*/
-					n_tmp = 0;
+					name = strdup("");
 					while( (!isspace(c)) && c != ':' && c != EOF){
-						name[n_tmp++] = c;
+						name = catChar(name, c);
 						c = fgetc(fp);
 					}
-					name[n_tmp] = '\0';
+					
 					if(c == ':')
 						while( c != ' ' && c != EOF){
 					/*Taking into account nested conditions on vertices*/
@@ -150,12 +150,13 @@ int read_cons(char *file_cons,int cpog_count,int *num_vert){
 							ins = FALSE;
 					if(ins){
 						(*num_vert)++;
-						strcpy(vertices[v_tmp++], name);
+						vertices[v_tmp++] = strdup(name);
 						/*DEBUG PRINTING: adding vertex*/
 						//printf("%s inserted\n", name);
 					}
 					while((!isspace(c)) && c != EOF)
 						c = fgetc(fp);
+					free(name);
 					break;
 			}
 		}
@@ -309,14 +310,18 @@ in same vertices.*/
 int get_conditions_names(){
 	int i,k,j,p;
 	boolean ins = TRUE;
-	char name[MAX_NAME];
+	char *name;
 	
 	for(i=0;i<nv; i++){
 		if(cpog[i][i].condition){
 			k = strlen(cpog[i][i].cond);
 			j = 0;
 			while(j<k){
-				p = 0;
+				printf("DUP NAME WIth SPACE... ");
+				fflush(stdout);
+				name = strdup("");
+				printf("DONE\n");
+				fflush(stdout);
 				switch(cpog[i][i].cond[j]){
 					case '(':
 						j++;
@@ -340,9 +345,17 @@ int get_conditions_names(){
 						j = k;
 						break;
 					default:
-						while( (!isspace(cpog[i][i].cond[j])) && cpog[i][i].cond[j] != '\0' && cpog[i][i].cond[j] != ')' && cpog[i][i].cond[j] != '+' && cpog[i][i].cond[j] != '*')
-							name[p++] = cpog[i][i].cond[j++];
-						name[p] = '\0';
+						while( (!isspace(cpog[i][i].cond[j])) &&
+							cpog[i][i].cond[j] != '\0' && 
+							cpog[i][i].cond[j] != ')' && 
+							cpog[i][i].cond[j] != '+' && 
+							cpog[i][i].cond[j] != '*'){
+								printf("Before name: %s\n", name);
+								fflush(stdout);
+								name = catChar(name,cpog[i][i].cond[j++]);
+								printf("After name: %s\n", name);
+								fflush(stdout);
+						}
 						ins = TRUE;
 						for(p=0;p<n_cond;p++)
 							if(!strcmp(name_cond[p],name))
@@ -351,6 +364,11 @@ int get_conditions_names(){
 							strcpy(name_cond[n_cond++],name);								
 						break;
 				}
+				printf("FREE NAME... ");
+				fflush(stdout);
+				free(name);
+				printf("DONE\n");
+				fflush(stdout);
 			}
 		}
 	}

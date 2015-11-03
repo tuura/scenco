@@ -5,7 +5,7 @@
 #endif
 
 /*GLOBAL VARIABLES*/
-char** diff = NULL, name_cond[MAX_VERT][MAX_NAME],vertices[MAX_VERT][MAX_NAME], **manual_file, **manual_file_back, *numb;
+char** diff = NULL, **name_cond, **vertices, **manual_file, **manual_file_back, *numb;
 int **opt_diff = NULL, counter = 0, **perm = NULL, nv=0, **cons_perm, n_cond = 0,*gates,mode = 1,tot_enc,gen_mode = 2,gen_perm = 1000, *custom_perm, *custom_perm_back, mod_bit = 2;
 long long int num_perm;
 float *area, *weights = NULL;
@@ -157,6 +157,13 @@ int main(int argc, char **argv){
 	printf("\n\n%s\n\n", CURRENT_PATH);
 	k = 0;
 #endif
+
+	printf("Allocating memory for vertex names...");
+	fflush(stdout);
+	name_cond = (char**) malloc(sizeof(char*) * MAX_VERT);
+	vertices = (char**) malloc(sizeof(char*) * MAX_VERT);
+	printf("DONE\n");
+	fflush(stdout);
 
 
 	/*************************************************************************
@@ -707,6 +714,8 @@ int main(int argc, char **argv){
 	fflush(stdout);
 
 	/*FIRST READING OF ENCODING FILE*/
+	printf("First reading of encoding file...");
+	fflush(stdout);
 	if( (err = read_cons(file_cons, cpog_count, &num_vert)) ){
 		printf(".error \n");
 		printf("Error occured while reading constraints file, error code: %d", err);
@@ -714,18 +723,24 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 5;
 	}
+	printf("DONE\n");
+	fflush(stdout);
 
 	/*DEBUG PRINTING: printing vertices information*/
-	printf("Number of vertices: %d\n", num_vert);
+	/*printf("Number of vertices: %d\n", num_vert);
 	printf("Names of vertices:\n");
 	for(i=0;i<num_vert;i++)
 		printf("%s ", vertices[i]);
-	printf("\n\n");
+	printf("\n\n");*/
 
 	/*CPOG ALLOCATION*/
+	printf("CPOG data structure allocation...");
+	fflush(stdout);
 	cpog = (CPOG_TYPE**) malloc(sizeof(CPOG_TYPE*) * (num_vert));
 	for(i=0;i<num_vert; i++)
 		cpog[i] = (CPOG_TYPE*) malloc(sizeof(CPOG_TYPE) * (num_vert));
+	printf("DONE\n");
+	fflush(stdout);
 
 	nv = num_vert; /*Due to overwriting problem*/
 
@@ -746,7 +761,11 @@ int main(int argc, char **argv){
 			}
 
 	/*SECOND READING OF ENCODING FILE*/
+	printf("Second reading of encoding file (parsing CPOG)...");
+	fflush(stdout);
 	parsing_cpog(file_cons, cpog_count, num_vert);
+	printf("DONE\n");
+	fflush(stdout);
 
 	printf("CPOG read properly.\n\n");
 
@@ -981,18 +1000,13 @@ int main(int argc, char **argv){
 
 	printf("Memory allocation phase... ");	
 	fflush(stdout);
-	
 	/*ALLOCATION MEMORY FOR ALL LOGIC FUNCTIONS CONSIDERED*/
-	for(i=0;i<nv; i++)
+	for(i=0;i<nv; i++){
 		for(j=0;j<nv;j++){
 			cpog[i][j].fun = (char**) malloc(sizeof(char*) * counter);
 			cpog[i][j].fun_cond = (char**) malloc(sizeof(char*) * counter);
-			for(k=0;k<counter;k++){
-				cpog[i][j].fun[k] = (char*) malloc(sizeof(char) * MAX_BOOL);
-				cpog[i][j].fun_cond[k] = (char*) malloc(sizeof(char) * MAX_BOOL);
-			}
 		}
-
+	}
 	printf("DONE\n");
 	fflush(stdout);
 
@@ -1084,14 +1098,13 @@ int main(int argc, char **argv){
 
 	fflush(stdout);
 	/*REMOVE OLD DIR AND MAKE NEW ONE AND ERASE USED FILES*/
-	command = (char*) malloc(sizeof(char) * MAX_LINE);
 
 #ifdef __linux
-	strcpy(command,"rm -f ");
+	command = strdup("rm -f ");
 #else
-	strcpy(command,"del ");
+	command = strdup("del ");
 #endif
-	strcat(command, TRIVIAL_ENCODING_FILE);
+	command = catMem(command, TRIVIAL_ENCODING_FILE);
 	if(system(command) != 0){
 		printf(".error \n");
 		printf("Error on removing trivial encoding file.\n");
@@ -1099,12 +1112,14 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 8;
 	}
+	free(command);
+
 #ifdef __linux
-	strcpy(command,"rm -f ");
+	command = strdup("rm -f ");
 #else
-	strcpy(command,"del ");
+	command = strdup("del ");
 #endif
-	strcat(command, CONSTRAINTS_FILE);
+	command = catMem(command, CONSTRAINTS_FILE);
 	if(system(command) != 0){
 		printf(".error \n");
 		printf("Error on removing trivial encoding file.\n");
@@ -1116,6 +1131,8 @@ int main(int argc, char **argv){
 	
 
 	//ACQUIRE NAMES OF CONDITIONS
+	printf("Getting condition names... ");
+	fflush(stdout);
 	if(get_conditions_names()){
 		printf(".error \n");
 		printf("Error on getting condition names from CPOG representation.\n");
@@ -1123,6 +1140,8 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 8;
 	}
+	printf("DONE\n");
+	fflush(stdout);
 
 	/*START COUNTING TIME*/
 	gettimeofday(&start, NULL);
@@ -1218,13 +1237,6 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 0;
 	}
-
-	/*REMOVE FOLDER CONTAINING ENCODINGS*/
-	/*command = (char*) malloc(sizeof(char) * MAX_LINE);
-	sprintf(command,"rm -rf ");
-	strcat(command, FOLDER_NAME);
-	system(command);
-	free(command);*/
 
 	/*COMPUTES TIME SPENT BY FUNCTION equations_abc*/
 	gettimeofday(&end, NULL);
@@ -1364,6 +1376,12 @@ int main(int argc, char **argv){
 
 	removeTempFiles();
 	
+	printf("Free memory for vertex names... ");
+	fflush(stdout);
+	free (name_cond);
+	free(vertices);
+	printf("DONE");
+	fflush(stdout);
 
 	return 0;
 }

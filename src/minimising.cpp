@@ -8,33 +8,34 @@
 /*Following function uses espresso program (developed by Berkeley University) for finding 
 and minimising logic functions, with respect encoding considered.*/
 int boolean_function(int max,int bits, int cpog_count,int co){
-	char *file_out, *command, c;
-	int i=0,j=0,p=0,n=0,k=0,val;
+	char *file_out, *command, *ss, c;
+	int i=0,j=0,p=0,k=0,val;
 	FILE *fp,*pp;
 #ifdef ACT_PERCENTAGE
 	float act,total,res,res_back = 101;
 	printf("Percentage till complete:\n");
 #endif
-	/*NAME OF THE FILES FOR CALLING ESPRESSO PROGRAM*/
-	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
 
-	/*FILE_TEMP NAME*/
+
+	//FILE_TEMP NAME
 	file_out = strdup(TMP_FILE);
 
+	// building espresso command
 #ifdef __linux
-	strcpy(command, ESPRESSO_PATH);
-	strcat(command, " ");
-	strcat(command, ESPRESSO_FILTER);
-	strcat(command, file_out);
+	command = strdup("");
+	command = catMem(command, ESPRESSO_PATH);
+	command = catChar(command, ' ');
+	ss = strdup(ESPRESSO_FILTER);
+	command = catMem(command, ss);
+	command = catMem(command, file_out);
 #else
-	strcpy(command, "\"");
-	strcat(command, ESPRESSO_PATH);
-	strcat(command, "\" ");
-	strcat(command, ESPRESSO_FILTER);
-	strcat(command, file_out);
+	command = strdup("\"");
+	command = catMem(command, ESPRESSO_PATH);
+	command = catMem(command, "\" ");
+	ss = strdup(ESPRESSO_FILTER);
+	command = catMem(command, ss);
+	command = catMem(command, file_out);
 #endif
-
-
 	
 	if(!co){
 		for(i=0; i<counter;i++){
@@ -87,16 +88,16 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						/*READING ESPRESSO OUTPUT*/
 						while( (c = fgetc(pp)) != '=');
 						c = fgetc(pp);
-						n = 0;
+						cpog[p][j].fun[i] = strdup(""); 
 
 						while( c != ';'){
 							switch(c){
 								case '&':
-									cpog[p][j].fun[i][n++] = '*';
+									cpog[p][j].fun[i] = catChar(cpog[p][j].fun[i], '*');
 									c = fgetc(pp);
 									break;
 								case '|':
-									cpog[p][j].fun[i][n++] = '+';
+									cpog[p][j].fun[i] = catChar(cpog[p][j].fun[i], '+');
 									c = fgetc(pp);
 									break;
 								case ' ':
@@ -110,15 +111,20 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 									while( (c = fgetc(pp)) != ' ');
 									break;
 								default:
-									cpog[p][j].fun[i][n++] = c;
+									cpog[p][j].fun[i] = catChar(cpog[p][j].fun[i], c);
 									c = fgetc(pp);
 							}
 						}
-						cpog[p][j].fun[i][n] = '\0';
 						/*DEBUG PRINTING: function read*/
 						//printf("%s\n\n",cpog[p][j].fun[i]);
-						if (!strcmp(cpog[p][j].fun[i], "()")) strcpy(cpog[p][j].fun[i], "1");
-						if (!strcmp(cpog[p][j].fun[i], "")) strcpy(cpog[p][j].fun[i], "0");
+						if (!strcmp(cpog[p][j].fun[i], "()")){
+							free(cpog[p][j].fun[i]);
+							cpog[p][j].fun[i] = strdup("1");
+						}
+						if (!strcmp(cpog[p][j].fun[i], "")){
+							free(cpog[p][j].fun[i]);
+							cpog[p][j].fun[i] = strdup("0");
+						}
 				
 						fclose(pp);
 				
@@ -126,9 +132,9 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						//printf("%s - %s\n",cpog[p][j].fun[i],cpog[p][j].fun_cond[i]);
 					}else{
 						if(val == 1)
-							strcpy(cpog[p][j].fun[i], "1");
+							cpog[p][j].fun[i] = strdup("1");
 						else
-							strcpy(cpog[p][j].fun[i], "0");
+							cpog[p][j].fun[i] = strdup("0");
 					}
 				}
 			}
@@ -194,16 +200,16 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						/*READING FIRST OUTPUT LINE OF ESPRESSO*/
 						while( (c = fgetc(pp)) != '=');
 						c = fgetc(pp);
-						n = 0;
+						cpog[p][j].fun[i] = strdup("");
 
 						while( c != ';'){
 							switch(c){
 								case '&':
-									cpog[p][j].fun[i][n++] = '*';
+									cpog[p][j].fun[i] = catChar(cpog[p][j].fun[i], '*');
 									c = fgetc(pp);
 									break;
 								case '|':
-									cpog[p][j].fun[i][n++] = '+';
+									cpog[p][j].fun[i] = catChar(cpog[p][j].fun[i], '+');
 									c = fgetc(pp);
 									break;
 								case ' ':
@@ -217,19 +223,22 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 									while( (c = fgetc(pp)) != ' ');
 									break;
 								default:
-									cpog[p][j].fun[i][n++] = c;
+									cpog[p][j].fun[i] = catChar(cpog[p][j].fun[i], c);
 									c = fgetc(pp);
 							}
 						}
-						cpog[p][p].fun_cond[i][n] = '\0';
-						if (!strcmp(cpog[p][p].fun_cond[i], "()")) strcpy(cpog[p][p].fun_cond[i], "1");
-						if (!strcmp(cpog[p][p].fun_cond[i], "")) strcpy(cpog[p][p].fun_cond[i], "0");	
+						if (!strcmp(cpog[p][p].fun_cond[i], "()")){
+							strcpy(cpog[p][p].fun_cond[i], "1");
+						}
+						if (!strcmp(cpog[p][p].fun_cond[i], "")){
+							strcpy(cpog[p][p].fun_cond[i], "0");
+						}
 						fclose(pp);
 					}else{
 						if(val == 1)
-							strcpy(cpog[p][p].fun_cond[i], "1");
+							cpog[p][p].fun[i] = strdup("1");
 						else
-							strcpy(cpog[p][p].fun_cond[i], "0");
+							cpog[p][p].fun[i] = strdup("0");
 
 					}
 				}
@@ -289,31 +298,37 @@ int decide(char* function){
 and minimising logic functions of the decoder needed if the number of bit for encoding
 CPOG is not minimum.*/
 int decoder_minimisation(int bits, int cpog_count){
-	char* file_out, *command, c;
-	int i=0,j=0,n=0,k=0,min_bits,min_tot_enc;
+	char* file_out, *command, c, *ss;
+	int i=0,j=0,k=0,min_bits,min_tot_enc;
 	FILE *fp,*pp;
 #ifdef ACT_PERCENTAGE
 	printf("Percentage till complete:\n");
 #endif
-	/*NAME OF THE FILES FOR CALLING ESPRESSO PROGRAM*/
-	file_out = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
-	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
-
 	/*FILE_TEMP NAME*/
 	file_out = strdup(TMP_FILE);
 
 	/*CONSTRUCTION ESPRESSO COMMAND*/
-	strcpy(command, ESPRESSO_PATH);
-	strcat(command, ESPRESSO_FILTER);
-	strcat(command, file_out);
+#ifdef __linux
+	command = strdup("");
+	command = catMem(command, ESPRESSO_PATH);
+	command = catChar(command, ' ');
+	ss = strdup(ESPRESSO_FILTER);
+	command = catMem(command, ss);
+	command = catMem(command, file_out);
+#else
+	command = strdup("\"");
+	command = catMem(command, ESPRESSO_PATH);
+	command = catMem(command, "\" ");
+	ss = strdup(ESPRESSO_FILTER);
+	command = catMem(command, ss);
+	command = catMem(command, file_out);
+#endif
 
 	/*ALLOCATING BASE STRUCTURES FOR DECODER*/
 	min_bits = logarithm2(cpog_count);
 	min_tot_enc = 1;
 	for(i=0;i<min_bits;i++) min_tot_enc *=2;
 	decoder = (char**) malloc(sizeof(char*) * bits);
-	for(i=0;i<bits;i++)
-		decoder[i] = (char*) malloc(sizeof(char) * MAX_BOOL);
 
 	for(i=0;i<bits;i++){
 		/*WRITING FILE CONTENT FOR ESPRESSO*/
@@ -359,16 +374,16 @@ int decoder_minimisation(int bits, int cpog_count){
 		/*READING FIRST OUTPUT LINE OF ESPRESSO*/
 		while( (c = fgetc(pp)) != '=');
 		c = fgetc(pp);
-		n = 0;
+		decoder[i] = strdup("");
 
 		while( c != ';'){
 			switch(c){
 				case '&':
-					decoder[i][n++] = '*';
+					decoder[i] = catChar(decoder[i], '*');
 					c = fgetc(pp);
 					break;
 				case '|':
-					decoder[i][n++] = '+';
+					decoder[i] = catChar(decoder[i], '+');
 					c = fgetc(pp);
 					break;
 				case ' ':
@@ -382,13 +397,18 @@ int decoder_minimisation(int bits, int cpog_count){
 					while( (c = fgetc(pp)) != ' ');
 					break;
 				default:
-					decoder[i][n++] = c;
+					decoder[i] = catChar(decoder[i], c);
 					c = fgetc(pp);
 			}
 		}	
-		decoder[i][n] = '\0';
-		if (!strcmp(decoder[i], "()")) strcpy(decoder[i], "1");
-		if (!strcmp(decoder[i], "")) strcpy(decoder[i], "0");
+		if (!strcmp(decoder[i], "()")){
+			free(decoder[i]);
+			decoder[i] =strdup("1");
+		}
+		if (!strcmp(decoder[i], "")){
+			free(decoder[i]);
+			decoder[i] = strdup("0");
+		}
 
 		fclose(pp);
 
@@ -398,13 +418,12 @@ int decoder_minimisation(int bits, int cpog_count){
 
 	/*REMOVING TMP FILE AND FREE USELESS STRINGS*/
 	free(command);
-	command = (char*) malloc(sizeof(char) * COMMANDS_LENGTH);
 #ifdef __linux
-	sprintf(command,"rm -f ");
+	command = strdup("rm -f ");
 #else
-	sprintf(command,"del ");
+	command = strdup("del ");
 #endif
-	strcat(command, file_out);
+	command = catMem(command, file_out);
 	if(system(command) != 0){
 		printf("Error on removing tmp files.\n");
 		return 3;

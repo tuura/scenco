@@ -18,6 +18,8 @@ int compute_HD(int,int, int,int,int,int);
 int check_correctness(int, int, int);
 void int_to_string_DC(int, int, int, char *);
 int filter_encodings(int,int,int);
+char* catMem(char*, char*);
+char* catChar(char*, char);
 
 #endif
 
