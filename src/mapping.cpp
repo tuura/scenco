@@ -36,7 +36,7 @@ int equations_abc(int cpog_count, int bits){
 #ifdef __linux
 		
 		file_name = catChar(file_name, '/');
-		string = strdup("fileXXXXXX");
+		string = strdup("abc_synthXXXXXX");
 		if (mkstemp(string) == -1){
 			printf(".error \n");
 			printf("Error on opening creating temporary file name in equation_abc: %s.\n", string);
@@ -376,11 +376,9 @@ int equations_abc(int cpog_count, int bits){
 				//printf("%s\n",abc_line);
 				sscanf(abc_line, "%s", string);
 				if( !strcmp(string, "TOTAL") ){
-					printf("LINEA RISULTATO : %s\n",abc_line);
 					sscanf(abc_line,"%s%s%s%d%s%s%f", string, name, dump1, &k,dump2,dump3, &k2);
 					gates[c] = k;
 					area[c] = k2;
-					printf("%d %f\n", gates[c],area[c]);
 				}
 			}
 			fclose(pp);
@@ -555,7 +553,7 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 		file_name = strdup(FOLDER_NAME);
 #ifdef __linux
 		file_name = catChar(file_name,'/');
-		strcpy(string, "fileXXXXXX");
+		strcpy(string, "abc_synth.XXXXXX");
 		if (mkstemp(string) == -1){
 			printf(".error \n");
 			printf("Error on opening creating temporary file name in equation_abc: %s.\n", string);
@@ -686,7 +684,6 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 					sscanf(abc_line,"%s%s%s%d%s%s%f", string, name, dump1, &k,dump2,dump3, &k2);
 					gates[c] = k;
 					area[c] = k2;
-					printf("%d %f\n", gates[c],area[c]);
 				}
 			}
 			fclose(pp);

@@ -42,15 +42,16 @@ int read_file(char *file_in,int *cpog_count, int *len_sequence){
 	}
 	fclose(fp);
 
-	if(verbose){
-		/*NON-TRIVIAL ENCODING PRINTING*/
+	/*NON-TRIVIAL ENCODING PRINTING*/
+	// debug printing
+	/*if(verbose){		
 		printf("NON-TRIVIAL ENCODING:\n");
 		for(i = 0; i <(*len_sequence) ;i++){
 			for(j = 0; j< (*cpog_count); j++)
 				printf("%c", diff[i][j]);
 			printf("\n");
 		}
-	}
+	}*/
 	return 0;
 }
 
@@ -68,7 +69,8 @@ int difference_matrix(int cpog_count, int len_sequence){
 					opt_diff[i][j]++;
 	
 	/*OPTIMAL DIFFERENCES MATRIX PRINTING*/
-	if(verbose){
+	// debug printing
+	/*if(verbose){
 		printf("\nOPTIMAL DIFFERENCES MATRIX:\n");
 		for(i=0;i<cpog_count;i++){
 			for(j=0;j<cpog_count;j++)
@@ -76,7 +78,7 @@ int difference_matrix(int cpog_count, int len_sequence){
 			printf("\n");
 		}
 		printf("\n");
-	}
+	}*/
 	return 0;
 }
 

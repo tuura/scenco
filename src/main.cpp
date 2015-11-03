@@ -57,10 +57,10 @@ bool alternative = false;
 int main(int argc, char **argv){
 	char *command;
 	int bits = 0, j = 0, k=0, err=0, cpog_count = 0, len_sequence = 0,min_bits = 0;
-	int *sol, *enc, count_min = 0, count_max = 0,c = 0;
+	int *sol, *enc, count_min = 0, count_max = 0;
 	float ma,MA,mfma,mfMA, max = 0, min = MAX_WEIGHT;
 	long int i;
-	int num_vert = 0,cnt_func = 0,elements,min_disp;
+	int num_vert = 0,elements,min_disp;
 	struct timeval start,end;
 	long secs_used;
 	FILE *fp = NULL;
@@ -567,15 +567,17 @@ int main(int argc, char **argv){
 	/*************************************************************************
 	***********************READING NON-TRIVIAL ENCODINGS**********************
 	*************************************************************************/
-	printf("\n****************************************************************\n");
+	printf("\n**************************************************************\n");
 	printf("*****************READING NON-TRIVIAL ENCODINGS******************\n");
-	printf("****************************************************************\n\n");
+	printf("**************************************************************\n\n");
 	fflush(stdout);
 
 	strcpy(file_in,TRIVIAL_ENCODING_FILE);
 	file_cons= strdup(CONSTRAINTS_FILE);
 
 	/*READ NON-TRIVIAL ENCODING FILE*/
+	printf("Reading non-trivial encoding file... ");
+	fflush(stdout);
 	if( (err = read_file(file_in, &cpog_count, &len_sequence)) ){
 		printf(".error \n");
 		printf("Error occured while reading non-trivial encoding file, error code: %d", err);
@@ -583,6 +585,8 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 2;
 	}
+	printf("DONE\n");
+	fflush(stdout);
 
 	/*SEED FOR RAND*/
 	srand(time(NULL));
@@ -593,7 +597,6 @@ int main(int argc, char **argv){
 		opt_diff[i] = (int*) calloc(cpog_count, sizeof(int));
 
 	/*COMPUTING LOGARITHM OF NUMBER OF CPOGs*/
-
 	if(mod_bit_flag){
 		bits = mod_bit;
 	}else{
@@ -604,14 +607,17 @@ int main(int argc, char **argv){
 	tot_enc = 1;
 	for(i=0;i<bits;i++) tot_enc *= 2;
 	if(mod_bit_flag){
-		printf("\nCustom number of bits set to encode all CPOG is: %d\n",bits);		
+		printf("Custom number of bits set to encode all CPOG is: %d\n",bits);		
 	} else{
-		printf("\nMiminum number of bits needed to encode all CPOG is: %d\n",bits);
+		printf("Miminum number of bits needed to encode all CPOG is: %d\n",bits);
 	}
-	printf("Number of possible encodings: %d\n",tot_enc);
+
+	// debug printing
+	/*printf("Number of possible encodings: %d\n",tot_enc);
 	printf("(int) binary\n");
-	for(i=0;i<tot_enc;i++) print_binary(stdout,i,bits);
-	printf("\n");
+	for(i=0;i<tot_enc;i++) 
+		print_binary(stdout,i,bits);
+	printf("\n");*/
 
 	/*ANALYSIS IF IT'S A PERMUTATION OR A DISPOSITION*/
 	num_perm = 1;
@@ -624,7 +630,7 @@ int main(int argc, char **argv){
 			for(i = 1; i<= tot_enc; i++)
 				num_perm *= i;
 		}
-		printf("\nNumber of possible permutations by fixing first element: %lld\n", num_perm);
+		printf("Number of possible permutations by fixing first element: %lld\n", num_perm);
 	}
 	else{
 		/*DISPOSITION*/
@@ -638,7 +644,7 @@ int main(int argc, char **argv){
 			num_perm = 1;
 		for(i=elements; i>= min_disp; i--)
 			num_perm *= i;
-		printf("\nNumber of possible dispositions by fixing first element: %lld\n", num_perm);
+		printf("Number of possible dispositions by fixing first element: %lld\n", num_perm);
 	}
 
 	if(gen_mode > 1){
@@ -649,20 +655,13 @@ int main(int argc, char **argv){
 			removeTempFiles();
 			return 3;
 		}
-		/*if(num_perm > MAX_MEMORY){
-			//num_perm = 100000000; max number of encodings
-			printf(".statistics \n");
-			printf("Since there are too many possibilities, CPOG programmer will evaluate: ");
-			num_perm = MAX_ENCODINGS; //MAX_ENCODINGS;
-			printf("%ld encodings will be evaluated.\n\n",num_perm);
-			printf(".end_statistics \n");	
-		}*/
 	}else{
 		num_perm = gen_perm;
 	}
 
 	/*PREPARATION DATA FOR ENCODING PERMUTATIONS*/
 	enc = (int*) calloc(tot_enc, sizeof(int));
+
 	/*First element is fixed*/
 	if (!unfix && !SET)
 		enc[0] = 1;
@@ -697,6 +696,8 @@ int main(int argc, char **argv){
 
 
 	/*BUILDING DIFFERENCE MATRIX*/
+	printf("Building DM (=Difference Matrix)... ");
+	fflush(stdout);
 	if( (err = difference_matrix(cpog_count, len_sequence)) ){
 		printf(".error \n");
 		printf("Error occurred while building difference matrix, error code: %d", err);
@@ -704,6 +705,8 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 3;
 	}
+	printf("DONE\n");
+	fflush(stdout);
 
 	/*************************************************************************
 	***************************ACQUISITION CPOG PART**************************
@@ -782,6 +785,8 @@ int main(int argc, char **argv){
 	gettimeofday(&start, NULL);
 
 	if(OLD){
+		printf("Reading encodings set (OLD flag)... ");
+		fflush(stdout);
 		if( (fp = fopen(custom_file_name,"w")) == NULL ){
 			printf(".error \n");
 			printf("Error on opening custom file.\n");
@@ -792,11 +797,14 @@ int main(int argc, char **argv){
 		for(i=0; i<cpog_count; i++) fprintf(fp,"%s\n",scenarioOpcodes[i].c_str());
 		int nbits = strlen(scenarioOpcodes[0].c_str());
 		fprintf(fp, "%d", nbits);
-
 		fclose(fp);
+		printf("DONE\n");
+		fflush(stdout);
 	}
 
 	if(SET){
+		printf("Reading encodings set... ");
+		fflush(stdout);
 		if(read_set_encoding(cpog_count,&bits) != 0){
 			printf(".error \n");
 			printf("Error on reading encoding set.\n");
@@ -804,54 +812,68 @@ int main(int argc, char **argv){
 			removeTempFiles();
 			return 1;
 		}
+		printf("DONE\n");
+		printf("Check correcteness of encoding set... ");
+		fflush(stdout);
 		if(check_correctness(cpog_count,tot_enc,bits) != 0){
 			removeTempFiles();
 			return 1;
 		}
+		printf("DONE\n");
+		fflush(stdout);
 		//DEBUG PRINTING: set encodings read properly
 		/*for(int y=0;y<cpog_count; y++){
 			printf("%d %s %d\n",custom_perm[y], manual_file[y], DC_custom[y]);
 		}*/
+
 	}
 
 	/*ENCODING GENERATION*/
 	switch(gen_mode){
-		case 0:
+		case 0: // RANDOM SEARCH
 			printf("Selected random encoding generation. %lld encodings will be generated.\n", num_perm);
 			if (!SET){
-				printf("Random algorithm unconstrained.\n");
+				printf("Random algorithm generation unconstrained... ");
+				fflush(stdout);
 				rand_permutation(cpog_count, tot_enc);
+				printf("DONE\n");
+				fflush(stdout);
 			}
 			else{
-				printf("Random algorithm constrained.\n");
+				printf("Random algorithm generation constrained... ");
+				fflush(stdout);
 				rand_permutations_constraints_v2(cpog_count,tot_enc,bits);
+				printf("DONE\n");
+				fflush(stdout);
 			}
 
 			break;
-		case 1:
-			printf("Selected clever encoding generation. %lld encodings will be generated.\n", num_perm);
-			//best_permutations(cpog_count, tot_enc, bits);
+		case 1: // HEURISTIC ENCODING
+			printf("Selected herustic encoding generation. %lld encodings will be generated.\n", num_perm);
+			// algorithm for setting the starting encoding disabled
+			// best_permutations(cpog_count, tot_enc, bits);
 
-			// TODO write down an easy algo for random permutation constrained
 			if (!SET){
-				//printf("Random algorithm unconstrained.\n");
+				printf("Starting encoding generation unconstrained... ");
+				fflush(stdout);
 				rand_permutation(cpog_count, tot_enc);
+				printf("DONE\n");
+				fflush(stdout);
 			}
 			else{
-				//printf("Random algorithm constrained.\n");
+				printf("Starting encoding generation constrained... ");
+				fflush(stdout);
 				rand_permutations_constraints_v2(cpog_count,tot_enc,bits);
+				printf("DONE\n");
+				fflush(stdout);
 			}
 			
 
-			printf("Tune vector by using simulated annealing:\n");
+			printf("Tune vector by using simulated annealing... ");
+			fflush(stdout);
 			start_simulated_annealing(cpog_count,tot_enc,bits);
-
-			/*for(i=0;i<num_perm;i++)
-				for(j=0;j<cpog_count;j++)
-					perm[i][j] = j;
-
-			num_perm = 1;
-			counter = 1;*/
+			printf("DONE\n");
+			fflush(stdout);
 
 			break;
 		default:
@@ -860,33 +882,20 @@ int main(int argc, char **argv){
 				printf("Permutation algorithm unconstrained.\n");
 				fflush(stdout);
 				permutation(sol,0,enc,cpog_count, tot_enc);
+				printf("DONE\n");
+				fflush(stdout);
 			}else{
 				printf("Permutation algorithm constrained.\n");
 				fflush(stdout);
 				permutation(sol,-1,enc,cpog_count, tot_enc);
+				printf("DONE\n");
 
-				/*printf("BEFORE FILTERING:-----------------------------------------\n\n");
-
-				for(i=0;i<num_perm;i++){
-					printf("%ld) ", i+1);
-					for(j=0;j<cpog_count;j++)
-						printf("%d ", perm[i][j]);
-					printf("\n\n");
-				}*/
-
+				printf("Filtering encoding... ");
+				fflush(stdout);
 				filter_encodings(cpog_count, bits, tot_enc);
-
-				/*printf("AFTER FILTERING:-----------------------------------------\n\n");
-
-				for(i=0;i<num_perm;i++){
-					printf("%ld) ", i+1);
-					for(j=0;j<cpog_count;j++)
-						printf("%d ", perm[i][j]);
-					printf("\n\n");
-				}*/
+				printf("DONE\n");
+				fflush(stdout);
 			}
-
-
 
 			break;
 	}
@@ -894,15 +903,14 @@ int main(int argc, char **argv){
 	//TIME SPENT FOR GENERATING ENCODINGS
 	gettimeofday(&end, NULL);
 	secs_used=(end.tv_sec - start.tv_sec);
-	printf("Time takes for generating encodings: %ld [s].\n",secs_used);
 
 	/*DEBUG PRINTING: permutations*/
-	for(i=0;i<num_perm;i++){
+	/*for(i=0;i<num_perm;i++){
 		printf("%ld) ", i+1);
 		for(j=0;j<cpog_count;j++)
 			printf("%d ", perm[i][j]);
 		printf("\n\n");
-	}
+	}*/
 
 	
 	/*COMPUTING WEIGHT FOR EACH ENCODING*/
@@ -911,49 +919,28 @@ int main(int argc, char **argv){
 
 	printf("Maximum weight for all possible permutations: %.2f\n", max);
 	printf("Minimum weight for all possible permutations: %.2f\n", min);
-	if(verbose){
-		printf("\nMAX AREA ENCODING:\n");
-		printf("Following are encodings maximise area of the circuit minimising weight function.\n");
-		printf("(int) binary\n");
-	}
+
 	/*COUNTING HOW MANY ENCODINGS HAVE MAX WEIGHT AND MAX AREA*/
 	for(i=0; i<counter;i++){
 		if(max == weights[i]){
 			count_max++;
-			if(verbose){
-				printf("%d) ", count_max);
-				for(j=0;j<cpog_count;j++){
-					print_binary(stdout,perm[i][j], bits);
-				}
-				printf("\n");
-			}
 		}
 	}
 
 	printf("Number of encodings with maximum weight: %d\n", count_max);
-	if(verbose){
-		printf("MAX AREA ENCODING:\n");
-		printf("Following are encodings maximise area of the circuit maximising weight function.\n");
-		printf("(int) binary\n");
-	}
+
 	/*COUNTING HOW MANY ENCODINGS HAVE MIN WEIGHT AND MIN AREA*/
 	for(i=0; i<counter;i++){
 		if(min == weights[i]){
 			count_min++;
-			if(verbose){
-				printf("%d) ", count_min);
-				for(j=0;j<cpog_count;j++)
-					print_binary(stdout,perm[i][j], bits);
-
-				printf(" WEIGHT = %.2f",weights[i]);
-				printf("\n");
-			}
 		}
 	}
 
-	printf("Number of encodings with minimum weight: %d\n\n", count_min);
+	printf("Number of encodings with minimum weight: %d\n", count_min);
 
 	/*MANAGE DATABASE PROPERLY*/
+	printf("Manage database for synthesis process... ");
+	fflush(stdout);
 	if(manage_data_base(count_min,min,count_max,max,cpog_count,&bits)){
 		printf(".error \n");
 		printf("Error managing data-base.\n");
@@ -961,9 +948,11 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 4;
 	}
+	printf("DONE\n");
+	fflush(stdout);
 
 	/*DEBUG PRINTING: permutations considerated*/
-	printf("Permutation considered: ");
+	/*printf("Permutation considered: ");
 	if(!DC){
 		for(i=0; i<counter;i++){
 			for(j=0;j<cpog_count;j++)
@@ -976,9 +965,11 @@ int main(int argc, char **argv){
 		for(i=0;i<cpog_count;i++)
 			printf("%s ",manual_file[i]);
 		printf("\n");
-	}
+	}*/
 
 	/*FREE VARIABLES NO MORE USEFUL*/
+	printf("Free memory of the variables no more used... ");
+	fflush(stdout);
 	free(enc);
 	free(sol);
 	for(i=0;i<cpog_count;i++)
@@ -988,7 +979,11 @@ int main(int argc, char **argv){
 		free(diff[i]);
 	free(diff);
 	free(file_in);
+	printf("DONE\n");
+	fflush(stdout);
 
+	printf("Time takes for generating encodings: %ld [s].\n\n",secs_used);
+	fflush(stdout);
 	/*************************************************************************
 	***************************MAPPING PART***********************************
 	*************************************************************************/
@@ -1058,7 +1053,8 @@ int main(int argc, char **argv){
 	}
 
 	/*PRINT INFORMATION ACQUIRED FROM CPOG WITH RESPECT ENCODING CONSIDERED*/
-	if(verbose){
+	// debug printing
+	/*if(verbose){
 		for(c=0;c<counter;c++){
 			printf("NAME\t\tTRUTH\t\tBOOL F.\t\tCOND\t\tTRUTH\t\tBOOL F.\n");
 			printf("-----------------------------------------------------------------------------------------\n");
@@ -1082,7 +1078,7 @@ int main(int argc, char **argv){
 			}
 			printf("\n");
 		}
-	}
+	}*/
 
 	gettimeofday(&end, NULL);
 	secs_used=(end.tv_sec - start.tv_sec);
@@ -1168,6 +1164,21 @@ int main(int argc, char **argv){
 	printf("DONE\n");
 	fflush(stdout);
 
+	/*COMPUTES TIME SPENT BY FUNCTION equations_abc*/
+	gettimeofday(&end, NULL);
+	secs_used=(end.tv_sec - start.tv_sec);
+	printf("Reduction and mapping done successfully.\n");
+	printf("Time spent= %ld [s].\n\n",secs_used);
+	fflush(stdout);
+
+	/*************************************************************************
+	*********************PRINTING OUT STATISTICS FOR WORKCRAFT****************
+	*************************************************************************/
+	printf("\n****************************************************************\n");
+	printf("************PRINTING OUT STATISTICS FOR WORKCRAFT***************\n");
+	printf("****************************************************************\n\n");
+	fflush(stdout);
+
 	// IF ABC TOOL IS NOT PRESENT OUTPUT A RANDOM ENCODING
 	if(ABCFLAG == FALSE){
 		i = rand() % counter;
@@ -1238,12 +1249,6 @@ int main(int argc, char **argv){
 		return 0;
 	}
 
-	/*COMPUTES TIME SPENT BY FUNCTION equations_abc*/
-	gettimeofday(&end, NULL);
-	secs_used=(end.tv_sec - start.tv_sec);
-	printf("Reduction and mapping done successfully.\n");
-	printf("Time spent= %ld [s].\n\n",secs_used);
-
 	ma = MAX_WEIGHT;
 	MA = -1;
 	mfma = MAX_WEIGHT;
@@ -1262,8 +1267,6 @@ int main(int argc, char **argv){
 		}
 	}
 	j = 0;
-
-	//printf("AREA MAX = %d\n",max_f);
 
 	/*PRINTING BEST ENCODINGS FOUND*/
 	if(mode != 3){
