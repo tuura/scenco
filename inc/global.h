@@ -11,10 +11,10 @@ extern char* file_in, *file_cons,*file_name, **decoder, *custom_file_name;
 extern boolean unfix, verbose, DC,decode_flag, SET,ABCFLAG, *DC_custom, CPOG_SIZE, DISABLE_FUNCTION, OLD, mod_bit_flag;
 extern char *ESPRESSO_PATH, *ABC_PATH, *LIBRARY_FILE, CURRENT_PATH[stringLimit], *FOLDER_NAME;
 
-extern char TRIVIAL_ENCODING_FILE[50], CONSTRAINTS_FILE[50], TMP_FILE[50], SCRIPT_PATH[50];
+extern char TRIVIAL_ENCODING_FILE[FILENAME_LENGTH], CONSTRAINTS_FILE[FILENAME_LENGTH], TMP_FILE[FILENAME_LENGTH], SCRIPT_PATH[FILENAME_LENGTH];
 
 // ANDREY'S TOOL
-extern GRAPH_TYPE g[scenariosLimit];
+extern GRAPH_TYPE *g;
 extern int n;
 extern char s[stringLimit];
 

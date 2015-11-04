@@ -5,25 +5,72 @@
 #endif
 
 /*GLOBAL VARIABLES*/
-char** diff = NULL, **name_cond, **vertices, **manual_file, **manual_file_back, *numb;
-int **opt_diff = NULL, counter = 0, **perm = NULL, nv=0, **cons_perm, n_cond = 0,*gates,mode = 1,tot_enc,gen_mode = 2,gen_perm = 1000, *custom_perm, *custom_perm_back, mod_bit = 2;
-long long int num_perm;
-float *area, *weights = NULL;
-CPOG_TYPE **cpog;
-char* file_in = NULL, *file_cons = NULL,*file_name = NULL, **decoder, *custom_file_name = NULL;
-boolean unfix = FALSE, verbose = FALSE, DC = FALSE,decode_flag = FALSE, SET =FALSE,ABCFLAG = FALSE, *DC_custom = NULL, CPOG_SIZE = FALSE, DISABLE_FUNCTION = FALSE, OLD = FALSE, mod_bit_flag = FALSE;
-char *ESPRESSO_PATH, *ABC_PATH, *LIBRARY_FILE, CURRENT_PATH[stringLimit], *FOLDER_NAME; 
+char **diff = NULL; 
+char **name_cond; 
+char **vertices;
+char **manual_file;
+char **manual_file_back;
+char *numb;
+char *file_in = NULL;
+char *file_cons = NULL;
+char *file_name = NULL;
+char **decoder;
+char *custom_file_name = NULL;
+char *ESPRESSO_PATH;
+char *ABC_PATH;
+char *LIBRARY_FILE;
+char CURRENT_PATH[stringLimit];
+char *FOLDER_NAME; 
+
+int **opt_diff = NULL;
+int counter = 0;
+int **perm = NULL;
+int nv=0;
+int **cons_perm;
+int n_cond = 0;
+int *gates,mode = 1;
+int tot_enc;
+int gen_mode = 2;
+int gen_perm = 1000;
+int *custom_perm;
+int *custom_perm_back;
+int mod_bit = 2;
 
 //TEMPORARY FILES
 #ifdef __linux
-	char TRIVIAL_ENCODING_FILE[50] = "/tmp/trivial.XXXXXX", CONSTRAINTS_FILE[50] = "/tmp/constraints.XXXXXX", TMP_FILE[50] = "/tmp/tmpfile.XXXXXX", SCRIPT_PATH[50] = "/tmp/synth.XXXXXX";
+	char TRIVIAL_ENCODING_FILE[FILENAME_LENGTH] = "/tmp/trivial.XXXXXX";
+	char CONSTRAINTS_FILE[FILENAME_LENGTH] = "/tmp/constraints.XXXXXX";
+	char TMP_FILE[FILENAME_LENGTH] = "/tmp/tmpfile.XXXXXX";
+	char SCRIPT_PATH[FILENAME_LENGTH] = "/tmp/synth.XXXXXX";
 #else
-	char TRIVIAL_ENCODING_FILE[50], CONSTRAINTS_FILE[50], TMP_FILE[50], SCRIPT_PATH[50];
+	char TRIVIAL_ENCODING_FILE[FILENAME_LENGTH];
+	char CONSTRAINTS_FILE[FILENAME_LENGTH];
+	char TMP_FILE[FILENAME_LENGTH];
+	char SCRIPT_PATH[FILENAME_LENGTH];
 #endif
+
+long long int num_perm;
+
+float *area;
+float *weights = NULL;
+
+CPOG_TYPE **cpog;
+
+boolean unfix = FALSE;
+boolean verbose = FALSE;
+boolean DC = FALSE;
+boolean decode_flag = FALSE;
+boolean SET =FALSE;
+boolean ABCFLAG = FALSE;
+boolean *DC_custom = NULL;
+boolean CPOG_SIZE = FALSE;
+boolean DISABLE_FUNCTION = FALSE;
+boolean OLD = FALSE;
+boolean mod_bit_flag = FALSE;
 
 
 //ANDREY'S TOOL
-GRAPH_TYPE g[scenariosLimit];
+GRAPH_TYPE *g;
 int n;
 char s[stringLimit];
 
@@ -55,15 +102,46 @@ string aConditions[eventsLimit][eventsLimit];
 bool alternative = false;
 
 int main(int argc, char **argv){
+
 	char *command;
-	int bits = 0, j = 0, k=0, err=0, cpog_count = 0, len_sequence = 0,min_bits = 0;
-	int *sol, *enc, count_min = 0, count_max = 0;
-	float ma,MA,mfma,mfMA, max = 0, min = MAX_WEIGHT;
+
+	int bits = 0;
+	int j = 0;
+	int k=0;
+	int err=0;
+	int cpog_count = 0;
+	int len_sequence = 0;
+	int min_bits = 0;
+	int *sol;
+	int *enc;
+	int count_min = 0;
+	int count_max = 0;
+	int num_vert = 0;
+	int elements; 
+	int min_disp;
+
+	float ma;
+	float MA;
+	float mfma;
+	float mfMA;
+	float max = 0;
+	float min = MAX_WEIGHT;
 	long int i;
-	int num_vert = 0,elements,min_disp;
-	struct timeval start,end;
+
+
+	struct timeval start;
+	struct timeval end;
+	struct timeval begin;
+	struct timeval finish;
+	struct timeval detail_start;
+	struct timeval detail_end;
 	long secs_used;
+	long precise;
+	long total_time;
+
 	FILE *fp = NULL;
+
+	gettimeofday(&begin, NULL);
 
 	/*PARSE PARAMETERS*/
 	if( (err = parse_arg(argc, argv)) != 0){
@@ -158,10 +236,11 @@ int main(int argc, char **argv){
 	k = 0;
 #endif
 
-	printf("Allocating memory for vertex names...");
+	printf("Allocating memory for vertex names and graphs...");
 	fflush(stdout);
 	name_cond = (char**) malloc(sizeof(char*) * MAX_VERT);
 	vertices = (char**) malloc(sizeof(char*) * MAX_VERT);
+	g = (GRAPH_TYPE *) malloc(sizeof(GRAPH_TYPE) * scenariosLimit);
 	printf("DONE\n");
 	fflush(stdout);
 
@@ -184,7 +263,7 @@ int main(int argc, char **argv){
 	fs = fopen("scenarios.cpog", "w");
 	do
 	   {
-	      c = fgetc(fp);
+	      char c = fgetc(fp);
 	      if( feof(fp) )
 	      {
 		 break ;
@@ -405,7 +484,7 @@ int main(int argc, char **argv){
 	}
 	fclose(fp);
 	
-	printf("\nBuilding conflict graph...");
+	printf("\nBuilding conflict graph... ");
 	
 	for(int i = 0; i < total; i++)
 	if (!encodings[i].trivial)
@@ -439,10 +518,13 @@ int main(int argc, char **argv){
 		if (conflict) cge[i].push_back(1); else cge[i].push_back(0);
 	}
 	
-	printf(" done.\n\nEncoding...");
+	printf("DONE.\n");
+	fflush(stdout);
 
 	// single literal encoding
-	if (OLD){	
+	if (OLD){
+		printf("Single literal encoding... ");
+		fflush(stdout);
 		int L = 0, R = cgv.size() / 2, cnt = 1;
 		while(R - L > 1)
 		{
@@ -463,7 +545,8 @@ int main(int argc, char **argv){
 			else L = limit;
 		}
 	
-		printf(" done.\n\nThe best encoding uses %d operational variables:\n\n", R);
+		printf("DONE.\nThe best encoding uses %d operational variables:\n", R);
+		fflush(stdout);
 	
 		scenarioOpcodes.resize(n);
 
@@ -563,6 +646,12 @@ int main(int argc, char **argv){
 		for(int i = 0; i < n; i++) printf("%s\n",scenarioOpcodes[i].c_str());
 		printf(".end_scen_opcodes \n");
 	}
+
+	printf("Free memory related to graphs acquisition...");
+	fflush(stdout);
+	free(g);
+	printf("DONE\n");
+	fflush(stdout);
 
 	/*************************************************************************
 	***********************READING NON-TRIVIAL ENCODINGS**********************
@@ -770,7 +859,7 @@ int main(int argc, char **argv){
 	printf("DONE\n");
 	fflush(stdout);
 
-	printf("CPOG read properly.\n\n");
+	printf("CPOG read properly.\n");
 
 	/*************************************************************************
 	***********************ENCODINGS GENERATION PART**************************
@@ -853,6 +942,7 @@ int main(int argc, char **argv){
 			// algorithm for setting the starting encoding disabled
 			// best_permutations(cpog_count, tot_enc, bits);
 
+			gettimeofday(&detail_start, NULL);
 			if (!SET){
 				printf("Starting encoding generation unconstrained... ");
 				fflush(stdout);
@@ -867,12 +957,20 @@ int main(int argc, char **argv){
 				printf("DONE\n");
 				fflush(stdout);
 			}
-			
+			gettimeofday(&detail_end, NULL);
+			precise=(detail_end.tv_sec - detail_start.tv_sec);
+			printf("Time for first vectors generation: %ld [s]\n", precise);
+			fflush(stdout);
 
+			gettimeofday(&detail_start, NULL);
 			printf("Tune vector by using simulated annealing... ");
 			fflush(stdout);
 			start_simulated_annealing(cpog_count,tot_enc,bits);
 			printf("DONE\n");
+			fflush(stdout);
+			gettimeofday(&detail_end, NULL);
+			precise=(detail_end.tv_sec - detail_start.tv_sec);
+			printf("Time for tuning vectors: %ld [s]\n", precise);
 			fflush(stdout);
 
 			break;
@@ -982,7 +1080,7 @@ int main(int argc, char **argv){
 	printf("DONE\n");
 	fflush(stdout);
 
-	printf("Time takes for generating encodings: %ld [s].\n\n",secs_used);
+	printf("Time takes for generating encodings: %ld [s].\n",secs_used);
 	fflush(stdout);
 	/*************************************************************************
 	***************************MAPPING PART***********************************
@@ -1166,11 +1264,13 @@ int main(int argc, char **argv){
 
 	/*COMPUTES TIME SPENT BY FUNCTION equations_abc*/
 	gettimeofday(&end, NULL);
+	gettimeofday(&finish, NULL);
 	secs_used=(end.tv_sec - start.tv_sec);
+	total_time=(finish.tv_sec - begin.tv_sec);
 	printf("Reduction and mapping done successfully.\n");
 	printf("Time spent= %ld [s].\n\n",secs_used);
+	printf("Total SCENCO run time: %ld [s].\n", total_time);
 	fflush(stdout);
-
 	/*************************************************************************
 	*********************PRINTING OUT STATISTICS FOR WORKCRAFT****************
 	*************************************************************************/

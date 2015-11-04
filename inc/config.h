@@ -19,7 +19,7 @@
 
 #define stringLimit	1000
 #define eventsLimit	1000
-#define scenariosLimit	500
+#define scenariosLimit	700
 #define predicatesLimit	200
 
 /*ESPRESSO CONFIGURATION ENVIRONMENT*/
