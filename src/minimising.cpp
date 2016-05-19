@@ -36,7 +36,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 	command = catMem(command, ss);
 	command = catMem(command, file_out);
 #endif
-	
+
 	if(!co){
 		for(i=0; i<counter;i++){
 			for(p=0;p<nv; p++){
@@ -59,7 +59,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 							fprintf(fp,"%s ",cpog[p][j].source);
 						else
 							fprintf(fp, "%s>%s ",cpog[p][j].source,cpog[p][j].dest);
-				
+
 						fprintf(fp,"\n");
 						if(tot_enc == cpog_count){
 							for(k=0;k<cpog_count;k++){
@@ -127,7 +127,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						}
 				
 						fclose(pp);
-				
+
 						/*DEBUG PRINTING: logic functions*/
 						//printf("%s - %s\n",cpog[p][j].fun[i],cpog[p][j].fun_cond[i]);
 					}else{
@@ -156,6 +156,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 			for(p=0;p<nv; p++){
 				if(cpog[p][p].type == 'v' && cpog[p][p].condition){
 					if( (val = eval_function(cpog[p][p].truth_cond,cpog_count)) == 0 ){
+
 						/*WRITING FILE CONTENT FOR ESPRESSO*/
 						if( (fp = fopen(file_out,"w")) == NULL ){
 							printf("Error on opening file.\n");
@@ -169,7 +170,6 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						fprintf(fp,"\n");
 						fprintf(fp, ".ob "); /*Names of outputs*/
 						fprintf(fp,"c(%s) ",cpog[p][p].source);
-
 						fprintf(fp,"\n");
 
 						if(tot_enc == cpog_count){
@@ -184,6 +184,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 							write_conditions(fp,cpog_count,i,p,p,bits,co);
 						fprintf(fp,".e");
 						fclose(fp);
+
 
 						/*DEBUG STOPPING: information about espresso output*/
 						/*if(p == 0) {
@@ -200,16 +201,16 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						/*READING FIRST OUTPUT LINE OF ESPRESSO*/
 						while( (c = fgetc(pp)) != '=');
 						c = fgetc(pp);
-						cpog[p][j].fun[i] = strdup("");
+						cpog[p][p].fun_cond[i] = strdup("");
 
 						while( c != ';'){
 							switch(c){
 								case '&':
-									cpog[p][j].fun[i] = catChar(cpog[p][j].fun[i], '*');
+									cpog[p][p].fun_cond[i] = catChar(cpog[p][p].fun_cond[i], '*');
 									c = fgetc(pp);
 									break;
 								case '|':
-									cpog[p][j].fun[i] = catChar(cpog[p][j].fun[i], '+');
+									cpog[p][p].fun_cond[i] = catChar(cpog[p][p].fun_cond[i], '+');
 									c = fgetc(pp);
 									break;
 								case ' ':
@@ -223,10 +224,11 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 									while( (c = fgetc(pp)) != ' ');
 									break;
 								default:
-									cpog[p][j].fun[i] = catChar(cpog[p][j].fun[i], c);
+									cpog[p][p].fun_cond[i] = catChar(cpog[p][p].fun_cond[i], c);
 									c = fgetc(pp);
 							}
 						}
+
 						if (!strcmp(cpog[p][p].fun_cond[i], "()")){
 							strcpy(cpog[p][p].fun_cond[i], "1");
 						}
@@ -236,9 +238,9 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						fclose(pp);
 					}else{
 						if(val == 1)
-							cpog[p][p].fun[i] = strdup("1");
+							cpog[p][p].fun_cond[i] = strdup("1");
 						else
-							cpog[p][p].fun[i] = strdup("0");
+							cpog[p][p].fun_cond[i] = strdup("0");
 
 					}
 				}
@@ -262,7 +264,6 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 	printf("100\n");
 	fflush(stdout);
 #endif
-
 	/*REMOVING TMP FILE AND FREE USELESS STRINGS*/
 #ifdef __linux
 	strcpy(command,"rm -f ");

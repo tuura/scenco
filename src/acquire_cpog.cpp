@@ -319,11 +319,7 @@ int get_conditions_names(){
 			k = strlen(cpog[i][i].cond);
 			j = 0;
 			while(j<k){
-				printf("DUP NAME WIth SPACE... ");
-				fflush(stdout);
 				name = strdup("");
-				printf("DONE\n");
-				fflush(stdout);
 				switch(cpog[i][i].cond[j]){
 					case '(':
 						j++;
@@ -352,25 +348,20 @@ int get_conditions_names(){
 							cpog[i][i].cond[j] != ')' && 
 							cpog[i][i].cond[j] != '+' && 
 							cpog[i][i].cond[j] != '*'){
-								printf("Before name: %s\n", name);
-								fflush(stdout);
 								name = catChar(name,cpog[i][i].cond[j++]);
-								printf("After name: %s\n", name);
-								fflush(stdout);
 						}
 						ins = TRUE;
 						for(p=0;p<n_cond;p++)
 							if(!strcmp(name_cond[p],name))
 								ins = FALSE;
-						if (ins)
-							strcpy(name_cond[n_cond++],name);								
+						if (ins){
+							name_cond[n_cond] = strdup("");
+							name_cond[n_cond] = catMem(name_cond[n_cond],name);
+							n_cond++;
+						}
 						break;
 				}
-				printf("FREE NAME... ");
-				fflush(stdout);
 				free(name);
-				printf("DONE\n");
-				fflush(stdout);
 			}
 		}
 	}
