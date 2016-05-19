@@ -108,7 +108,8 @@ void rand_permutation(int n, int tot){
 /*Following function finds all possible permutations for all available encoding
 for each CPOG.*/
 void best_permutations(int cpog_count, int tot_enc,int bits){
-	int min = MAX_WEIGHT,k;
+	long long int min = numeric_limits<long long int>::max();
+	int k;
 	int i,j,c = 0,i_min,j_min,enc1 = 0,enc2 = 0,inc,p = 0,n = 1;
 	int *full = NULL, *encod = NULL, **matrix_ass;
 	int v_min_i[MAX_CPOG], v_min_j[MAX_CPOG];
@@ -266,7 +267,7 @@ void best_permutations(int cpog_count, int tot_enc,int bits){
 		}
 
 		for( p= j; p<cpog_count ; p=(p+inc)){
-			min = MAX_WEIGHT;
+			min = numeric_limits<long long int>::max();
 			//FIND MINIMUMs INSIDE DIFFERENCES MATRIX
 			for(i=0;i<cpog_count-1;i++){
 				for( j=(i+1) ; j<cpog_count ; j++ ){
@@ -414,7 +415,8 @@ void best_permutations(int cpog_count, int tot_enc,int bits){
 /*Following function finds rando permutations for all available encoding
 for each CPOG which fit the customisation set by user.*/
 void rand_permutations_constraints_v2(int cpog_count, int tot_enc,int bits){
-	int min = MAX_WEIGHT,k;
+	long long int min = numeric_limits<long long int>::max();
+	int k;
 	int i,j,c = 0,i_min,j_min,enc1 = 0,enc2 = 0,inc,p = 0,n = 1;
 	int *full = NULL, *encod = NULL, **matrix_ass;
 	int v_min_i[MAX_CPOG], v_min_j[MAX_CPOG];
@@ -572,7 +574,7 @@ void rand_permutations_constraints_v2(int cpog_count, int tot_enc,int bits){
 		}
 
 		for( p= j; p<cpog_count ; p=(p+inc)){
-			min = MAX_WEIGHT;
+			min = numeric_limits<long long int>::max();
 			//FIND MINIMUMs INSIDE DIFFERENCES MATRIX
 			for(i=0;i<cpog_count-1;i++){
 				for( j=(i+1) ; j<cpog_count ; j++ ){

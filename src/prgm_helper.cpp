@@ -320,13 +320,13 @@ void print_help(char *prog_name){
 }
 
 void print_version(){
-	printf("ScEnco version: 1.4.2\n");
+	printf("ScEnco version: 1.4.3\n");
 	return;
 }
 
 /*MANAGE DATA-BASE FUNCTION*/
 /*Following function manage data-base according to user choice.*/
-int manage_data_base(int count_max,float max,int count_min,float min, int cpog_count,int *bits){
+int manage_data_base(int count_max,long long int max,int count_min,long long int min, int cpog_count,int *bits){
 	int i, j,k;
 	FILE *fp;
 	char number[MAX_NAME];

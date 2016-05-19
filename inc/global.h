@@ -5,7 +5,8 @@
 extern char** diff, **name_cond, **vertices, **manual_file,*numb, **manual_file_back;
 extern int **opt_diff, counter, **perm, nv, **cons_perm, n_cond,*gates,mode,tot_enc,gen_mode,gen_perm, *custom_perm, *custom_perm_back, mod_bit;
 extern long long int num_perm;
-extern float *area, *weights;
+extern float *area;
+extern long long int *weights;
 extern CPOG_TYPE **cpog;
 extern char* file_in, *file_cons,*file_name, **decoder, *custom_file_name;
 extern boolean unfix, verbose, DC,decode_flag, SET,ABCFLAG, *DC_custom, CPOG_SIZE, DISABLE_FUNCTION, OLD, mod_bit_flag;

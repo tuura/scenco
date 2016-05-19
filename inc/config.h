@@ -6,7 +6,6 @@
 #define ACT_STOP		//Activate stopping generation if they are finished
 
 #define MAX_CPOG	1000	//Max number of graphs of CPOG
-#define MAX_WEIGHT	100000000//Used for finding min weight
 #define MAX_LOG		10000	//2^(MAX_LOG) as max number of log_2 computable
 #define FILENAME_LENGTH	300	// Max length of file names
 #define ABC_LINELENGTH 	1000	// Buffer for reading ABC output file
@@ -44,6 +43,7 @@
 #include <sstream>
 #include <map>
 #include <set>
+#include <limits>
 
 using namespace std;
 

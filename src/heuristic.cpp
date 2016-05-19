@@ -7,9 +7,10 @@
 /*AREA FUNCTION SSD*/
 /*Following function computes both the maximum and minimum weight for each encoding permutation
 following SSD criterion.*/
-float area_encodings_ssd(int cpog, int bits, float *max,int tot_enc,int v){
+long long int area_encodings_ssd(int cpog, int bits, long long int *max,int tot_enc,int v){
         int i = 0, j = 0, k = 0, ones = 0;
-	float wg = 0.0,min = MAX_WEIGHT;
+	long long int wg = 0;
+	long long int min = numeric_limits<long long int>::max();
 
         for(i = 0; i<counter; i++){
                 wg = 0.0;
@@ -28,7 +29,7 @@ float area_encodings_ssd(int cpog, int bits, float *max,int tot_enc,int v){
 }
 
 /*FUNCTION TO MINISIME*/
-float  weight_function(int Mij,int HDij){
+long long int weight_function(int Mij,int HDij){
 	return ((Mij-HDij) * (Mij - HDij));
 }
 
@@ -36,7 +37,7 @@ float  weight_function(int Mij,int HDij){
 /*It returns minimum encoding available among available ones.*/
 void HD_min_v2(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *sol,int i_min,int j_min,int cpog_count){
 	int i,j,ones,bit_diff,l;
-	long long int min = MAX_WEIGHT;
+	long long int min = numeric_limits<long long int>::max();
 	int n = 1,r = 1,k,p,where;
 	int vi[MAX_CPOG],vj[MAX_CPOG],vres[MAX_CPOG];
 	float wg = 0;
@@ -85,7 +86,7 @@ void HD_min_v2(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *
 			//CHECK THE ENCODING MINIMISING FUNCTION
 			for(i=0;i<n;i++){
 				wg = 0;
-				min = MAX_WEIGHT;
+				min = numeric_limits<long long int>::max();
 				sol[i_min] = vi[i];
 				sol[j_min] = vj[i];
 				for(j=0;j<cpog_count-1;j++){
@@ -164,7 +165,7 @@ void HD_min_v2(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *
 			}
 			for(k=0;k<n;k++){
 				wg = 0;
-				min = MAX_WEIGHT;
+				min = numeric_limits<long long int>::max();
 				if(where == 0)	sol[i_min] = vj[k];
 				else	sol[j_min] = vj[k];
 				for(j=0;j<cpog_count-1;j++){
@@ -206,7 +207,7 @@ void HD_min_v2(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *
 /*v3: try every possible combination minimising funcion*/
 void HD_min_v3(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *sol,int i_min,int j_min,int cpog_count){
 	int i,j,ones,l;
-	long long int min = MAX_WEIGHT;
+	long long int min = numeric_limits<long long int>::max();
 	int r = 1,k,p,where;
 	int *vi, *vj;
 	float wg = 0;
@@ -219,7 +220,7 @@ void HD_min_v3(int *encod,int tot_enc,int *enc1,int *enc2,int bits,int sel,int *
 		
 		//LOOK FOR ENCDODING WITH MINIMUM HAMMING DISTANCE
 		//AMONG AVAILABLE ONES
-		min = MAX_WEIGHT;		
+		min = numeric_limits<long long int>::max();		
 		for(i=0;i<tot_enc-1;i++){
 			for(j=i+1;j<tot_enc;j++){
 				if(encod[i] == 0 && encod[j] == 0){

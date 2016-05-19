@@ -52,7 +52,7 @@ int mod_bit = 2;
 long long int num_perm;
 
 float *area;
-float *weights = NULL;
+long long int *weights = NULL;
 
 CPOG_TYPE **cpog;
 
@@ -124,8 +124,8 @@ int main(int argc, char **argv){
 	float MA;
 	float mfma;
 	float mfMA;
-	float max = 0;
-	float min = MAX_WEIGHT;
+	long long int max = -1;
+	long long int min = numeric_limits<long long int>::max();
 	long int i;
 
 
@@ -781,7 +781,7 @@ int main(int argc, char **argv){
 			return 3;
 		}
 	}
-	weights = (float*) calloc(num_perm, sizeof(float));
+	weights = (long long int*) calloc(num_perm, sizeof(long long int));
 
 
 	/*BUILDING DIFFERENCE MATRIX*/
@@ -1015,8 +1015,8 @@ int main(int argc, char **argv){
 	max = -1;
 	min = area_encodings_ssd(cpog_count, bits, &max,tot_enc,num_vert);
 
-	printf("Maximum weight for all possible permutations: %.2f\n", max);
-	printf("Minimum weight for all possible permutations: %.2f\n", min);
+	printf("Maximum weight for all possible permutations: %lld\n", max);
+	printf("Minimum weight for all possible permutations: %lld\n", min);
 
 	/*COUNTING HOW MANY ENCODINGS HAVE MAX WEIGHT AND MAX AREA*/
 	for(i=0; i<counter;i++){
@@ -1349,9 +1349,9 @@ int main(int argc, char **argv){
 		return 0;
 	}
 
-	ma = MAX_WEIGHT;
+	ma = numeric_limits<float>::max();
 	MA = -1;
-	mfma = MAX_WEIGHT;
+	mfma = numeric_limits<float>::max();
 	mfMA = -1;
 	for(i=0;i<counter;i++){
 		/*COUNT MAX ERROR AND MIN ERROR*/		
@@ -1387,7 +1387,7 @@ int main(int argc, char **argv){
 					else
 						print_binary(stdout,cons_perm[i][k], bits);
 				}
-				printf("with %d gates and %.3f [um^2] and weight %f.\n", gates[i],area[i],weights[i]);
+				printf("with %d gates and %.3f [um^2] and weight %lld.\n", gates[i],area[i],weights[i]);
 				
 			}
 			printf("-----------------------\n\n");
