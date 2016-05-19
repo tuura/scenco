@@ -52,7 +52,7 @@ int equations_abc(int cpog_count, int bits){
 		}
 		free(command);
 #else
-		file_name = catChar(file_name, "\\");
+		file_name = catChar(file_name, '\\');
 		string = (char*) malloc(sizeof(char) * FILENAME_LENGTH);
 		tmpnam (string);
 #endif
