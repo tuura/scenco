@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "minimising.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\minimising.h"
+	#include "D:\Projects\SCENCO\inc\minimising.h"
 #endif
 
 /*BOOLEAN FUNCTION*/
@@ -21,7 +21,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 	file_out = strdup(TMP_FILE);
 
 	// building espresso command
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	command = strdup("");
 	command = catMem(command, ESPRESSO_PATH);
 	command = catChar(command, ' ');
@@ -265,7 +265,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 	fflush(stdout);
 #endif
 	/*REMOVING TMP FILE AND FREE USELESS STRINGS*/
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	strcpy(command,"rm -f ");
 #else
 	strcpy(command,"del ");
@@ -309,7 +309,7 @@ int decoder_minimisation(int bits, int cpog_count){
 	file_out = strdup(TMP_FILE);
 
 	/*CONSTRUCTION ESPRESSO COMMAND*/
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	command = strdup("");
 	command = catMem(command, ESPRESSO_PATH);
 	command = catChar(command, ' ');
@@ -419,7 +419,7 @@ int decoder_minimisation(int bits, int cpog_count){
 
 	/*REMOVING TMP FILE AND FREE USELESS STRINGS*/
 	free(command);
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	command = strdup("rm -f ");
 #else
 	command = strdup("del ");

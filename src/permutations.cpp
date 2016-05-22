@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "permutations.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\permutations.h"
+	#include "D:\Projects\SCENCO\inc\permutations.h"
 #endif
 /*C++ PERMUTATION FUNCTION*/
 /*It uses c++ function in order to compute each disposition.*/

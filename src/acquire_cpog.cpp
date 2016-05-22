@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "acquire_cpog.h"
-#elif WIN32
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\acquire_cpog.h"
+#else
+	#include "D:\Projects\SCENCO\inc\acquire_cpog.h"
 #endif
 
 /*READ FILE FUNCTION*/

@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "utilities.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\utilities.h"
+	#include "D:\Projects\SCENCO\inc\utilities.h"
 #endif
 
 /*STRING COMPARE WITH DON'T CARE SUPPORT*/

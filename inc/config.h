@@ -103,7 +103,7 @@ typedef struct Encoding_st
 }Encoding;
 
 /*PROJECT INCLUDES*/
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "global.h"
 	#include "heuristic.h"
 	#include "acquire_cpog.h"
@@ -115,16 +115,16 @@ typedef struct Encoding_st
 	#include "simulated_annealing.h"
 	#include "building_cpog.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\global.h"
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\heuristic.h"
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\acquire_cpog.h"
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\mapping.h"
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\minimising.h"
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\permutations.h"
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\prgm_helper.h"
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\utilities.h"
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\simulated_annealing.h"
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\building_cpog.h"
+	#include "D:\Projects\SCENCO\inc\global.h"
+	#include "D:\Projects\SCENCO\inc\heuristic.h"
+	#include "D:\Projects\SCENCO\inc\acquire_cpog.h"
+	#include "D:\Projects\SCENCO\inc\mapping.h"
+	#include "D:\Projects\SCENCO\inc\minimising.h"
+	#include "D:\Projects\SCENCO\inc\permutations.h"
+	#include "D:\Projects\SCENCO\inc\prgm_helper.h"
+	#include "D:\Projects\SCENCO\inc\utilities.h"
+	#include "D:\Projects\SCENCO\inc\simulated_annealing.h"
+	#include "D:\Projects\SCENCO\inc\building_cpog.h"
 #endif
 
 #endif

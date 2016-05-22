@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "heuristic.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\heuristic.h"
+	#include "D:\Projects\SCENCO\inc\heuristic.h"
 #endif
 
 /*AREA FUNCTION SSD*/

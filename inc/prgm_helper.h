@@ -1,10 +1,10 @@
 #ifndef __PRGM_HELPER_H__
 #define __PRGM_HELPER_H__
 
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "config.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\config.h"
+	#include "D:\Projects\SCENCO\inc\config.h"
 #endif
 
 int parse_arg(int,char**);

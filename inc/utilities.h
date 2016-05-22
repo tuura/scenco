@@ -1,10 +1,10 @@
 #ifndef __UTILITIES_H__
 #define __UTILITIES_H__
 
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "config.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\config.h"
+	#include "D:\Projects\SCENCO\inc\config.h"
 #endif
 
 int strDCcmp(char*,char*,int);

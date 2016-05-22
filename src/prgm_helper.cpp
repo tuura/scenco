@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "prgm_helper.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\prgm_helper.h"
+	#include "D:\Projects\SCENCO\inc\prgm_helper.h"
 #endif
 
 /*PARSE ARGUMENTS FUNCTION*/
@@ -108,7 +108,7 @@ int parse_arg(int argc, char *argv[]){
 			}
 		}
 		//SET ESPRESSO PATH
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 		if(!strcmp(argv[cur], "-e")){
 			if( cur+1 < argc ){
 				ESPRESSO_PATH = strdup(argv[cur+1]);
@@ -146,7 +146,7 @@ int parse_arg(int argc, char *argv[]){
 #endif
 		
 		//SET RESULTS FOLDER PATH
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 		if(!strcmp(argv[cur], "-res")){
 			if( cur+1 < argc ){
 				FOLDER_NAME = strdup(argv[cur+1]);
@@ -214,7 +214,7 @@ int parse_arg(int argc, char *argv[]){
 			}
 		}
 		//SET ANY ENCODINGS
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 		if(!strcmp(argv[cur], "-lib")){
 			if( cur+1 < argc ){
 				LIBRARY_FILE = strdup(argv[cur+1]);
@@ -493,7 +493,7 @@ int read_set_encoding(int cpog_count, int *bits){
 void removeTempFiles(){
 	char *command;
 
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	command = strdup("rm -f ");
 	command = catMem(command, TMP_FILE);
 	if (system(command) == -1){

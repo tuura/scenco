@@ -1,10 +1,10 @@
 #ifndef __ACQUIRE_CPOG_H__
 #define __ACQUIRE_CPOG_H__
 
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "config.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\config.h"
+	#include "D:\Projects\SCENCO\inc\config.h"
 #endif
 
 int read_file(char*,int*, int*);

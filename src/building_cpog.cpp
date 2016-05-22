@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "building_cpog.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\building_cpog.h"
+	#include "D:\Projects\SCENCO\inc\building_cpog.h"
 #endif
 
 int getEventID(string name)

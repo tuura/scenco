@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "config.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\config.h"
+	#include "D:\Projects\SCENCO\inc\config.h"
 #endif
 
 /*GLOBAL VARIABLES*/
@@ -37,7 +37,7 @@ int *custom_perm_back;
 int mod_bit = 2;
 
 //TEMPORARY FILES
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	char TRIVIAL_ENCODING_FILE[FILENAME_LENGTH] = "/tmp/trivial.XXXXXX";
 	char CONSTRAINTS_FILE[FILENAME_LENGTH] = "/tmp/constraints.XXXXXX";
 	char TMP_FILE[FILENAME_LENGTH] = "/tmp/tmpfile.XXXXXX";
@@ -155,7 +155,7 @@ int main(int argc, char **argv){
 
 
 	// TEMPORARY FILES DEFINITION
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	if (mkstemp(TRIVIAL_ENCODING_FILE) == -1){
 		printf(".error \n");
 		printf("Error on opening trivial temporary file: %s.\n", TRIVIAL_ENCODING_FILE);
@@ -192,7 +192,7 @@ int main(int argc, char **argv){
 #endif
 
 	// READ CURRENT PATH POSITION
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	if( (fp = popen("pwd","r")) == NULL){
 			printf(".error \n");
 			printf("Error on pwd execution.\n");
@@ -321,6 +321,7 @@ int main(int argc, char **argv){
 		}
 	}
 
+	fclose(fp);
 	
 	printf("\n%d scenarios have been loaded.\n", n);
 	
@@ -661,13 +662,13 @@ int main(int argc, char **argv){
 	printf("**************************************************************\n\n");
 	fflush(stdout);
 
-	strcpy(file_in,TRIVIAL_ENCODING_FILE);
-	file_cons= strdup(CONSTRAINTS_FILE);
+	//strcpy(file_in,TRIVIAL_ENCODING_FILE);
+	//file_cons= strdup(CONSTRAINTS_FILE);
 
 	/*READ NON-TRIVIAL ENCODING FILE*/
 	printf("Reading non-trivial encoding file... ");
 	fflush(stdout);
-	if( (err = read_file(file_in, &cpog_count, &len_sequence)) ){
+	if( (err = read_file(TRIVIAL_ENCODING_FILE, &cpog_count, &len_sequence)) ){
 		printf(".error \n");
 		printf("Error occured while reading non-trivial encoding file, error code: %d", err);
 		printf(".end_error \n");
@@ -808,7 +809,7 @@ int main(int argc, char **argv){
 	/*FIRST READING OF ENCODING FILE*/
 	printf("First reading of encoding file...");
 	fflush(stdout);
-	if( (err = read_cons(file_cons, cpog_count, &num_vert)) ){
+	if( (err = read_cons(CONSTRAINTS_FILE, cpog_count, &num_vert)) ){
 		printf(".error \n");
 		printf("Error occured while reading constraints file, error code: %d", err);
 		printf(".end_error \n");
@@ -855,7 +856,7 @@ int main(int argc, char **argv){
 	/*SECOND READING OF ENCODING FILE*/
 	printf("Second reading of encoding file (parsing CPOG)...");
 	fflush(stdout);
-	parsing_cpog(file_cons, cpog_count, num_vert);
+	parsing_cpog(CONSTRAINTS_FILE, cpog_count, num_vert);
 	printf("DONE\n");
 	fflush(stdout);
 
@@ -1193,7 +1194,7 @@ int main(int argc, char **argv){
 	fflush(stdout);
 	/*REMOVE OLD DIR AND MAKE NEW ONE AND ERASE USED FILES*/
 
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	command = strdup("rm -f ");
 #else
 	command = strdup("del ");
@@ -1208,7 +1209,7 @@ int main(int argc, char **argv){
 	}
 	free(command);
 
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	command = strdup("rm -f ");
 #else
 	command = strdup("del ");

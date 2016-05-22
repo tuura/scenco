@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "mapping.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\mapping.h"
+	#include "D:\Projects\SCENCO\inc\mapping.h"
 #endif
 
 // disable warnings about constant chars
@@ -33,7 +33,7 @@ int equations_abc(int cpog_count, int bits){
 		//DEFINE FILE NAMES
 		file_name = strdup("");
 		file_name = catMem(file_name, FOLDER_NAME);
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 		
 		file_name = catChar(file_name, '/');
 		string = strdup("abc_synthXXXXXX");
@@ -332,7 +332,7 @@ int equations_abc(int cpog_count, int bits){
 		
 
 			/*BUILDING COMMAND CALLING ABC*/
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 			command = strdup("./abc");
 #else
 			command = strdup("abc.exe");
@@ -410,7 +410,7 @@ int equations_abc(int cpog_count, int bits){
 
 	//REMOVE SCRIPT FILES
 	if (ABCFLAG){
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 		command = strdup("rm -f ");
 #else
 		command = strdup("del ");
@@ -554,7 +554,7 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 	for(c=0;c<counter;c++){
 		//DEFINE FILE NAMES
 		file_name = strdup(FOLDER_NAME);
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 		file_name = catChar(file_name,'/');
 		strcpy(string, "abc_synth.XXXXXX");
 		if (mkstemp(string) == -1){
@@ -641,7 +641,7 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 		
 
 			/*BUILDING COMMAND CALLING ABC*/
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 			command = strdup("./abc");
 #else
 			command = strdup("abc.exe");
@@ -718,7 +718,7 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 
 	if(ABCFLAG){
 		//REMOVE SCRIPT FILES
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 		command = strdup("rm -f ");
 #else
 		command = strdup("del ");

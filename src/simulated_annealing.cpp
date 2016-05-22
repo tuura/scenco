@@ -1,7 +1,7 @@
-#ifdef __linux
+#if defined(__linux) || defined(__APPLE__)
 	#include "simulated_annealing.h"
 #else
-	#include "D:\Projects\PRGM_WORKCRAFT\inc\simulated_annealing.h"
+	#include "D:\Projects\SCENCO\inc\simulated_annealing.h"
 #endif
 
 /*SIMULATED ANNEALING*/
