@@ -48,6 +48,8 @@ int mod_bit = 2;
 	char CONSTRAINTS_FILE[FILENAME_LENGTH];
 	char TMP_FILE[FILENAME_LENGTH];
 	char SCRIPT_PATH[FILENAME_LENGTH];
+	char BOOL_PATH[FILENAME_LENGTH];
+	char TMP_NAME[FILENAME_LENGTH];
 #endif
 
 long long int num_perm;
@@ -235,7 +237,7 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 1;
 	}
-	fclose(fp);
+	pclose(fp);
 
 	k = 0;
 	for(j = 0; j< ((int)strlen(CURRENT_PATH) - 1); j++){
@@ -256,7 +258,7 @@ int main(int argc, char **argv){
 			return 1;
 	}
 	fgets(CURRENT_PATH,stringLimit,fp);
-	fclose(fp);
+	pclose(fp);
 	int lenstr = strlen(CURRENT_PATH);
 	CURRENT_PATH[lenstr-1] = '\\';
 	k = 0;

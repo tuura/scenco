@@ -199,9 +199,14 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						}*/
 			
 						/*CALLING ESPRESSO FRAMEWORK*/
-						if( (pp = popen(command,"r")) == NULL){
+						if( system(command) == -1){
 							printf("Error on calling espresso program: %s.\n", command);
-							return 6;
+							return 3;
+						}
+						
+						if( (pp = fopen(BOOL_PATH, "r")) == NULL){
+							printf("Error on reading espresso generated file.");
+							return 3;
 						}
 
 						/*READING FIRST OUTPUT LINE OF ESPRESSO*/
@@ -330,6 +335,8 @@ int decoder_minimisation(int bits, int cpog_count){
 	command = catMem(command, ss);
 	command = catMem(command, file_out);
 #endif
+	command = catMem(command, " > ");
+	command = catMem(command, BOOL_PATH);
 
 	/*ALLOCATING BASE STRUCTURES FOR DECODER*/
 	min_bits = logarithm2(cpog_count);
@@ -372,9 +379,13 @@ int decoder_minimisation(int bits, int cpog_count){
 		}*/
 
 		/*CALLING ESPRESSO FRAMEWORK*/
-		if( (pp = popen(command,"r")) == NULL){
-			
+		if( system(command) == -1){
 			printf("Error on calling espresso program: %s.\n", command);
+			return 3;
+		}
+		
+		if( (pp = fopen(BOOL_PATH, "r")) == NULL){
+			printf("Error on reading espresso generated file.");
 			return 3;
 		}
 
