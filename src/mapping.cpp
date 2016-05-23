@@ -340,6 +340,9 @@ int equations_abc(int cpog_count, int bits){
 			
 			command = catMem(command, " < ");
 			command = catMem(command, SCRIPT_PATH);
+			command = catMem(command, " > ");
+			command = catMem(command, BOOL_PATH);
+			command = catMem(command, " 2>&1");
 
 			if( (fp = fopen(SCRIPT_PATH,"w")) == NULL ){
 				printf("Error on opening script file.\n");
@@ -368,9 +371,19 @@ int equations_abc(int cpog_count, int bits){
 			return 3;*/
 
 			/*CALLING ABC*/
-			if( (pp = popen(command,"r")) == NULL){
+			/*if( (pp = popen(command,"r")) == NULL){
 					printf("Error on calling abc program.\n");
 					return 3;
+			}*/
+
+			if( system(command) == -1){
+				printf("Error on calling abc program: %s.\n", command);
+				return 3;
+			}
+
+			if( (pp = fopen(BOOL_PATH, "r")) == NULL){
+				printf("Error on reading abc generated file.");
+				return 3;
 			}
 
 			/*READING RESULTS*/
@@ -648,6 +661,9 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 #endif
 			command = catMem(command, " < ");
 			command = catMem(command, SCRIPT_PATH);
+			command = catMem(command, " > ");
+			command = catMem(command, BOOL_PATH);
+			command = catMem(command, " 2>&1");
 
 			if( (fp = fopen(SCRIPT_PATH,"w")) == NULL ){
 				printf("Error on opening script file.\n");
@@ -676,11 +692,19 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			return 3;*/
 
 			/*CALLING ABC*/
-			if( (pp = popen(command,"r")) == NULL){
+			/*if( (pp = popen(command,"r")) == NULL){
 					printf("Error on calling abc program.\n");
 					return 3;
+			}*/
+			if( system(command) == -1){
+				printf("Error on calling abc program: %s.\n", command);
+				return 3;
 			}
-			
+			if( (pp = fopen(BOOL_PATH, "r")) == NULL){
+				printf("Error on reading abc generated file.");
+				return 3;
+			}
+
 
 			/*READING RESULTS*/
 			while(fgets(abc_line,ABC_LINELENGTH,pp) != NULL){
