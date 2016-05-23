@@ -45,10 +45,15 @@
 #include <set>
 #include <limits>
 
+#if defined(__linux) || defined(__APPLE__)
+	typedef enum {FALSE, TRUE} boolean;
+#else
+	#include <windows.h>
+#endif
+
 using namespace std;
 
 /*TYPE DEFINITION*/
-typedef enum {FALSE, TRUE} boolean;
 typedef struct struct_tag{
 	char type; 		/*v = vertex, e = edge*/
 	char* source, *dest; 	/*if n

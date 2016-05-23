@@ -193,11 +193,30 @@ int main(int argc, char **argv){
 		return 1;
 	}
 #else
-	tmpnam (TRIVIAL_ENCODING_FILE);
-	tmpnam (CONSTRAINTS_FILE);
-	tmpnam (TMP_FILE);
-	tmpnam (SCRIPT_PATH);
-	tmpnam (BOOL_PATH);
+	GetTempPath(FILENAME_LENGTH,TRIVIAL_ENCODING_FILE);
+   	BOOL_PATH[strlen(TRIVIAL_ENCODING_FILE)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(TRIVIAL_ENCODING_FILE,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,CONSTRAINTS_FILE);
+	BOOL_PATH[strlen(CONSTRAINTS_FILE)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(CONSTRAINTS_FILE,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,TMP_FILE);
+	BOOL_PATH[strlen(TMP_FILE)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(TMP_FILE,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,SCRIPT_PATH);
+	BOOL_PATH[strlen(SCRIPT_PATH)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(SCRIPT_PATH,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,BOOL_PATH);
+    	BOOL_PATH[strlen(BOOL_PATH)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(BOOL_PATH,TMP_NAME);
 #endif
 
 	// READ CURRENT PATH POSITION
@@ -240,8 +259,6 @@ int main(int argc, char **argv){
 	fclose(fp);
 	int lenstr = strlen(CURRENT_PATH);
 	CURRENT_PATH[lenstr-1] = '\\';
-
-	printf("\n\n%s\n\n", CURRENT_PATH);
 	k = 0;
 #endif
 
