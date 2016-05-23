@@ -522,6 +522,13 @@ void removeTempFiles(){
 		return;
 	}
 	free(command);
+	command = strdup("rm -f ");
+	command = catMem(command, BOOL_PATH);
+	if (system(command) == -1){
+		printf("Error on removing %s.\n", BOOL_PATH);
+		return;
+	}
+	free(command);
 #else
     	command = strdup("del ");
 	command = catMem(command, TMP_FILE);
@@ -548,6 +555,13 @@ void removeTempFiles(){
 	command = catMem(command, CONSTRAINTS_FILE);
 	if (system(command) == -1){
 		printf("Error on removing %s.\n", CONSTRAINTS_FILE);
+		return;
+	}
+	free(command);
+	command = strdup("del ");
+	command = catMem(command, BOOL_PATH);
+	if (system(command) == -1){
+		printf("Error on removing %s.\n", BOOL_PATH);
 		return;
 	}
 	free(command);

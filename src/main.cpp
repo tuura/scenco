@@ -42,6 +42,7 @@ int mod_bit = 2;
 	char CONSTRAINTS_FILE[FILENAME_LENGTH] = "/tmp/constraints.XXXXXX";
 	char TMP_FILE[FILENAME_LENGTH] = "/tmp/tmpfile.XXXXXX";
 	char SCRIPT_PATH[FILENAME_LENGTH] = "/tmp/synth.XXXXXX";
+	char BOOL_PATH[FILENAME_LENGTH] = "/tmp/bool.XXXXXX";
 #else
 	char TRIVIAL_ENCODING_FILE[FILENAME_LENGTH];
 	char CONSTRAINTS_FILE[FILENAME_LENGTH];
@@ -184,11 +185,19 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 1;
 	}
+	if (mkstemp(BOOL_PATH) == -1){
+		printf(".error \n");
+		printf("Error on opening temporary file: %s.\n", BOOL_PATH);
+		printf(".end_error \n");
+		removeTempFiles();
+		return 1;
+	}
 #else
 	tmpnam (TRIVIAL_ENCODING_FILE);
 	tmpnam (CONSTRAINTS_FILE);
 	tmpnam (TMP_FILE);
 	tmpnam (SCRIPT_PATH);
+	tmpnam (BOOL_PATH);
 #endif
 
 	// READ CURRENT PATH POSITION

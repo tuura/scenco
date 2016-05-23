@@ -36,6 +36,8 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 	command = catMem(command, ss);
 	command = catMem(command, file_out);
 #endif
+	command = catMem(command, " > ");
+	command = catMem(command, BOOL_PATH);
 
 	if(!co){
 		for(i=0; i<counter;i++){
@@ -75,16 +77,20 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 						fclose(fp);
 
 						/*DEBUG STOPPING: information about espresso output*/
-						/*printf("CALLING ESPRESSO: %s\n", command);
+						/*printf("CALLING ESPRESSO: %s\n", command); fflush(stdout);
 						system(command);
 						return 2;*/
 				
 						/*CALLING ESPRESSO FRAMEWORK*/
-						if( (pp = popen(command,"r")) == NULL){
+						if( system(command) == -1){
 							printf("Error on calling espresso program: %s.\n", command);
 							return 3;
 						}
-
+						
+						if( (pp = fopen(BOOL_PATH, "r")) == NULL){
+							printf("Error on reading espresso generated file.");
+							return 3;
+						}
 						/*READING ESPRESSO OUTPUT*/
 						while( (c = fgetc(pp)) != '=');
 						c = fgetc(pp);
@@ -104,7 +110,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 									c = fgetc(pp);
 									break;
 								case '\n':
-									if( feof(pp) ){
+									if( c == EOF ){
 										printf("Error on reading espresso output.\n");
 										return 3;
 									}

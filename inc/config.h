@@ -10,7 +10,7 @@
 #define FILENAME_LENGTH	300	// Max length of file names
 #define ABC_LINELENGTH 	1000	// Buffer for reading ABC output file
 #define MAX_NAME	100	//Max length name for each node
-#define MAX_VERT	10000	//Max number of vertices of CPOG
+#define MAX_VERT	1000	//Max number of vertices of CPOG
 #define MAX_MEMORY	100000    //Max memory available for Workcraft
 #define MAX_ENCODINGS	100000	//Max encodings that is possible to try
 #define MAX_RAND_ITERATIONS 20	//Number of Rand swapping for shuffling vector
@@ -18,8 +18,8 @@
 
 #define stringLimit	1000
 #define eventsLimit	1000
-#define scenariosLimit	700
-#define predicatesLimit	200
+#define scenariosLimit	500
+#define predicatesLimit	100
 
 /*ESPRESSO CONFIGURATION ENVIRONMENT*/
 #define ESPRESSO_FILTER		"-o eqntott "
