@@ -6,6 +6,9 @@ Order Graphs models.
 Most updated version: ScEnco v1.4.3
 
 # CHANGELOG #
+Changelog Scenco v1.4.4 - 23/05/2016
+-OS X support
+
 Changelog Scenco v1.4.3 - 19/05/2016
 -Alias dependency removed from ABC
 -Max and min weights computed via limits library
