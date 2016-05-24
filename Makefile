@@ -40,14 +40,14 @@ $(OBJDIR):
 
 clean:
 	@echo "Removing $(PROJECT_NAME)..."
-	@rm -r $(OBJDIR)
+	@rm -rf $(OBJDIR)
 	@rm $(TARGET)
 	@echo "$(PROJECT_NAME) removed correctly."
 
 rmtmp:
-	@rm *~
-	@rm -r $(SRCDIR)*~
-	@rm -r $(INCDIR)*~
+	@rm -f *~
+	@rm -rf $(SRCDIR)*~
+	@rm -rf $(INCDIR)*~
 	@echo "Temporary files removed correctly."
 
 help:
