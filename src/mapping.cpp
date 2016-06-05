@@ -682,6 +682,9 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
 			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
 			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
+			if(VER){
+				fprintf(fp,"write_verilog %s\n", VERILOG_FILE);
+			}
 			fprintf(fp,"print_gates\n");
 			fprintf(fp,"quit");
 			fclose(fp);

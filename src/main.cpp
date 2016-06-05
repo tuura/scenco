@@ -19,6 +19,7 @@ char *custom_file_name = NULL;
 char *ESPRESSO_PATH;
 char *ABC_PATH;
 char *LIBRARY_FILE;
+char *VERILOG_FILE;
 char CURRENT_PATH[stringLimit];
 char *FOLDER_NAME; 
 
@@ -70,6 +71,7 @@ boolean CPOG_SIZE = FALSE;
 boolean DISABLE_FUNCTION = FALSE;
 boolean OLD = FALSE;
 boolean mod_bit_flag = FALSE;
+boolean VER = FALSE;
 
 
 //ANDREY'S TOOL

@@ -6,6 +6,9 @@ Order Graphs models.
 Most updated version: ScEnco v1.4.3
 
 # CHANGELOG #
+Changelog Scenco v1.4.6 - 05/06/2016
+-Verilog file generation supported
+
 Changelog Scenco v1.4.5 - 23/05/2016
 -Temporary files created inside temporary path in Windows
 

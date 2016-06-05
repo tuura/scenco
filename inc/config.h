@@ -17,9 +17,24 @@
 #define MAX_FAILS	10000	//Number of fails before stopping encoding generation
 
 #define stringLimit	1000
-#define eventsLimit	1000
-#define scenariosLimit	500
-#define predicatesLimit	100
+
+#if defined(__linux)
+	#define eventsLimit	660
+	#define scenariosLimit	700
+	#define predicatesLimit	100
+#endif
+
+#if defined(__APPLE__)
+	#define eventsLimit	100
+	#define scenariosLimit	100
+	#define predicatesLimit	100
+#endif
+
+#if defined(_WIN32) || defined(_WIN64)
+	#define eventsLimit	100
+	#define scenariosLimit	200
+	#define predicatesLimit	100
+#endif
 
 /*ESPRESSO CONFIGURATION ENVIRONMENT*/
 #define ESPRESSO_FILTER		"-o eqntott "

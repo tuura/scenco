@@ -251,6 +251,47 @@ int parse_arg(int argc, char *argv[]){
 			}
 		}
 #endif
+
+		// verilog output
+#if defined(__linux) || defined(__APPLE__)
+		if(!strcmp(argv[cur], "-ver")){
+			VER = TRUE;
+			if( cur+1 < argc ){
+				VERILOG_FILE = strdup(argv[cur+1]);
+
+				i=0; j=0;
+
+				// FIX THE PATH FOR __linux VERSION
+				while(((unsigned int)i) < strlen(VERILOG_FILE)){
+					if(VERILOG_FILE[i] != ' '){
+						supp[j++] = VERILOG_FILE[i];
+					}else{
+						supp[j++] = '\\';
+						supp[j++] = ' ';
+					}
+					i++;
+				}
+				supp[j] = '\0';
+
+				strcpy(VERILOG_FILE,supp);
+			}
+			else{
+				printf("After -lib gates library in genlib format must be inserted.\n");
+				return 9;
+			}
+		}
+#else
+		if(!strcmp(argv[cur], "-ver")){
+			VER = TRUE;
+			if( cur+1 < argc ){
+				VERILOG_FILE = strdup(argv[cur+1]);
+			}
+			else{
+				printf("After -ver an output file for the verilog must be inserted.\n");
+				return 9;
+			}
+		}
+#endif
 		
 		//OPTIMISE CPOG SIZE
 		if (!strcmp(argv[cur], "-cs")){
@@ -264,6 +305,7 @@ int parse_arg(int argc, char *argv[]){
 		if (!strcmp(argv[cur], "-old")){
 			OLD = TRUE;
 		}
+		
 		cur++;
 	}
 	if(argc < 2){
@@ -308,6 +350,7 @@ void print_help(char *prog_name){
 	printf("\t-top [num_encs]: activate clever encoding generation, you must specify number of encodings to generate.\n");
 	printf("\t-u: do not fix first element during permutations.\n");
 	printf("\t-v: selects the verbose mode of the tool.\n");
+	printf("\t-ver [verilog_output]: Output the verilog netlist into a file.\n");
 	printf("\t-version: prints version of ScEnco.\n\n");
 	//EXAMPLE
 	printf("Example: ");
@@ -320,7 +363,7 @@ void print_help(char *prog_name){
 }
 
 void print_version(){
-	printf("ScEnco version: 1.4.5\n");
+	printf("ScEnco version: 1.4.6\n");
 	return;
 }
 
