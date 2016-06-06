@@ -362,7 +362,7 @@ int equations_abc(int cpog_count, int bits){
 			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
 			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
 			if(VER){
-				fprintf(fp,"write_verilog %s\n", VERILOG_FILE);
+				fprintf(fp,"write_verilog %s\n", VERILOG_TMP);
 			}
 			fprintf(fp,"print_gates\n");
 			fprintf(fp,"quit");
@@ -383,6 +383,8 @@ int equations_abc(int cpog_count, int bits){
 				printf("Error on calling abc program: %s.\n", command);
 				return 3;
 			}
+
+			replaceVerilogName();
 
 			if( (pp = fopen(BOOL_PATH, "r")) == NULL){
 				printf("Error on reading abc generated file.");
@@ -446,6 +448,28 @@ int equations_abc(int cpog_count, int bits){
 	printf("100\n");
 #endif
 	return 0;
+}
+
+void replaceVerilogName(){
+
+	FILE *fs = NULL, *fd = NULL;
+	char c;
+
+	fs = fopen(VERILOG_TMP, "r");
+	fd = fopen(VERILOG_FILE, "w");
+
+	// skip three lines
+	while( (c = fgetc(fs)) != '\n' );
+	while( (c = fgetc(fs)) != '\n' );
+	while( (c = fgetc(fs)) != '\n' );
+	fprintf(fd, "module micro (\n");
+
+	while( (c = fgetc(fs)) != EOF ) fputc(c, fd);
+
+	fclose(fs);
+	fclose(fd);
+
+	return;
 }
 
 /*WRITE CONDITIONS FUNCTION*/
@@ -686,7 +710,7 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
 			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
 			if(VER){
-				fprintf(fp,"write_verilog %s\n", VERILOG_FILE);
+				fprintf(fp,"write_verilog %s\n", VERILOG_TMP);
 			}
 			fprintf(fp,"print_gates\n");
 			fprintf(fp,"quit");
@@ -706,6 +730,9 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 				printf("Error on calling abc program: %s.\n", command);
 				return 3;
 			}
+
+			replaceVerilogName();
+
 			if( (pp = fopen(BOOL_PATH, "r")) == NULL){
 				printf("Error on reading abc generated file.");
 				return 3;

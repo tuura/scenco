@@ -9,6 +9,7 @@
 
 int equations_abc(int, int);
 int equations_abc_cpog_size(int, int);
+void replaceVerilogName();
 void write_conditions(FILE*,int,int,int,int,int,int);
 
 #endif

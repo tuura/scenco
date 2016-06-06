@@ -44,6 +44,7 @@ int mod_bit = 2;
 	char TMP_FILE[FILENAME_LENGTH] = "/tmp/tmpfile.XXXXXX";
 	char SCRIPT_PATH[FILENAME_LENGTH] = "/tmp/synth.XXXXXX";
 	char BOOL_PATH[FILENAME_LENGTH] = "/tmp/bool.XXXXXX";
+	char VERILOG_TMP[FILENAME_LENGTH] = "/tmp/micro.XXXXXX";
 #else
 	char TRIVIAL_ENCODING_FILE[FILENAME_LENGTH];
 	char CONSTRAINTS_FILE[FILENAME_LENGTH];
@@ -51,6 +52,7 @@ int mod_bit = 2;
 	char SCRIPT_PATH[FILENAME_LENGTH];
 	char BOOL_PATH[FILENAME_LENGTH];
 	char TMP_NAME[FILENAME_LENGTH];
+	char VERILOG_TMP[FILENAME_LENGTH];
 #endif
 
 long long int num_perm;
@@ -196,6 +198,13 @@ int main(int argc, char **argv){
 		removeTempFiles();
 		return 1;
 	}
+	if (mkstemp(VERILOG_TMP) == -1){
+		printf(".error \n");
+		printf("Error on opening temporary file: %s.\n", VERILOG_TMP);
+		printf(".end_error \n");
+		removeTempFiles();
+		return 1;
+	}
 #else
 	GetTempPath(FILENAME_LENGTH,TRIVIAL_ENCODING_FILE);
    	BOOL_PATH[strlen(TRIVIAL_ENCODING_FILE)-1] = '\0';
@@ -221,6 +230,11 @@ int main(int argc, char **argv){
     	BOOL_PATH[strlen(BOOL_PATH)-1] = '\0';
 	tmpnam (TMP_NAME);
 	strcat(BOOL_PATH,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,VERILOG_TMP);
+    	BOOL_PATH[strlen(VERILOG_TMP)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(VERILOG_TMP,TMP_NAME);
 #endif
 
 	// READ CURRENT PATH POSITION
