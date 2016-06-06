@@ -731,7 +731,7 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 				return 3;
 			}
 
-			replaceVerilogName();
+			if(VER) replaceVerilogName();
 
 			if( (pp = fopen(BOOL_PATH, "r")) == NULL){
 				printf("Error on reading abc generated file.");
