@@ -232,7 +232,7 @@ int main(int argc, char **argv){
 	strcat(BOOL_PATH,TMP_NAME);
 
 	GetTempPath(FILENAME_LENGTH,VERILOG_TMP);
-    	BOOL_PATH[strlen(VERILOG_TMP)-1] = '\0';
+    	VERILOG_TMP[strlen(VERILOG_TMP)-1] = '\0';
 	tmpnam (TMP_NAME);
 	strcat(VERILOG_TMP,TMP_NAME);
 #endif
