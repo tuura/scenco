@@ -1290,7 +1290,7 @@ int main(int argc, char **argv){
 	if(!CPOG_SIZE){
 		if( (err = equations_abc(cpog_count,bits)) != 0){
 			printf(".error \n");
-			printf("Error on writing final equations. Error code: %d.\n",err);
+			printf("Error on using ABC. Error code: %d.\n",err);
 			printf(".end_error \n");
 			removeTempFiles();
 			return 9;
@@ -1298,7 +1298,7 @@ int main(int argc, char **argv){
 	}else{
 		if( (err = equations_abc_cpog_size(cpog_count,bits)) != 0){
 			printf(".error \n");
-			printf("Error on writing final equations. Error code: %d.\n",err);
+			printf("Error on using ABC. Error code: %d.\n",err);
 			printf(".end_error \n");
 			removeTempFiles();
 			return 9;

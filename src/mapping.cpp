@@ -384,25 +384,33 @@ int equations_abc(int cpog_count, int bits){
 				return 3;
 			}
 
-			replaceVerilogName();
-
 			if( (pp = fopen(BOOL_PATH, "r")) == NULL){
 				printf("Error on reading abc generated file.");
 				return 3;
 			}
 
 			/*READING RESULTS*/
+			boolean correct_exec = FALSE;
 			string = (char*) malloc(sizeof(char) * ABC_LINELENGTH);
 			while(fgets(abc_line,ABC_LINELENGTH,pp) != NULL){
 				//printf("%s\n",abc_line);
 				sscanf(abc_line, "%s", string);
 				if( !strcmp(string, "TOTAL") ){
+					correct_exec = TRUE;
 					sscanf(abc_line,"%s%s%s%d%s%s%f", string, name, dump1, &k,dump2,dump3, &k2);
 					gates[c] = k;
 					area[c] = k2;
 				}
 			}
 			fclose(pp);
+
+			if(!correct_exec){
+				printf("Error on the ABC execution.");
+				return 4;
+			}
+
+			if (VER) replaceVerilogName();
+
 			free(string);
 			free(command);
 
@@ -726,12 +734,11 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 					printf("Error on calling abc program.\n");
 					return 3;
 			}*/
+
 			if( system(command) == -1){
 				printf("Error on calling abc program: %s.\n", command);
 				return 3;
 			}
-
-			if(VER) replaceVerilogName();
 
 			if( (pp = fopen(BOOL_PATH, "r")) == NULL){
 				printf("Error on reading abc generated file.");
@@ -740,10 +747,12 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 
 
 			/*READING RESULTS*/
+			boolean correct_exec = FALSE;
 			while(fgets(abc_line,ABC_LINELENGTH,pp) != NULL){
 				//printf("%s\n",abc_line);
 				sscanf(abc_line, "%s", string);
 				if( !strcmp(string, "TOTAL") ){
+					correct_exec = TRUE;
 					sscanf(abc_line,"%s%s%s%d%s%s%f", string, name, dump1, &k,dump2,dump3, &k2);
 					gates[c] = k;
 					area[c] = k2;
@@ -751,6 +760,13 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			}
 			fclose(pp);
 			free(command);
+
+			if(!correct_exec){
+				printf("Error on the ABC execution.");
+				return 4;
+			}
+
+			if(VER) replaceVerilogName();
 
 			/*GET BACK STARTING POSITION*/
 			if(chdir(CURRENT_PATH) != 0){
