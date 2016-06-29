@@ -372,7 +372,7 @@ void best_permutations(int cpog_count, int tot_enc,int bits){
 		//STOP ENCODINGS GENERATION
 		if(fails > MAX_FAILS){
 			num_perm = c;
-			printf("\nFunction was able to generate just %lld permutations.\n",num_perm);
+			if (!script) printf("\nFunction was able to generate just %lld permutations.\n",num_perm);
 			out = TRUE;
 		}
 #endif
@@ -675,7 +675,7 @@ void rand_permutations_constraints_v2(int cpog_count, int tot_enc,int bits){
 		//STOP ENCODINGS GENERATION
 		if(fails > MAX_FAILS){
 			num_perm = c;
-			printf("\nFunction was able to generate just %lld permutations.\n",num_perm);
+			if (!script) printf("\nFunction was able to generate just %lld permutations.\n",num_perm);
 			out = TRUE;
 		}
 #endif

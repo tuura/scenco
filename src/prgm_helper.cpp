@@ -62,6 +62,10 @@ int parse_arg(int argc, char *argv[]){
 		if(!strcmp(argv[cur], "-u")){
 			unfix = TRUE;
 		}
+		// disable output for scripting
+		if(!strcmp(argv[cur], "-script")){
+			script = TRUE;
+		}
 		//RANDOM ENCODINGS
 		if(!strcmp(argv[cur], "-r")){
 			gen_mode = 0;
@@ -167,7 +171,7 @@ int parse_arg(int argc, char *argv[]){
 				strcpy(FOLDER_NAME,supp);
 
 				// DEBUG PRINTING
-				printf("FOLDER NAME TEMP: %s\n", FOLDER_NAME);
+				if (!script) printf("FOLDER NAME TEMP: %s\n", FOLDER_NAME);
 			}
 			else{
 				printf("After -res results folder's path must be inserted.\n");
@@ -346,6 +350,7 @@ void print_help(char *prog_name){
 	printf("\t\tman [cust_enc.txt]: followed by name of file contains custom encodings, encode CPOG with them.\n");
 	printf("\t-h/help: show help of the tool.\n");
 	printf("\t-r [num_encs]: activate random generation mode, and how many encodings generate.\n");
+	printf("\t-script: output just area and gate count for scripting purpose.\n");
 	printf("\t-set [cust_enc.txt]: followed by name of file contains custom encodings, encode selected POG with them.\n");
 	printf("\t-top [num_encs]: activate clever encoding generation, you must specify number of encodings to generate.\n");
 	printf("\t-u: do not fix first element during permutations.\n");
@@ -363,7 +368,7 @@ void print_help(char *prog_name){
 }
 
 void print_version(){
-	printf("ScEnco version: 1.4.7\n");
+	printf("ScEnco version: 1.4.8\n");
 	return;
 }
 

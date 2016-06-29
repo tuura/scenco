@@ -104,6 +104,7 @@ int equations_abc(int cpog_count, int bits){
 		//FUNCTIONS
 		for(i=0;i<nv; i++){
 			fprintf(fp,"REQ_%s = ", cpog[i][i].source);
+			//printf("REQ_%s = ", cpog[i][i].source);
 			ins = FALSE;
 			line = strdup("");
 			for(j=0;j<nv;j++){
@@ -316,6 +317,7 @@ int equations_abc(int cpog_count, int bits){
 				line = strdup("1;");
 			}
 			fprintf(fp,"%s\n", line);
+			//printf("%s\n", line);
 			free(line);
 		}
 		
@@ -665,15 +667,22 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 		for(i=0;i<nv; i++){
 			for(j=0; j<nv; j++){
 				if(cpog[i][j].type == 'v'){
-					if(cpog[i][j].condition)
+					if(cpog[i][j].condition){
 						fprintf(fp,"%s = (%s) + ((%s) * (%s));\n",cpog[i][j].source,cpog[i][j].fun[c], cpog[i][j].cond,cpog[i][j].fun_cond[c]);
-					else
-						if(cpog[i][j].fun[c][0] != '0' && cpog[i][j].fun[c][0] != '1')
+						//printf("%s = (%s) + ((%s) * (%s));\n",cpog[i][j].source,cpog[i][j].fun[c], cpog[i][j].cond,cpog[i][j].fun_cond[c]);
+					}else{
+						if(cpog[i][j].fun[c][0] != '0' && cpog[i][j].fun[c][0] != '1'){
 							fprintf(fp,"%s = (%s);\n",cpog[i][j].source,cpog[i][j].fun[c]);
+							//printf("%s = (%s);\n",cpog[i][j].source,cpog[i][j].fun[c]);
+						}
+					}
 				}
-				else
-					if(cpog[i][j].fun[c][0] != '0' && cpog[i][j].fun[c][0] != '1')
+				else{
+					if(cpog[i][j].fun[c][0] != '0' && cpog[i][j].fun[c][0] != '1'){
 						fprintf(fp, "%s->%s = (%s);\n", cpog[i][j].source, cpog[i][j].dest, cpog[i][j].fun[c]);
+						//printf("%s->%s = (%s);\n", cpog[i][j].source, cpog[i][j].dest, cpog[i][j].fun[c]);
+					}
+				}
 			}
 		}
 		

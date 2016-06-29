@@ -135,7 +135,7 @@ bool readScenario()
 		if (g[n].e[i][j] == 2) ntran++;
 	}
 	
-	printf("%d events, %d dependencies (%d non-transitive, %d transitive), %d predicates\n", nv, ntran + nnontran, nnontran, ntran, npred);
+	if (!script) printf("%d events, %d dependencies (%d non-transitive, %d transitive), %d predicates\n", nv, ntran + nnontran, nnontran, ntran, npred);
 	
 	n++;
 	return true;
