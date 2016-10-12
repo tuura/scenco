@@ -74,8 +74,13 @@ int equations_abc(int cpog_count, int bits){
 		if(!decode_flag)
 			for(k=0;k<bits;k++)
 				fprintf(fp," x_%d",k);
-		for(k=0;k<nv;k++)
-			fprintf(fp," ACK_%s",cpog[k][k].source);
+		for(k=0;k<nv;k++) {
+			if(strcmp(cpog[k][k].source, "GO") == 0){
+				fprintf(fp," GO");
+			} else if(strcmp(cpog[k][k].source, "DONE") != 0){
+				fprintf(fp," ACK_%s",cpog[k][k].source);
+			}
+		}
 		for(k=0;k<n_cond;k++)
 			fprintf(fp," %s",name_cond[k]);
 		if(decode_flag){
@@ -89,8 +94,13 @@ int equations_abc(int cpog_count, int bits){
 		if(decode_flag)
 			for(k=0;k<bits;k++)
 				fprintf(fp," x_%d",k);
-		for(k=0;k<nv;k++)
-			fprintf(fp," REQ_%s",cpog[k][k].source);
+		for(k=0;k<nv;k++){
+			if(strcmp(cpog[k][k].source, "DONE") == 0){
+				fprintf(fp," DONE");
+			} else if(strcmp(cpog[k][k].source, "GO") != 0){
+				fprintf(fp," REQ_%s",cpog[k][k].source);
+			}
+		}
 		fprintf(fp,";\n");
 
 		//DECODER
@@ -103,226 +113,290 @@ int equations_abc(int cpog_count, int bits){
 
 		//FUNCTIONS
 		for(i=0;i<nv; i++){
-			fprintf(fp,"REQ_%s = ", cpog[i][i].source);
-			//printf("REQ_%s = ", cpog[i][i].source);
-			ins = FALSE;
-			line = strdup("");
-			for(j=0;j<nv;j++){
-				/*DEBUG PRINTING: Information about and*/
-				/*if(i == 1)
-					printf("%d",ins);*/
-				string = strdup("");
-				//CONDITIONS OF VERTICES
-				if(j == i){
-					if(cpog[j][i].condition){
-						if( (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][i].fun_cond[c])) && ins){
-							string = strdup(" * ");
-							line = catMem(line, string);
-						}
-						if (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][i].fun_cond[c]))
-							ins = TRUE;
-						if(!decide(cpog[j][i].fun_cond[c]) && !decide(cpog[j][i].fun[c])){
-							string = strdup("( ( (");
-							string = catMem(string, cpog[j][i].fun_cond[c]);
-							string = catMem(string, ") * (");
-							string = catMem(string, cpog[j][i].cond);
-							string = catMem(string, ") ) + (");
-							string = catMem(string, cpog[j][i].fun[c]);
-							string = catMem(string, ")) ");
-							line = catMem(line, string);
-						}
-						if(decide(cpog[j][i].fun_cond[c]) && !decide(cpog[j][i].fun[c])){
-							string = strdup("( (");
-							string = catMem(string, cpog[j][i].cond);
-							string = catMem(string, ") + (");
-							string = catMem(string, cpog[j][i].fun[c]);
-							string = catMem(string, ") ) ");
-							line = catMem(line, string);
-						}
-						if(!decide(cpog[j][i].fun_cond[c]) && decide(cpog[j][i].fun[c])){
-							string = strdup("( (");
-							string = catMem(string, cpog[j][i].cond);
-							string = catMem(string, ") * (");
-							string = catMem(string, cpog[j][i].fun_cond[c]);
-							string = catMem(string, ") ) ");
-							line = catMem(line, string);
-						}
-						if(decide(cpog[j][i].fun_cond[c]) && decide(cpog[j][i].fun[c]))
-							ins = FALSE;
-					}else{	
-						if(!decide(cpog[j][i].fun[c]) && ins){
-							string = strdup(" * ");
-							line = catMem(line, string);
-						}			
-						if(!decide(cpog[j][i].fun[c])){
-							ins = TRUE;
-							string = strdup("(");
-							string = catMem(string, cpog[j][i].fun[c]);
-							string = catMem(string, ") ");
-							line = catMem(line, string);
-						}
-					}
-				//CONDITIONS OF EDGES
-				}else{
-					if(decide(cpog[j][i].fun[c]) != 2){
-						if(cpog[j][j].condition){
-							if( (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][j].fun[c]) || decide(cpog[j][j].fun_cond[c]) != 3) && ins){
-								string = strdup(" * ");
-								line = catMem(line, string);
-							}
-							if (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][j].fun[c]) || decide(cpog[j][j].fun_cond[c]) != 3)
-								ins = TRUE;
-
-							if(!decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !((((");
-								string = catMem(string, cpog[j][j].fun_cond[c]);
-								string = catMem(string, ") * (");
-								string = catMem(string, cpog[j][j].cond);
-								string = catMem(string, ")) + (");
-								string = catMem(string, cpog[j][j].fun[c]);
-								string = catMem(string, ")) * (");
-								string = catMem(string, cpog[j][i].fun[c]);
-								string = catMem(string, ")))");
-								line = catMem(line, string);
-							}
-
-							if(decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !(((");
-								string = catMem(string, cpog[j][j].fun_cond[c]);
-								string = catMem(string, ") * (");
-								string = catMem(string, cpog[j][j].cond);
-								string = catMem(string, ")) + (");
-								string = catMem(string, cpog[j][j].fun[c]);
-								string = catMem(string, ")))");
-								line = catMem(line, string);
-							}
-
-							if(!decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !(((");
-								string = catMem(string, cpog[j][j].fun_cond[c]);
-								string = catMem(string, ") * (");
-								string = catMem(string, cpog[j][j].cond);
-								string = catMem(string, ")) * (");
-								string = catMem(string, cpog[j][i].fun[c]);
-								string = catMem(string, ")))");
-								line = catMem(line, string);
-							}
-
-							if(decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !((");
-								string = catMem(string, cpog[j][j].fun_cond[c]);
-								string = catMem(string, ") * (");
-								string = catMem(string, cpog[j][j].cond);
-								string = catMem(string, ")))");
-								line = catMem(line, string);
-							}
-
-							if(!decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !((");
-								string = catMem(string, cpog[j][j].fun[c]);
-								string = catMem(string, ") * (");
-								string = catMem(string, cpog[j][i].fun[c]);
-								string = catMem(string, ")))");
-								line = catMem(line, string);
-							}
-
-							if(decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !(");
-								string = catMem(string, cpog[j][j].fun[c]);
-								string = catMem(string, "))");
-								line = catMem(line, string);
-							}
-							if(!decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !(");
-								string = catMem(string, cpog[j][i].fun[c]);
-								string = catMem(string, "))");
-								line = catMem(line, string);
-							}
-
-							if(decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
-								ins = TRUE;
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catChar(string, ')');
-								line = catMem(line, string);
-							}
-						}else{
-							if(ins){
-								string = strdup(" * ");
-								line = catMem(line, string);
-							}
-
-							if (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][j].fun[c]))
-								ins = TRUE;
-
-							if(!decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !((");
-								string = catMem(string, cpog[j][i].fun[c]);
-								string = catMem(string, ") * (");
-								string = catMem(string, cpog[j][j].fun[c]);
-								string = catMem(string, ")))");
-								line = catMem(line, string);
-							}
-
-							if(decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !(");
-								string = catMem(string, cpog[j][j].fun[c]);
-								string = catMem(string, "))");
-								line = catMem(line, string);
-							}
-
-							if(!decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c])){
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catMem(string, " + !(");
-								string = catMem(string, cpog[j][i].fun[c]);
-								string = catMem(string, "))");
-								line = catMem(line, string);
-							}
-
-							if(decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c])){
-								ins = TRUE;
-								string = strdup("(ACK_");
-								string = catMem(string, cpog[j][i].source);
-								string = catChar(string, ')');
-								line = catMem(line, string);
-							}
-						}
-					}
+			if(strcmp(cpog[i][i].source, "GO") != 0) {
+				if (strcmp(cpog[i][i].source, "DONE") == 0) {
+					fprintf(fp,"DONE = ");
+				} else {
+					fprintf(fp,"REQ_%s = ", cpog[i][i].source);
 				}
-				free(string);
-			}
-			//printf("\n");
-			line = catChar(line, ';');
-			if(line[0] == ';'){
+				//printf("REQ_%s = ", cpog[i][i].source);
+				ins = FALSE;
+				line = strdup("");
+				for(j=0;j<nv;j++){
+					/*DEBUG PRINTING: Information about and*/
+					/*if(i == 1)
+						printf("%d",ins);*/
+					string = strdup("");
+					//CONDITIONS OF VERTICES
+					if(j == i){
+						if(cpog[j][i].condition){
+							if( (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][i].fun_cond[c])) && ins){
+								string = strdup(" * ");
+								line = catMem(line, string);
+							}
+							if (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][i].fun_cond[c]))
+								ins = TRUE;
+							if(!decide(cpog[j][i].fun_cond[c]) && !decide(cpog[j][i].fun[c])){
+								string = strdup("( ( (");
+								string = catMem(string, cpog[j][i].fun_cond[c]);
+								string = catMem(string, ") * (");
+								string = catMem(string, cpog[j][i].cond);
+								string = catMem(string, ") ) + (");
+								string = catMem(string, cpog[j][i].fun[c]);
+								string = catMem(string, ")) ");
+								line = catMem(line, string);
+							}
+							if(decide(cpog[j][i].fun_cond[c]) && !decide(cpog[j][i].fun[c])){
+								string = strdup("( (");
+								string = catMem(string, cpog[j][i].cond);
+								string = catMem(string, ") + (");
+								string = catMem(string, cpog[j][i].fun[c]);
+								string = catMem(string, ") ) ");
+								line = catMem(line, string);
+							}
+							if(!decide(cpog[j][i].fun_cond[c]) && decide(cpog[j][i].fun[c])){
+								string = strdup("( (");
+								string = catMem(string, cpog[j][i].cond);
+								string = catMem(string, ") * (");
+								string = catMem(string, cpog[j][i].fun_cond[c]);
+								string = catMem(string, ") ) ");
+								line = catMem(line, string);
+							}
+							if(decide(cpog[j][i].fun_cond[c]) && decide(cpog[j][i].fun[c]))
+								ins = FALSE;
+						}else{	
+							if(!decide(cpog[j][i].fun[c]) && ins){
+								string = strdup(" * ");
+								line = catMem(line, string);
+							}			
+							if(!decide(cpog[j][i].fun[c])){
+								ins = TRUE;
+								string = strdup("(");
+								string = catMem(string, cpog[j][i].fun[c]);
+								string = catMem(string, ") ");
+								line = catMem(line, string);
+							}
+						}
+					//CONDITIONS OF EDGES
+					}else{
+						if(decide(cpog[j][i].fun[c]) != 2){
+							if(cpog[j][j].condition){
+								if( (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][j].fun[c]) || decide(cpog[j][j].fun_cond[c]) != 3) && ins){
+									string = strdup(" * ");
+									line = catMem(line, string);
+								}
+								if (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][j].fun[c]) || decide(cpog[j][j].fun_cond[c]) != 3)
+									ins = TRUE;
+
+								if(!decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}								
+									string = catMem(string, " + !((((");
+									string = catMem(string, cpog[j][j].fun_cond[c]);
+									string = catMem(string, ") * (");
+									string = catMem(string, cpog[j][j].cond);
+									string = catMem(string, ")) + (");
+									string = catMem(string, cpog[j][j].fun[c]);
+									string = catMem(string, ")) * (");
+									string = catMem(string, cpog[j][i].fun[c]);
+									string = catMem(string, ")))");
+									line = catMem(line, string);
+								}
+
+								if(decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catMem(string, " + !(((");
+									string = catMem(string, cpog[j][j].fun_cond[c]);
+									string = catMem(string, ") * (");
+									string = catMem(string, cpog[j][j].cond);
+									string = catMem(string, ")) + (");
+									string = catMem(string, cpog[j][j].fun[c]);
+									string = catMem(string, ")))");
+									line = catMem(line, string);
+								}
+
+								if(!decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catMem(string, " + !(((");
+									string = catMem(string, cpog[j][j].fun_cond[c]);
+									string = catMem(string, ") * (");
+									string = catMem(string, cpog[j][j].cond);
+									string = catMem(string, ")) * (");
+									string = catMem(string, cpog[j][i].fun[c]);
+									string = catMem(string, ")))");
+									line = catMem(line, string);
+								}
+
+								if(decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && !decide(cpog[j][j].fun_cond[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catMem(string, " + !((");
+									string = catMem(string, cpog[j][j].fun_cond[c]);
+									string = catMem(string, ") * (");
+									string = catMem(string, cpog[j][j].cond);
+									string = catMem(string, ")))");
+									line = catMem(line, string);
+								}
+
+								if(!decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catMem(string, " + !((");
+									string = catMem(string, cpog[j][j].fun[c]);
+									string = catMem(string, ") * (");
+									string = catMem(string, cpog[j][i].fun[c]);
+									string = catMem(string, ")))");
+									line = catMem(line, string);
+								}
+
+								if(decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catMem(string, " + !(");
+									string = catMem(string, cpog[j][j].fun[c]);
+									string = catMem(string, "))");
+									line = catMem(line, string);
+								}
+								if(!decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catMem(string, " + !(");
+									string = catMem(string, cpog[j][i].fun[c]);
+									string = catMem(string, "))");
+									line = catMem(line, string);
+								}
+
+								if(decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c]) && decide(cpog[j][j].fun_cond[c])){
+									ins = TRUE;
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catChar(string, ')');
+									line = catMem(line, string);
+								}
+							}else{
+								if(ins){
+									string = strdup(" * ");
+									line = catMem(line, string);
+								}
+
+								if (!decide(cpog[j][i].fun[c]) || !decide(cpog[j][j].fun[c]))
+									ins = TRUE;
+
+								if(!decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catMem(string, " + !((");
+									string = catMem(string, cpog[j][i].fun[c]);
+									string = catMem(string, ") * (");
+									string = catMem(string, cpog[j][j].fun[c]);
+									string = catMem(string, ")))");
+									line = catMem(line, string);
+								}
+
+								if(decide(cpog[j][i].fun[c]) && !decide(cpog[j][j].fun[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catMem(string, " + !(");
+									string = catMem(string, cpog[j][j].fun[c]);
+									string = catMem(string, "))");
+									line = catMem(line, string);
+								}
+
+								if(!decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c])){
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catMem(string, " + !(");
+									string = catMem(string, cpog[j][i].fun[c]);
+									string = catMem(string, "))");
+									line = catMem(line, string);
+								}
+
+								if(decide(cpog[j][i].fun[c]) && decide(cpog[j][j].fun[c])){
+									ins = TRUE;
+									if (strcmp(cpog[j][i].source, "GO") == 0){
+										string = strdup("(GO");
+									} else {
+										string = strdup("(ACK_");
+										string = catMem(string, cpog[j][i].source);
+									}
+									string = catChar(string, ')');
+									line = catMem(line, string);
+								}
+							}
+						}
+					}
+					free(string);
+				}
+				//printf("\n");
+				line = catChar(line, ';');
+				if(line[0] == ';'){
+					free(line);
+					line = strdup("1;");
+				}
+				fprintf(fp,"%s\n", line);
+				//printf("%s\n", line);
 				free(line);
-				line = strdup("1;");
 			}
-			fprintf(fp,"%s\n", line);
-			//printf("%s\n", line);
-			free(line);
 		}
 		
 		//CLOSING FILE AND FREE NAME MEMORY
 		fclose(fp);
+
+		// Debug: watching equations
+		/*FILE *copy = NULL;
+		fp = fopen(file_name, "r");
+		copy = fopen("circuit.eq", "w");
+		char ch;
+			while ((ch = fgetc(fp)) != EOF)
+				fputc(ch, copy);
+		fclose(fp);
+		fclose(copy);*/
 
 		/*ACCESSING TOOLS FOLDER*/
 		if(ABCFLAG){
@@ -688,6 +762,16 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 		
 		//CLOSING FILE AND FREE NAME MEMORY
 		fclose(fp);
+
+		// Debug: watching equations
+		/*FILE *copy = NULL;
+		fp = fopen(file_name, "r");
+		copy = fopen("circuit.eq", "w");
+		char ch;
+			while ((ch = fgetc(fp)) != EOF)
+				fputc(ch, copy);
+		fclose(fp);
+		fclose(copy);*/
 
 		if(ABCFLAG){
 			/*ACCESSING TOOLS FOLDER*/

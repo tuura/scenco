@@ -165,6 +165,11 @@ int main(int argc, char **argv){
 		return 1;
 	}
 
+	// add go and done signals in the case a microcontroller is the final target
+	if (!CPOG_SIZE) {
+		
+	}
+
 
 	// TEMPORARY FILES DEFINITION
 #if defined(__linux) || defined(__APPLE__)
