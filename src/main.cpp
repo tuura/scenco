@@ -165,7 +165,6 @@ int main(int argc, char **argv){
 		return 1;
 	}
 
-
 	// TEMPORARY FILES DEFINITION
 #if defined(__linux) || defined(__APPLE__)
 	if (mkstemp(TRIVIAL_ENCODING_FILE) == -1){

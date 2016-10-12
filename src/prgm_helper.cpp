@@ -368,7 +368,7 @@ void print_help(char *prog_name){
 }
 
 void print_version(){
-	printf("ScEnco version: 1.4.8\n");
+	printf("ScEnco version: 1.5.0\n");
 	return;
 }
 
