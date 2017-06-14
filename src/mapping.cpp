@@ -401,19 +401,8 @@ int equations_abc(int cpog_count, int bits){
 		/*ACCESSING TOOLS FOLDER*/
 		if(ABCFLAG){
 
-			if(chdir(ABC_PATH) != 0){
-				printf("Error on cd command. %s\n", ABC_PATH);
-				return 2;
-			}
-		
-
-			/*BUILDING COMMAND CALLING ABC*/
-#if defined(__linux) || defined(__APPLE__)
-			command = strdup("./abc");
-#else
-			command = strdup("abc.exe");
-#endif
-			
+   			//BUILDING COMMAND CALLING ABC
+            command = strdup(ABC_PATH);			
 			command = catMem(command, " < ");
 			command = catMem(command, SCRIPT_PATH);
 			command = catMem(command, " > ");
@@ -455,6 +444,7 @@ int equations_abc(int cpog_count, int bits){
 					return 3;
 			}*/
 
+            fflush(stdout);
 			if( system(command) == -1){
 				printf("Error on calling abc program: %s.\n", command);
 				return 3;
@@ -489,12 +479,6 @@ int equations_abc(int cpog_count, int bits){
 
 			free(string);
 			free(command);
-
-			/*GET BACK STARTING POSITION*/
-			if(chdir(CURRENT_PATH) != 0){
-				printf("Error on cd command. %s\n",CURRENT_PATH);
-				return 2;
-			}
 		}
 
 #ifdef ACT_PERCENTAGE	
@@ -774,19 +758,9 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 		fclose(copy);*/
 
 		if(ABCFLAG){
-			/*ACCESSING TOOLS FOLDER*/
-			if(chdir(ABC_PATH) != 0){
-				printf("Error on cd command. %s\n", ABC_PATH);
-				return 2;
-			}
 		
-
-			/*BUILDING COMMAND CALLING ABC*/
-#if defined(__linux) || defined(__APPLE__)
-			command = strdup("./abc");
-#else
-			command = strdup("abc.exe");
-#endif
+            //BUILDING COMMAND CALLING ABC
+            command = strdup(ABC_PATH);
 			command = catMem(command, " < ");
 			command = catMem(command, SCRIPT_PATH);
 			command = catMem(command, " > ");
@@ -860,12 +834,6 @@ int equations_abc_cpog_size(int cpog_count, int bits){
 			}
 
 			if(VER) replaceVerilogName();
-
-			/*GET BACK STARTING POSITION*/
-			if(chdir(CURRENT_PATH) != 0){
-				printf("Error on cd command. %s\n",CURRENT_PATH);
-				return 2;
-			}
 		}
 
 #ifdef ACT_PERCENTAGE	
