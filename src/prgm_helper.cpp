@@ -213,7 +213,7 @@ int parse_arg(int argc, char *argv[]){
 				strcpy(ABC_PATH,supp);*/
 			}
 			else{
-				printf("After -a abc tool folder must be inserted.\n");
+				printf("After -a abc tool must be inserted.\n");
 				return 8;
 			}
 		}
@@ -368,7 +368,7 @@ void print_help(char *prog_name){
 }
 
 void print_version(){
-	printf("ScEnco version: 1.5.0\n");
+	printf("ScEnco version: 1.5.1\n");
 	return;
 }
 
