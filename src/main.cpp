@@ -1391,18 +1391,20 @@ int main(int argc, char **argv){
 		if (!script) printf("Boolean equations for each element:\n");
 		for(j=0;j<nv; j++){
 			for(k=0;k<nv;k++){
-				if(cpog[j][k].type == 'v'){
-					if(cpog[j][k].condition){
-						if (!script) printf("%s = (%s) + ((%s) * (%s))\n",cpog[j][k].source,cpog[j][k].fun[i], cpog[j][k].cond,cpog[j][k].fun_cond[i]);
-					}
-					else{
-						if (!script) printf("%s = (%s)\n",cpog[j][k].source,cpog[j][k].fun[i]);
-					}
-				}
-				else{
-					if(!decide(cpog[j][k].fun[i]))
-						if (!script) printf("%s -> %s = (%s)\n",cpog[j][k].source, cpog[j][k].dest,cpog[j][k].fun[i]);
-				}
+                if ( strcmp(cpog[j][k].source, "GO") != 0 && strcmp(cpog[j][k].source, "DONE") != 0 ) {
+				    if(cpog[j][k].type == 'v'){
+					    if(cpog[j][k].condition){
+						    if (!script) printf("%s = (%s) + ((%s) * (%s))\n",cpog[j][k].source,cpog[j][k].fun[i], cpog[j][k].cond,cpog[j][k].fun_cond[i]);
+					    }
+					    else{
+						    if (!script) printf("%s = (%s)\n",cpog[j][k].source,cpog[j][k].fun[i]);
+					    }
+				    }
+				    else{
+					    if(!decide(cpog[j][k].fun[i]))
+						    if (!script) printf("%s -> %s = (%s)\n",cpog[j][k].source, cpog[j][k].dest,cpog[j][k].fun[i]);
+				    }
+                }
 			}
 		}
 		if (!script) printf("\n");
@@ -1516,18 +1518,20 @@ int main(int argc, char **argv){
 				if (!script) printf("Boolean equations for each element:\n");
 				for(j=0;j<nv; j++){
 					for(k=0;k<nv;k++){
-						if(cpog[j][k].type == 'v'){
-							if(cpog[j][k].condition){
-								if (!script) printf("%s = (%s) + ((%s) * (%s))\n",cpog[j][k].source,cpog[j][k].fun[i], cpog[j][k].cond,cpog[j][k].fun_cond[i]);
-							}
-							else{
-								if (!script) printf("%s = (%s)\n",cpog[j][k].source,cpog[j][k].fun[i]);
-							}
-						}
-						else{
-							if(!decide(cpog[j][k].fun[i]))
-								if (!script) printf("%s -> %s = (%s)\n",cpog[j][k].source, cpog[j][k].dest,cpog[j][k].fun[i]);
-						}
+                        if ( strcmp(cpog[j][k].source, "GO") != 0 && strcmp(cpog[j][k].source, "DONE") != 0 ) {
+						    if(cpog[j][k].type == 'v'){
+							    if(cpog[j][k].condition){
+								    if (!script) printf("%s = (%s) + ((%s) * (%s))\n",cpog[j][k].source,cpog[j][k].fun[i], cpog[j][k].cond,cpog[j][k].fun_cond[i]);
+							    }
+							    else{
+								    if (!script) printf("%s = (%s)\n",cpog[j][k].source,cpog[j][k].fun[i]);
+							    }
+						    }
+						    else{
+							    if(!decide(cpog[j][k].fun[i]))
+								    if (!script) printf("%s -> %s = (%s)\n",cpog[j][k].source, cpog[j][k].dest,cpog[j][k].fun[i]);
+						    }
+                        }
 					}
 				}
 				if (!script) printf("\n");
