@@ -6,7 +6,7 @@ Order Graphs models.
 Most updated version: ScEnco v1.5.0
 
 # CHANGELOG #
-Changelog Scenco v1.5.0 - 14/06/2017
+Changelog Scenco v1.5.1 - 14/06/2017
 -"-a" option requires Abc to be passed
 
 Changelog Scenco v1.5.0 - 12/10/2016
