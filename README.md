@@ -1,84 +1,40 @@
 # README #
 
-# DESCRIPTION #
-SCENCO is a tool for supporting encoding and synthesis of Conditional Partial 
-Order Graphs models.
-Most updated version: ScEnco v1.5.0
+**SCENCO** is a crossplatform tool which provides functions for encoding,
+synthesis and technology mapping for hardware systems described as behavioural
+scenarios, in the form of conditional partial order graphs. The
+[SCENCO](https://www.workcraft.org/scenco) toolsuite works in Windows, Linux and
+OS X operating systems, and is provided as a part of the
+[Workcraft](https://www.workcraft.org/start) distribution.
 
-# CHANGELOG #
-Changelog Scenco v1.5.1 - 14/06/2017
--"-a" option requires Abc to be passed
+SCENCO interfaces with [Espresso](https://embedded.eecs.berkeley.edu/pubs/downloads/espresso/)
+for synthesis of Boolean equations, with [Abc](https://people.eecs.berkeley.edu/~alanmi/abc/)
+for their refactorisation and technology mapping. It includes several approaches
+for scenario encoding:
 
-Changelog Scenco v1.5.0 - 12/10/2016
--GO and DONE signals added if the target is a microcontroller
+* **sequential encoding**: scenarios are encoded sequentially;
+* **random encoding**: scenarios are encoded randomly;
+* **heuristic encoding**: an heuristics is used to encode scenarios in order to
+minimise the derived microcontroller area;
+* **single-literal encoding**: scenarios are encoded with the constraint that
+each Boolean condition is composed by at most one literal;
+* **SAT-based encoding**: a SAT-solver is used to minimise the derived
+microcontroller area ([Clasp](https://potassco.org/clasp/) or [MiniSAT](http://minisat.se/)).
+Look at the following link for more information:
+[CPOG encodings](https://www.workcraft.org/help/encoding_plugin?s[]=cpog&s[]=encoding).
 
-Changelog Scenco v1.4.8 - 29/06/2016
--Script option support
+SCENCO has been tested with benchamarks of two types: *processor instruction sets*,
+and *process mining traces*. Results can be found at the following web-page:
+[Benchmarks](https://github.com/tuura/graph-families).
 
-Changelog Scenco v1.4.7 - 23/06/2016
--Scenco stops if ABC lib has not been read
+### Building from source
+A Makefile is provided to simplify building process. Download SCENCO from Github:
 
-Changelog Scenco v1.4.6 - 05/06/2016
--Verilog file generation supported
+`git clone https://github.com/allegroCoder/scenco-workcraft.git`
 
-Changelog Scenco v1.4.5 - 23/05/2016
--Temporary files created inside temporary path in Windows
+Type `make` to compile and build SCENCO from the source code.
+Type `make help` to see the help of the Make.
 
-Changelog Scenco v1.4.4 - 23/05/2016
--OS X support
-
-Changelog Scenco v1.4.3 - 19/05/2016
--Alias dependency removed from ABC
--Max and min weights computed via limits library
-
-Changelog Scenco v1.4.2 - 04/11/2015
--Output formatted (Total run-time program computed and displayed in verbose)
--Structure for starting graphs allocation allocated and freed at run time.
-
-Changelog Scenco v1.4.1 - 03/11/2015
--Minor changes at the verbose output
-
-Changelog Scenco v1.4 - 03/11/2015
--Memory management of Boolean equations changed into a dynamic memory allocation
--Minor changes inside main. Useful print out added.
-
-Changelog Scenco v1.3.4 - 02/11/2015
--Fixed bug when CPOG_SIZE synthesis mode was selected
-
-Changelog Scenco v1.3.3 - 02/11/2015
--All temp files removed
--Fixed bug name with a couple of temporary file with same names
--Reading of ABC output file modified
-
-Changelog Scenco v1.3.2 - 01/11/2015
--Modified way constraints and output of espresso are read
-
-Changelog Scenco v1.3.1 - 31/10/2015
--All warning removed
--Add parameter for printing out version of ScEnco
-
-Changelog Scenco v1.3 - 31/10/2015
--Fixed bug: temporary name file created to feed ABC tool
--heuristic search: algorithm for associating opcodes to partial orders before
- simulated annealing skipped. Now first assignment is random
--Removed functions for the synthesis of one single encoding at a time
--Removed simulated annealing algorithm without heuristic function
--Some warnings removed. Code refactored. Code commented removed
-
-Changelog Scenco v1.2.1 - 28/10/2015
--Fixed bug: Single Literal Encoding run always at the beginning of the program
-
-Changelog Scenco v1.2
--Fixed bug with temporary files removal
--Scenco version printed out with the help of the tool
-
-Changelog Scenco v1.1.1
--Fixed bug with random encoding constrained
--Fixed bug which did not allow the SCRIPT_PATH file to be removed in Windows
-
-Changelog Scenco v1.1
--Constrained encoding added for Exhaustive and Random Search
--Fixed bug: early encoding creation in Heuristic encoding
-
-Changelog Scenco v1.0
--Supports Windows and Linux.
+Scenco is meant to be used inside Workcraft, so download it from
+<https://www.workcraft.org/start> and start using it following the tutorials
+presents in the website.
