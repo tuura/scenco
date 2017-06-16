@@ -1,5 +1,7 @@
 # README #
 
+[![Build Status](https://travis-ci.org/allegroCoder/scenco-workcraft.svg?branch=master)](https://travis-ci.org/allegroCoder/scenco-workcraft)
+
 **SCENCO** is a crossplatform tool which provides functions for encoding,
 synthesis and technology mapping for hardware systems described as behavioural
 scenarios, in the form of conditional partial order graphs. The
