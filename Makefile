@@ -59,3 +59,7 @@ help:
 	@echo "$(PROJECT_NAME) has been developed at Newcastle University (School of Electrical and Electronic Engineering)."
 	@echo "Developers: Alessandro de Gennaro - Andrey Mokhov\n"
 
+tests:
+	@echo "\nRunning tests:"
+	@./run-tests.sh
+

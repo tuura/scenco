@@ -1,0 +1,29 @@
+# setting environment
+sudo: required
+
+# libraries needed for compilation and linking
+before_install:
+    - sudo apt-get install libc6-dev-i386
+    - sudo apt-get install gcc-multilib g++-multilib
+
+# language used
+language: cpp
+
+# compiler to be used
+compiler:
+    - g++
+
+# install dependencies and build scenco
+install:
+    - wget -O abc.zip https://bitbucket.org/alanmi/abc/get/b637ae1ad4ff.zip
+    - unzip -qq abc.zip -d abc_folder
+    - cd abc_folder/alanmi-abc-b637ae1ad4ff/
+    - make > /dev/null
+    - wget -O espresso https://github.com/workcraft/workcraft-dist-template/raw/master/linux/tools/Espresso/espresso
+    - export PATH="$PATH:$PWD"
+    - chmod +x espresso
+    - cd ../../
+    - make
+
+# run tests
+script: make tests
