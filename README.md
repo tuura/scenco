@@ -1,4 +1,4 @@
-# README #
+# SCENCO - SCEnario ENCOder #
 
 [![Build Status](https://travis-ci.org/allegroCoder/scenco-workcraft.svg?branch=master)](https://travis-ci.org/allegroCoder/scenco-workcraft)
 
@@ -35,6 +35,7 @@ A Makefile is provided to simplify building process. Download SCENCO from Github
 `git clone https://github.com/allegroCoder/scenco-workcraft.git`
 
 Type `make` to compile and build SCENCO from the source code.
+
 Type `make help` to see the help of the Make.
 
 Scenco is meant to be used inside Workcraft, so download it from
