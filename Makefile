@@ -56,7 +56,6 @@ help:
 	@echo "\t-make clean:\tremove $(PROJECT_NAME)"
 	@echo "\t-make rmtmp:\tremove temporary files from the project"
 	@echo "\t-make help:\thelp of the program."
-	@echo "Remember to set the path of the directory where abc tool is installed, as well as the path of espresso executable\nfile into Workcraft. It's needed to $(PROJECT_NAME) to work properly.\n"
 	@echo "$(PROJECT_NAME) has been developed at Newcastle University (School of Electrical and Electronic Engineering)."
 	@echo "Developers: Alessandro de Gennaro - Andrey Mokhov\n"
 
