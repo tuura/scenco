@@ -1,0 +1,10 @@
+GATE zero	0	O=CONST0;
+GATE one	0	O=CONST1;
+GATE inv1	7.7616	O=!a;		PIN * INV 1 999 0.9 0.3 0.9 0.3
+GATE buf1	11.0074	O=a;		PIN * INV 1 999 0.9 0.3 0.9 0.3
+GATE and2	5.6448	O=a*b;		PIN * INV 1 999 1.0 0.2 1.0 0.2
+GATE nand2	7.056	O=!(a*b);	PIN * INV 1 999 1.0 0.2 1.0 0.2
+GATE or2	5.6448	O=a+b;		PIN * NONINV 1 999 2.4 0.3 2.4 0.3
+GATE nor2	9.0405	O=!(a+b);	PIN * INV 1 999 1.0 0.2 1.0 0.2
+GATE xor	9.1728	O=a*!b+!a*b;	PIN * UNKNOWN 2 999 1.9 0.5 1.9 0.5
+GATE xnor	9.8784	O=a*b+!a*!b;	PIN * UNKNOWN 2 999 2.1 0.5 2.1 0.5

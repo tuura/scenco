@@ -7,7 +7,7 @@ TI_TEST=test/TI_MSP_430_8.cpog
 PM_TEST=test/Colibrilog.cpog
 
 # Library
-TECH_LIB=test/lib/workcraft_no_async.lib
+TECH_LIB=test/lib/90nm.genlib
 
 mkdir result
 ./scenco $ARM_TEST -m all -top 10 -e espresso -a abc -lib $TECH_LIB -res result -ver micro.v
