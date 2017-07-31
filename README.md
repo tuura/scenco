@@ -1,6 +1,6 @@
 # SCENCO - SCEnario ENCOder #
 
-[![Build Status](https://travis-ci.org/allegroCoder/scenco-workcraft.svg?branch=master)](https://travis-ci.org/allegroCoder/scenco-workcraft)
+[![Build Status](https://travis-ci.org/tuura/scenco.svg?branch=master)](https://travis-ci.org/tuura/scenco)
 
 **SCENCO** is a crossplatform tool which provides functions for encoding,
 synthesis and technology mapping for hardware systems described as behavioural
@@ -32,7 +32,7 @@ and *process mining traces*. Results can be found at the following web-page:
 ### Building from source
 A Makefile is provided to simplify building process. Download SCENCO from Github:
 
-`git clone https://github.com/allegroCoder/scenco-workcraft.git`
+`git clone https://github.com/tuura/scenco.git`
 
 Type `make` to compile and build SCENCO from the source code.
 
