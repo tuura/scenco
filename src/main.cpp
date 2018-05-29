@@ -10,6 +10,7 @@ char **name_cond;
 char **vertices;
 char **manual_file;
 char **manual_file_back;
+char **verilogFiles;
 char *numb;
 char *file_in = NULL;
 char *file_cons = NULL;
@@ -1538,6 +1539,11 @@ int main(int argc, char **argv){
 				if (!script) printf("Area and number of gates achieved with library set:\n");
 				if (!script) printf("Controller for CPOG consumes %.3f [um^2] and %d gates are needed.\n", area[i],gates[i]);
 				if (!script) printf(".end_statistics \n");
+
+				if (!CPOG_SIZE){
+					useABC(verilogFiles[i]);
+					if (VER) replaceVerilogName();
+				}
 
 				removeTempFiles();
 				return 0;
