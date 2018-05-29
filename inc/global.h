@@ -2,7 +2,7 @@
 #define __GLOBAL_H__
 
 /*GLOBAL VARIABLES*/
-extern char** diff, **name_cond, **vertices, **manual_file,*numb, **manual_file_back;
+extern char** diff, **name_cond, **vertices, **manual_file,*numb, **manual_file_back, **verilogFiles;
 extern int **opt_diff, counter, **perm, nv, **cons_perm, n_cond,*gates,mode,tot_enc,gen_mode,gen_perm, *custom_perm, *custom_perm_back, mod_bit;
 extern long long int num_perm;
 extern float *area;

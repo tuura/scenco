@@ -7,6 +7,65 @@
 // disable warnings about constant chars
 #pragma GCC diagnostic ignored "-Wwrite-strings"
 
+int useABC( char* fn){
+
+	FILE *fp = NULL;
+	char *command;
+
+	//BUILDING COMMAND CALLING ABC
+    command = strdup(ABC_PATH);			
+	command = catMem(command, " < ");
+	command = catMem(command, SCRIPT_PATH);
+	command = catMem(command, " > ");
+	command = catMem(command, BOOL_PATH);
+	command = catMem(command, " 2>&1");
+
+	if( (fp = fopen(SCRIPT_PATH,"w")) == NULL ){
+		printf("Error on opening script file.\n");
+		return 2;
+	}
+
+	/*WRITING DOWN SCRIPT FILE*/
+	fprintf(fp,"read_eqn %s\n",fn);
+	fprintf(fp,"read_library ");
+	fprintf(fp,"%s", LIBRARY_FILE);
+	fprintf(fp,"\n");
+	fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
+	fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
+	fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
+	fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
+	fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
+	fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
+	fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
+	if(VER){
+		fprintf(fp,"write_verilog %s\n", VERILOG_TMP);
+	}
+	fprintf(fp,"print_gates\n");
+	fprintf(fp,"quit");
+	fclose(fp);
+
+	// DEBUG PRINTING
+	/*printf("Calling ABC: %s\n",command);
+	system(command);
+	return 3;*/
+
+	/*CALLING ABC*/
+	/*if( (pp = popen(command,"r")) == NULL){
+			printf("Error on calling abc program.\n");
+			return 3;
+	}*/
+
+    fflush(stdout);
+	if( system(command) == -1){
+		printf("Error on calling abc program: %s.\n", command);
+		return 3;
+	}
+
+	free(command);
+
+	return 0;
+}
+
 /*FINAL EQUATIONS AND ABC FUNCTION*/
 /*Following function write in some file in a format compatible with abc tool (Developed by Berkeley
 University), in order to get statistics about area of encoder. Moreover it calls abc tool.*/
@@ -28,6 +87,8 @@ int equations_abc(int cpog_count, int bits){
 
 	if(decode_flag)
 		min_bits = logarithm2(cpog_count);
+
+	verilogFiles = (char **) malloc(sizeof(char*) * counter);
 
 	for(c=0;c<counter;c++){
 		//DEFINE FILE NAMES
@@ -61,6 +122,8 @@ int equations_abc(int cpog_count, int bits){
 		file_name = catMem(file_name, line);
 		free(line);
 		free(string);
+
+		verilogFiles[c] = strdup(file_name);
 
 		//OPNENING FILE
 		if( (fp = fopen(file_name,"w")) == NULL ){
@@ -389,66 +452,19 @@ int equations_abc(int cpog_count, int bits){
 		fclose(fp);
 
 		// Debug: watching equations
-		/*FILE *copy = NULL;
+		FILE *copy = NULL;
 		fp = fopen(file_name, "r");
 		copy = fopen("circuit.eq", "w");
 		char ch;
 			while ((ch = fgetc(fp)) != EOF)
 				fputc(ch, copy);
 		fclose(fp);
-		fclose(copy);*/
+		fclose(copy);
 
 		/*ACCESSING TOOLS FOLDER*/
 		if(ABCFLAG){
 
-   			//BUILDING COMMAND CALLING ABC
-            command = strdup(ABC_PATH);			
-			command = catMem(command, " < ");
-			command = catMem(command, SCRIPT_PATH);
-			command = catMem(command, " > ");
-			command = catMem(command, BOOL_PATH);
-			command = catMem(command, " 2>&1");
-
-			if( (fp = fopen(SCRIPT_PATH,"w")) == NULL ){
-				printf("Error on opening script file.\n");
-				return 2;
-			}
-
-			/*WRITING DOWN SCRIPT FILE*/
-			fprintf(fp,"read_eqn %s\n",file_name);
-			fprintf(fp,"read_library ");
-			fprintf(fp,"%s", LIBRARY_FILE);
-			fprintf(fp,"\n");
-			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
-			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
-			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
-			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
-			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
-			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
-			fprintf(fp,"fraig_store; balance; rewrite; rewrite -z; balance; rewrite -z; balance; fraig_store; balance; rewrite; refactor; balance; rewrite; rewrite -z; balance;  refactor -z; rewrite -z; balance; fraig_store; fraig_restore; map\n");
-			if(VER){
-				fprintf(fp,"write_verilog %s\n", VERILOG_TMP);
-			}
-			fprintf(fp,"print_gates\n");
-			fprintf(fp,"quit");
-			fclose(fp);
-
-			// DEBUG PRINTING
-			/*printf("Calling ABC: %s\n",command);
-			system(command);
-			return 3;*/
-
-			/*CALLING ABC*/
-			/*if( (pp = popen(command,"r")) == NULL){
-					printf("Error on calling abc program.\n");
-					return 3;
-			}*/
-
-            fflush(stdout);
-			if( system(command) == -1){
-				printf("Error on calling abc program: %s.\n", command);
-				return 3;
-			}
+			if (useABC(file_name) != 0) return 3;
 
 			if( (pp = fopen(BOOL_PATH, "r")) == NULL){
 				printf("Error on reading abc generated file.");
@@ -478,9 +494,8 @@ int equations_abc(int cpog_count, int bits){
 			if (VER) replaceVerilogName();
 
 			free(string);
-			free(command);
-		}
 
+		}
 #ifdef ACT_PERCENTAGE	
 		/*PRINTING PERCENTAGE ELAPSED TO COMPLETION*/
 		act = c;
