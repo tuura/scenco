@@ -1,0 +1,31 @@
+.scenario CPOG_0
+PCIU IFU
+ALU
+.end
+
+.scenario CPOG_1
+PCIU IFU
+IFU PCIU2
+PCIU2 IFU2
+IFU ALU
+ALU IFU2
+.end
+
+.scenario CPOG_2
+PCIU PCIU2
+PCIU2 IFU2
+PCIU IFU
+IFU PCIU2
+ALU IFU
+IFU ALU2
+ALU PCIU2
+ALU2 IFU2
+:!cd IFU
+:!cd ALU2
+.end
+
+.scenario CPOG_3
+PCIU IFU
+ALU ALU2
+:!cd ALU2
+.end
