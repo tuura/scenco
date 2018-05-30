@@ -452,14 +452,14 @@ int equations_abc(int cpog_count, int bits){
 		fclose(fp);
 
 		// Debug: watching equations
-		FILE *copy = NULL;
+		/*FILE *copy = NULL;
 		fp = fopen(file_name, "r");
 		copy = fopen("circuit.eq", "w");
 		char ch;
 			while ((ch = fgetc(fp)) != EOF)
 				fputc(ch, copy);
 		fclose(fp);
-		fclose(copy);
+		fclose(copy);*/
 
 		/*ACCESSING TOOLS FOLDER*/
 		if(ABCFLAG){
