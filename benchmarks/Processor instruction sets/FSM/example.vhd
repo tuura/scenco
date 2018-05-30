@@ -19,8 +19,8 @@ ENTITY example_controller IS
       CLK :  IN  STD_LOGIC;
       RST :  IN  STD_LOGIC;
 	  
-	  -- codes
-	  b : IN STD_LOGIC_VECTOR(0 downto 0); -- binary code
+      -- codes
+      b : IN STD_LOGIC_VECTOR(0 downto 0); -- binary code
 
       -- outputs
       FINE : OUT  STD_LOGIC;
@@ -46,7 +46,8 @@ begin
 
 process (CLK,RST)
 begin
-   if (RST='1') then      current_state <= start;
+   if (RST='1') then
+      current_state <= start;
    elsif (CLK'event and CLK='1') then
       current_state <= next_state;
    end if;
@@ -69,8 +70,8 @@ begin
          if ( go = '1') then
 		    case b is
 		       when '0' => next_state <= s1;
-			   when '1' => next_state <= s7;
-			end case;
+		       when '1' => next_state <= s7;
+		    end case;
          end if;
 
       -- Arithmetic instructions
