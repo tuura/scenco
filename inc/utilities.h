@@ -20,6 +20,9 @@ void int_to_string_DC(int, int, int, char *);
 int filter_encodings(int,int,int);
 char* catMem(char*, char*);
 char* catChar(char*, char);
+int nameTmpFiles();
+void printError(const char*);
+void printErrorCode(const char*, int);
 
 #endif
 

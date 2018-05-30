@@ -490,3 +490,96 @@ char* catChar(char *str1, char c){
 
 	return newStr;
 }
+
+int nameTmpFiles(){
+
+#if defined(__linux) || defined(__APPLE__)
+	if (mkstemp(TRIVIAL_ENCODING_FILE) == -1){
+		printf(".error \n");
+		printf("Error on opening trivial temporary file: %s.\n", TRIVIAL_ENCODING_FILE);
+		printf(".end_error \n");
+		removeTempFiles();
+		return 1;
+	}
+	if (mkstemp(CONSTRAINTS_FILE) == -1){
+		printf(".error \n");
+		printf("Error on opening constraint temporary file: %s.\n", CONSTRAINTS_FILE);
+		printf(".end_error \n");
+		removeTempFiles();
+		return 1;
+	}
+	if (mkstemp(TMP_FILE) == -1){
+		printf(".error \n");
+		printf("Error on opening temporary file: %s.\n", TMP_FILE);
+		printf(".end_error \n");
+		removeTempFiles();
+		return 1;
+	}
+	if (mkstemp(SCRIPT_PATH) == -1){
+		printf(".error \n");
+		printf("Error on opening temporary file: %s.\n", SCRIPT_PATH);
+		printf(".end_error \n");
+		removeTempFiles();
+		return 1;
+	}
+	if (mkstemp(BOOL_PATH) == -1){
+		printf(".error \n");
+		printf("Error on opening temporary file: %s.\n", BOOL_PATH);
+		printf(".end_error \n");
+		removeTempFiles();
+		return 1;
+	}
+	if (mkstemp(VERILOG_TMP) == -1){
+		printf(".error \n");
+		printf("Error on opening temporary file: %s.\n", VERILOG_TMP);
+		printf(".end_error \n");
+		removeTempFiles();
+		return 1;
+	}
+#else
+	GetTempPath(FILENAME_LENGTH,TRIVIAL_ENCODING_FILE);
+   	BOOL_PATH[strlen(TRIVIAL_ENCODING_FILE)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(TRIVIAL_ENCODING_FILE,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,CONSTRAINTS_FILE);
+	BOOL_PATH[strlen(CONSTRAINTS_FILE)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(CONSTRAINTS_FILE,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,TMP_FILE);
+	BOOL_PATH[strlen(TMP_FILE)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(TMP_FILE,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,SCRIPT_PATH);
+	BOOL_PATH[strlen(SCRIPT_PATH)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(SCRIPT_PATH,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,BOOL_PATH);
+    BOOL_PATH[strlen(BOOL_PATH)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(BOOL_PATH,TMP_NAME);
+
+	GetTempPath(FILENAME_LENGTH,VERILOG_TMP);
+    VERILOG_TMP[strlen(VERILOG_TMP)-1] = '\0';
+	tmpnam (TMP_NAME);
+	strcat(VERILOG_TMP,TMP_NAME);
+#endif
+	return 0;
+}
+
+void printError(const char* errorMessage) {
+	printf(".error \n");
+	printf("%s\n", errorMessage);
+	printf(".end_error \n");
+	return;
+}
+
+void printErrorCode(const char* errorMessage, int error) {
+	printf(".error \n");
+	printf("%s, error code: %d\n", errorMessage, error);
+	printf(".end_error \n");
+	return;
+}
