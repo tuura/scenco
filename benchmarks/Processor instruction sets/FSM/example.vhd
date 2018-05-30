@@ -47,7 +47,7 @@ begin
 process (CLK,RST)
 begin
    if (RST='1') then
-      current_state <= start;
+      current_state <= s0;
    elsif (CLK'event and CLK='1') then
       current_state <= next_state;
    end if;
