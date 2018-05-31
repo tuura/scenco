@@ -149,12 +149,12 @@ begin
          REQ_mem <= '0';
          REQ_PC <= '0';
          if ( ACK_fetch = '0' AND
-		      ACK_decode = '0' AND
-			  ACK_loadA = '0' AND
-			  ACK_loadB = '0' AND
-			  ACK_ALU = '0' AND
-			  ACK_mem = '0' AND
-			  ACK_PC = '0') then
+	      ACK_decode = '0' AND
+	      ACK_loadA = '0' AND
+	      ACK_loadB = '0' AND
+	      ACK_ALU = '0' AND
+	      ACK_mem = '0' AND
+	      ACK_PC = '0') then
             next_state <= s0;
          end if;
 		 
