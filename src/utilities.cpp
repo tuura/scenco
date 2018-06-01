@@ -490,3 +490,68 @@ char* catChar(char *str1, char c){
 
 	return newStr;
 }
+
+int nameTmpFiles(){
+
+#if defined(__linux) || defined(__APPLE__)
+
+	if (unixNameTmpFile(TRIVIAL_ENCODING_FILE) != 0) return 1;
+	if (unixNameTmpFile(CONSTRAINTS_FILE) != 0) return 1;
+	if (unixNameTmpFile(TMP_FILE) != 0) return 1;
+	if (unixNameTmpFile(SCRIPT_PATH) != 0) return 1;
+	if (unixNameTmpFile(BOOL_PATH) != 0) return 1;
+	if (unixNameTmpFile(VERILOG_TMP) != 0) return 1;
+
+#else
+
+	if (winNameTmpFile(TRIVIAL_ENCODING_FILE) != 0) return 1;
+	if (winNameTmpFile(CONSTRAINTS_FILE) != 0) return 1;
+	if (winNameTmpFile(TMP_FILE) != 0) return 1;
+	if (winNameTmpFile(SCRIPT_PATH) != 0) return 1;
+	if (winNameTmpFile(BOOL_PATH) != 0) return 1;
+	if (winNameTmpFile(VERILOG_TMP) != 0) return 1;
+
+#endif
+	return 0;
+}
+
+#if defined(__linux) || defined(__APPLE__)
+
+	int unixNameTmpFile(char* file) {
+		if (mkstemp(file) == -1){
+			printf(".error \n");
+			printf("Error on opening file: %s.\n", file);
+			printf(".end_error \n");
+			removeTempFiles();
+			return 1;
+		}
+		return 0;
+	}
+
+#else
+
+	int winNameTmpFile(char* file) {
+
+		GetTempPath(FILENAME_LENGTH,file);
+	   	BOOL_PATH[strlen(file)-1] = '\0';
+		tmpnam (TMP_NAME);
+		strcat(file,TMP_NAME);
+
+		return 0;
+	}
+
+#endif
+
+void printError(const char* errorMessage) {
+	printf(".error \n");
+	printf("%s\n", errorMessage);
+	printf(".end_error \n");
+	return;
+}
+
+void printErrorCode(const char* errorMessage, int error) {
+	printf(".error \n");
+	printf("%s, error code: %d\n", errorMessage, error);
+	printf(".end_error \n");
+	return;
+}

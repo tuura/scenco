@@ -159,102 +159,27 @@ int main(int argc, char **argv){
 	/*PARSE PARAMETERS*/
 	if( (err = parse_arg(argc, argv)) != 0){
 		if (err != 4){
-			printf(".error \n");
-			printf("Error on parsing the argument.\n");
-			printf(".end_error \n");
+			printError("Error on parsing arguments.");
 		}
 		return 1;
 	}
 
-	// TEMPORARY FILES DEFINITION
-#if defined(__linux) || defined(__APPLE__)
-	if (mkstemp(TRIVIAL_ENCODING_FILE) == -1){
-		printf(".error \n");
-		printf("Error on opening trivial temporary file: %s.\n", TRIVIAL_ENCODING_FILE);
-		printf(".end_error \n");
+	// temporary file names
+	if (nameTmpFiles() != 0) {
+		printError("Error on naming temporary files.");
 		removeTempFiles();
 		return 1;
 	}
-	if (mkstemp(CONSTRAINTS_FILE) == -1){
-		printf(".error \n");
-		printf("Error on opening constraint temporary file: %s.\n", CONSTRAINTS_FILE);
-		printf(".end_error \n");
-		removeTempFiles();
-		return 1;
-	}
-	if (mkstemp(TMP_FILE) == -1){
-		printf(".error \n");
-		printf("Error on opening temporary file: %s.\n", TMP_FILE);
-		printf(".end_error \n");
-		removeTempFiles();
-		return 1;
-	}
-	if (mkstemp(SCRIPT_PATH) == -1){
-		printf(".error \n");
-		printf("Error on opening temporary file: %s.\n", SCRIPT_PATH);
-		printf(".end_error \n");
-		removeTempFiles();
-		return 1;
-	}
-	if (mkstemp(BOOL_PATH) == -1){
-		printf(".error \n");
-		printf("Error on opening temporary file: %s.\n", BOOL_PATH);
-		printf(".end_error \n");
-		removeTempFiles();
-		return 1;
-	}
-	if (mkstemp(VERILOG_TMP) == -1){
-		printf(".error \n");
-		printf("Error on opening temporary file: %s.\n", VERILOG_TMP);
-		printf(".end_error \n");
-		removeTempFiles();
-		return 1;
-	}
-#else
-	GetTempPath(FILENAME_LENGTH,TRIVIAL_ENCODING_FILE);
-   	BOOL_PATH[strlen(TRIVIAL_ENCODING_FILE)-1] = '\0';
-	tmpnam (TMP_NAME);
-	strcat(TRIVIAL_ENCODING_FILE,TMP_NAME);
-
-	GetTempPath(FILENAME_LENGTH,CONSTRAINTS_FILE);
-	BOOL_PATH[strlen(CONSTRAINTS_FILE)-1] = '\0';
-	tmpnam (TMP_NAME);
-	strcat(CONSTRAINTS_FILE,TMP_NAME);
-
-	GetTempPath(FILENAME_LENGTH,TMP_FILE);
-	BOOL_PATH[strlen(TMP_FILE)-1] = '\0';
-	tmpnam (TMP_NAME);
-	strcat(TMP_FILE,TMP_NAME);
-
-	GetTempPath(FILENAME_LENGTH,SCRIPT_PATH);
-	BOOL_PATH[strlen(SCRIPT_PATH)-1] = '\0';
-	tmpnam (TMP_NAME);
-	strcat(SCRIPT_PATH,TMP_NAME);
-
-	GetTempPath(FILENAME_LENGTH,BOOL_PATH);
-    	BOOL_PATH[strlen(BOOL_PATH)-1] = '\0';
-	tmpnam (TMP_NAME);
-	strcat(BOOL_PATH,TMP_NAME);
-
-	GetTempPath(FILENAME_LENGTH,VERILOG_TMP);
-    	VERILOG_TMP[strlen(VERILOG_TMP)-1] = '\0';
-	tmpnam (TMP_NAME);
-	strcat(VERILOG_TMP,TMP_NAME);
-#endif
 
 	// READ CURRENT PATH POSITION
 #if defined(__linux) || defined(__APPLE__)
 	if( (fp = popen("pwd","r")) == NULL){
-			printf(".error \n");
-			printf("Error on pwd execution.\n");
-			printf(".end_error \n");
+			printError("Error on pwd execution.");
 			removeTempFiles();
 			return 1;
 	}
 	if (fgets(CURRENT_PATH,stringLimit,fp) == NULL){
-		printf(".error \n");
-		printf("Error on reading current path.\n");
-		printf(".end_error \n");
+		printError("Error on reading current path.");
 		removeTempFiles();
 		return 1;
 	}
@@ -272,9 +197,7 @@ int main(int argc, char **argv){
 	fflush(stdout);
 #else
 	if( (fp = popen("echo %cd%","r")) == NULL){
-			printf(".error \n");
-			printf("Error on pwd execution.\n");
-			printf(".end_error \n");
+			printError("Error on pwd execution.");
 			removeTempFiles();
 			return 1;
 	}
@@ -294,9 +217,9 @@ int main(int argc, char **argv){
 	fflush(stdout);
 
 
-	/*************************************************************************
-	****************************BUILDING CPOG*********************************
-	*************************************************************************/
+	// ========================================================================
+	// Parsing scenarios
+	// ========================================================================
 
 	if (!script) puts("\nOptimal scenarios encoding and CPOG synthesis.\n");	
 
@@ -307,25 +230,6 @@ int main(int argc, char **argv){
 		if (!script) puts("Using 'f = x * (y + predicate)' to deal with predicates.\n");
 	}
 
-		
-	// debug scenarios
-	/*FILE *fs = NULL;
-	fp = fopen(file_in, "r");
-	fs = fopen("scenarios.cpog", "w");
-	do
-	   {
-	      char c = fgetc(fp);
-	      if( feof(fp) )
-	      {
-		 break ;
-	      }
-	      fprintf(fs,"%c", c);
-	   }while(1);
-	
-	fclose(fs);
-	fclose(fp);
-	return 1;*/
-
 	fp = freopen(file_in, "r", stdin);
 
 	n = 0;
@@ -334,9 +238,7 @@ int main(int argc, char **argv){
 		if (s[0] == '#')
 		{
 			if(fgets(s, sizeof(s), stdin) == NULL){
-				printf(".error \n");
-				puts("Error reading scenario.");
-				printf(".end_error \n");
+				printError("Error reading scenario.");
 				removeTempFiles();
 				return 0;
 			}
@@ -346,27 +248,21 @@ int main(int argc, char **argv){
 		if (!strcmp(s, ".scenario"))
 		{
 			if(scanf("%s", s) == EOF){
-				printf(".error \n");
-				puts("Error reading scenario.");
-				printf(".end_error \n");
+				printError("Error reading scenario.");
 				removeTempFiles();
 				return 0;
 			}
 			if (!script) printf("Loading scenario '%s'... ", s);
 			scenarioNames.push_back(s);
 			if (!readScenario()) {
-				printf(".error \n");
-				puts("Error reading scenario.");
-				printf(".end_error \n");
+				printError("Error reading scenario.");
 				removeTempFiles();
 				return 0;
 			}
 		}
 		else
 		{
-			printf(".error \n");
-			puts("Wrong file format.");
-			printf(".end_error \n");
+			printError("Wrong file format.");
 			removeTempFiles();
 			return 0;
 		}
@@ -398,9 +294,7 @@ int main(int argc, char **argv){
 	if (!predicates_found) if (!script) puts("\nNo predicates found.");
 	
 	if( (fp = fopen(CONSTRAINTS_FILE,"w")) == NULL){
-		printf(".error \n");
-		printf("Error on opening constraints file for writing.\n");
-		printf(".end_error \n");
+		printError("Error on opening constraints file for writing.");
 		removeTempFiles();
 		return -1;
 	}
@@ -523,16 +417,13 @@ int main(int argc, char **argv){
 	if (!script) printf("\n%d non-trivial encoding constraints found:\n\n", total - trivial);
 	
 	if( (fp = fopen(TRIVIAL_ENCODING_FILE,"w")) == NULL){
-		printf(".error \n");
-		printf("Error on opening constraints file for writing.\n");
-		printf(".end_error \n");
+		printError("Error on opening constraints file for writing.");
 		removeTempFiles();
 		return -1;
 	}
 	for(int i = 0; i < total; i++)
 		if (!encodings[i].trivial) {
 			fprintf(fp,"%s\n",encodings[i].constraint.c_str());
-			//printf("%s\n",encodings[i].constraint.c_str());
 	}
 	fclose(fp);
 	
@@ -706,46 +597,41 @@ int main(int argc, char **argv){
 	if (!script) printf("DONE\n");
 	fflush(stdout);
 
-	/*************************************************************************
-	***********************READING NON-TRIVIAL ENCODINGS**********************
-	*************************************************************************/
-	if (!script) printf("\n**************************************************************\n");
-	if (!script) printf("*****************READING NON-TRIVIAL ENCODINGS******************\n");
-	if (!script) printf("**************************************************************\n\n");
+	// ========================================================================
+	// Reading non-trivial encodings
+	// ========================================================================
+	if (!script) printf("\n================================================\n");
+	if (!script) printf(" Reading non-trivial encodings\n");
+	if (!script) printf("================================================\n\n");
 	fflush(stdout);
 
-	//strcpy(file_in,TRIVIAL_ENCODING_FILE);
-	//file_cons= strdup(CONSTRAINTS_FILE);
-
-	/*READ NON-TRIVIAL ENCODING FILE*/
+	// READ NON-TRIVIAL ENCODING FILE
 	if (!script) printf("Reading non-trivial encoding file... ");
 	fflush(stdout);
 	if( (err = read_file(TRIVIAL_ENCODING_FILE, &cpog_count, &len_sequence)) ){
-		printf(".error \n");
-		printf("Error occured while reading non-trivial encoding file, error code: %d", err);
-		printf(".end_error \n");
+		printErrorCode("Error while reading non-trivial encoding file", err);
 		removeTempFiles();
 		return 2;
 	}
 	if (!script) printf("DONE\n");
 	fflush(stdout);
 
-	/*SEED FOR RAND*/
+	// SEED FOR RAND
 	srand(time(NULL));
 
-	/*ALLOCATING AND ZEROING DIFFERENCE MATRIX*/
+	// ALLOCATING AND ZEROING DIFFERENCE MATRIX
 	opt_diff = (int**) calloc(cpog_count, sizeof(int*));
 	for(i=0;i<cpog_count;i++)
 		opt_diff[i] = (int*) calloc(cpog_count, sizeof(int));
 
-	/*COMPUTING LOGARITHM OF NUMBER OF CPOGs*/
+	// COMPUTING LOGARITHM OF NUMBER OF CPOGs
 	if(mod_bit_flag){
 		bits = mod_bit;
 	}else{
 		bits = logarithm2(cpog_count);
 	}
 
-	/*NUMBER OF POSSIBLE ENCODING*/
+	// NUMBER OF POSSIBLE ENCODING
 	tot_enc = 1;
 	for(i=0;i<bits;i++) tot_enc *= 2;
 	if(mod_bit_flag){
@@ -754,17 +640,10 @@ int main(int argc, char **argv){
 		if (!script) printf("Miminum number of bits needed to encode all CPOG is: %d\n",bits);
 	}
 
-	// debug printing
-	/*printf("Number of possible encodings: %d\n",tot_enc);
-	printf("(int) binary\n");
-	for(i=0;i<tot_enc;i++) 
-		print_binary(stdout,i,bits);
-	printf("\n");*/
-
-	/*ANALYSIS IF IT'S A PERMUTATION OR A DISPOSITION*/
+	/// ANALYSIS IF IT'S A PERMUTATION OR A DISPOSITION
 	num_perm = 1;
 	if (cpog_count == tot_enc){
-		/*PERMUTATION*/
+		// permuation
 		if(!unfix && !SET){
 			for(i = 1; i< tot_enc; i++)
 				num_perm *= i;
@@ -775,7 +654,7 @@ int main(int argc, char **argv){
 		if (!script) printf("Number of possible permutations by fixing first element: %lld\n", num_perm);
 	}
 	else{
-		/*DISPOSITION*/
+		// DISPOSITION
 		if(!unfix && !SET){
 			elements = tot_enc-1;
 			min_disp = elements - (cpog_count - 1) + 1;
@@ -791,9 +670,7 @@ int main(int argc, char **argv){
 
 	if(gen_mode > 1){
 		if(num_perm > MAX_MEMORY || num_perm < 0){
-			printf(".error \n");
-			printf("Solution space is too wide to be inspected.\n");
-			printf(".end_error \n");
+			printError("Solution space is too wide to be inspected.");
 			removeTempFiles();
 			return 3;
 		}
@@ -801,26 +678,22 @@ int main(int argc, char **argv){
 		num_perm = gen_perm;
 	}
 
-	/*PREPARATION DATA FOR ENCODING PERMUTATIONS*/
+	// PREPARATION DATA FOR ENCODING PERMUTATIONS
 	enc = (int*) calloc(tot_enc, sizeof(int));
 
-	/*First element is fixed*/
+	// First element is fixed
 	if (!unfix && !SET)
 		enc[0] = 1;
 	
 	sol = (int*) calloc(tot_enc, sizeof(int));
 	if (sol == NULL){
-		printf(".error \n");
-		printf("solution variable = null\n");
-		printf(".end_error \n");
+		printError("Failed memory allocation for 'sol' variable.");
 		removeTempFiles();
 		return 3;
 	}
 	perm = (int**) malloc(sizeof(int*) * num_perm);
 	if ( perm == NULL){
-		printf(".error \n");
-		printf("perm variable = null\n");
-		printf(".end_error \n");
+		printError("Failed memory allocation for 'perm' variable.");
 		removeTempFiles();
 		return 3;
 	}
@@ -828,7 +701,7 @@ int main(int argc, char **argv){
 		perm[i] = (int*) malloc(cpog_count * sizeof(int));
 		if (perm[i] == NULL){
 			printf(".error \n");
-			printf("perm[%ld] = null\n",i);
+			printf("Failed memory allocation for 'perm[%ld]'\n", i);
 			printf(".end_error \n");
 			removeTempFiles();
 			return 3;
@@ -841,44 +714,33 @@ int main(int argc, char **argv){
 	if (!script) printf("Building DM (=Difference Matrix)... ");
 	fflush(stdout);
 	if( (err = difference_matrix(cpog_count, len_sequence)) ){
-		printf(".error \n");
-		printf("Error occurred while building difference matrix, error code: %d", err);
-		printf(".end_error \n");
+		printErrorCode("Error occurred while building difference matrix", err);
 		removeTempFiles();
 		return 3;
 	}
 	if (!script) printf("DONE\n");
 	fflush(stdout);
 
-	/*************************************************************************
-	***************************ACQUISITION CPOG PART**************************
-	*************************************************************************/
-	if (!script) printf("\n****************************************************************\n");
-	if (!script) printf("******READING ENCODING CONSTRAINTS OF THE ENTIRE CPOG***********\n");
-	if (!script) printf("****************************************************************\n\n");
+	// ========================================================================
+	// Building CPOG
+	// ========================================================================
+	if (!script) printf("\n================================================\n");
+	if (!script) printf(" Building CPOG\n");
+	if (!script) printf("================================================\n\n");
 	fflush(stdout);
 
 	/*FIRST READING OF ENCODING FILE*/
 	if (!script) printf("First reading of encoding file...");
 	fflush(stdout);
 	if( (err = read_cons(CONSTRAINTS_FILE, cpog_count, &num_vert)) ){
-		printf(".error \n");
-		printf("Error occured while reading constraints file, error code: %d", err);
-		printf(".end_error \n");
+		printErrorCode("Error occured while reading constraints file", err);
 		removeTempFiles();
 		return 5;
 	}
 	if (!script) printf("DONE\n");
 	fflush(stdout);
 
-	/*DEBUG PRINTING: printing vertices information*/
-	/*printf("Number of vertices: %d\n", num_vert);
-	printf("Names of vertices:\n");
-	for(i=0;i<num_vert;i++)
-		printf("%s ", vertices[i]);
-	printf("\n\n");*/
-
-	/*CPOG ALLOCATION*/
+	// CPOG ALLOCATION
 	if (!script) printf("CPOG data structure allocation...");
 	fflush(stdout);
 	cpog = (CPOG_TYPE**) malloc(sizeof(CPOG_TYPE*) * (num_vert));
@@ -887,9 +749,9 @@ int main(int argc, char **argv){
 	if (!script) printf("DONE\n");
 	fflush(stdout);
 
-	nv = num_vert; /*Due to overwriting problem*/
+	nv = num_vert;
 
-	/*CPOG DEFINITION*/
+	// CPOG DEFINITION
 	for(i=0;i<num_vert; i++)
 		for(j=0;j<num_vert;j++)
 			if(i == j){
@@ -905,7 +767,7 @@ int main(int argc, char **argv){
 				cpog[i][j].condition = FALSE;
 			}
 
-	/*SECOND READING OF ENCODING FILE*/
+	// SECOND READING OF ENCODING FILE
 	if (!script) printf("Second reading of encoding file (parsing CPOG)...");
 	fflush(stdout);
 	parsing_cpog(CONSTRAINTS_FILE, cpog_count, num_vert);
@@ -914,25 +776,22 @@ int main(int argc, char **argv){
 
 	if (!script) printf("CPOG read properly.\n");
 
-	/*************************************************************************
-	***********************ENCODINGS GENERATION PART**************************
-	*************************************************************************/
-
-	if (!script) printf("\n****************************************************************\n");
-	if (!script) printf("***************GENERATING ENCODINGS FOR CPOG********************\n");
-	if (!script) printf("****************************************************************\n\n");
+	// ========================================================================
+	// Generating encoding
+	// ========================================================================
+	if (!script) printf("\n================================================\n");
+	if (!script) printf(" Generating encodings\n");
+	if (!script) printf("================================================\n\n");
 	fflush(stdout);
 
-	/*START COUNTING TIME*/
+	// START COUNTING TIME
 	gettimeofday(&start, NULL);
 
 	if(OLD){
 		if (!script) printf("Reading encodings set (OLD flag)... ");
 		fflush(stdout);
 		if( (fp = fopen(custom_file_name,"w")) == NULL ){
-			printf(".error \n");
-			printf("Error on opening custom file.\n");
-			printf(".end_error \n");
+			printError("Error on opening custom file.");
 			removeTempFiles();
 			return 2;
 		}
@@ -948,9 +807,7 @@ int main(int argc, char **argv){
 		if (!script) printf("Reading encodings set... ");
 		fflush(stdout);
 		if(read_set_encoding(cpog_count,&bits) != 0){
-			printf(".error \n");
-			printf("Error on reading encoding set.\n");
-			printf(".end_error \n");
+			printError("Error on reading encoding set.");
 			removeTempFiles();
 			return 1;
 		}
@@ -963,16 +820,13 @@ int main(int argc, char **argv){
 		}
 		if (!script) printf("DONE\n");
 		fflush(stdout);
-		//DEBUG PRINTING: set encodings read properly
-		/*for(int y=0;y<cpog_count; y++){
-			printf("%d %s %d\n",custom_perm[y], manual_file[y], DC_custom[y]);
-		}*/
-
 	}
 
-	/*ENCODING GENERATION*/
+	// ENCODING GENERATION
 	switch(gen_mode){
-		case 0: // RANDOM SEARCH
+
+		// random search
+		case 0:
 			if (!script) printf("Selected random encoding generation. %lld encodings will be generated.\n", num_perm);
 			if (!SET){
 				if (!script) printf("Random algorithm generation unconstrained... ");
@@ -990,10 +844,10 @@ int main(int argc, char **argv){
 			}
 
 			break;
-		case 1: // HEURISTIC ENCODING
+
+		// heuristic encoding
+		case 1:
 			if (!script) printf("Selected herustic encoding generation. %lld encodings will be generated.\n", num_perm);
-			// algorithm for setting the starting encoding disabled
-			// best_permutations(cpog_count, tot_enc, bits);
 
 			gettimeofday(&detail_start, NULL);
 			if (!SET){
@@ -1025,8 +879,8 @@ int main(int argc, char **argv){
 			precise=(detail_end.tv_sec - detail_start.tv_sec);
 			if (!script) printf("Time for tuning vectors: %ld [s]\n", precise);
 			fflush(stdout);
-
 			break;
+
 		default:
 			if(!unfix && !SET){
 				//permutation_stdalgo(cpog_count,tot_enc);
@@ -1051,18 +905,9 @@ int main(int argc, char **argv){
 			break;
 	}
 
-	//TIME SPENT FOR GENERATING ENCODINGS
+	// TIME SPENT FOR GENERATING ENCODINGS
 	gettimeofday(&end, NULL);
 	secs_used=(end.tv_sec - start.tv_sec);
-
-	/*DEBUG PRINTING: permutations*/
-	/*for(i=0;i<num_perm;i++){
-		printf("%ld) ", i+1);
-		for(j=0;j<cpog_count;j++)
-			printf("%d ", perm[i][j]);
-		printf("\n\n");
-	}*/
-
 	
 	/*COMPUTING WEIGHT FOR EACH ENCODING*/
 	max = -1;
@@ -1089,36 +934,18 @@ int main(int argc, char **argv){
 
 	if (!script) printf("Number of encodings with minimum weight: %d\n", count_min);
 
-	/*MANAGE DATABASE PROPERLY*/
-	if (!script) printf("Manage database for synthesis process... ");
+	// Memory allocation for synthesis
+	if (!script) printf("Memory allocation for synthesis... ");
 	fflush(stdout);
 	if(manage_data_base(count_min,min,count_max,max,cpog_count,&bits)){
-		printf(".error \n");
-		printf("Error managing data-base.\n");
-		printf(".end_error \n");
+		printError("Error on allocating memory for synthesis.");
 		removeTempFiles();
 		return 4;
 	}
 	if (!script) printf("DONE\n");
 	fflush(stdout);
 
-	/*DEBUG PRINTING: permutations considerated*/
-	/*printf("Permutation considered: ");
-	if(!DC){
-		for(i=0; i<counter;i++){
-			for(j=0;j<cpog_count;j++)
-				print_binary(stdout,cons_perm[i][j], bits);
-			printf("\n");
-		}
-	}
-	else{
-		printf("Encoding set by file:\n");
-		for(i=0;i<cpog_count;i++)
-			printf("%s ",manual_file[i]);
-		printf("\n");
-	}*/
-
-	/*FREE VARIABLES NO MORE USEFUL*/
+	// FREE VARIABLES NO MORE USEFUL
 	if (!script) printf("Free memory of the variables no more used... ");
 	fflush(stdout);
 	free(enc);
@@ -1135,18 +962,18 @@ int main(int argc, char **argv){
 
 	if (!script) printf("Time takes for generating encodings: %ld [s].\n",secs_used);
 	fflush(stdout);
-	/*************************************************************************
-	***************************MAPPING PART***********************************
-	*************************************************************************/
 
-	if (!script) printf("\n****************************************************************\n");
-	if (!script) printf("******CONVERTING CPOG CONTRAINTS INTO BOOLEAN FUNCTIONS*********\n");
-	if (!script) printf("****************************************************************\n\n");
+	// ========================================================================
+	// Extracting Boolean equations from the CPOG
+	// ========================================================================
+	if (!script) printf("\n================================================\n");
+	if (!script) printf(" Extracting Boolean equations from the CPOG\n");
+	if (!script) printf("================================================\n\n");
 	fflush(stdout);
 
 	if (!script) printf("Memory allocation phase... ");	
 	fflush(stdout);
-	/*ALLOCATION MEMORY FOR ALL LOGIC FUNCTIONS CONSIDERED*/
+	// ALLOCATION MEMORY FOR ALL LOGIC FUNCTIONS CONSIDERED
 	for(i=0;i<nv; i++){
 		for(j=0;j<nv;j++){
 			cpog[i][j].fun = (char**) malloc(sizeof(char*) * counter);
@@ -1156,17 +983,14 @@ int main(int argc, char **argv){
 	if (!script) printf("DONE\n");
 	fflush(stdout);
 
-	/*START COUNTING TIME*/
-	//start = clock();
+	// START COUNTING TIME
 	gettimeofday(&start, NULL);
 
-	/*CONVERT TRUTH TABLES INTO BOOLEAN FUNCTION*/
+	//CONVERT TRUTH TABLES INTO BOOLEAN FUNCTION
 	if (!script) printf("Convert truth table into boolean functions of vertices and edges... ");
 	fflush(stdout);
 	if((err = boolean_function(max,bits,cpog_count,0)!= 0)){
-		printf(".error \n");
-		printf("Error on getting boolean function using Espresso. Error code: %d\n", err);
-		printf(".end_error \n");
+		printErrorCode("Error on getting boolean function using Espresso", err);
 		removeTempFiles();
 		return 6;
 	}
@@ -1174,13 +998,11 @@ int main(int argc, char **argv){
 	fflush(stdout);
 
 
-	/*CONVERT TRUTH TABLES INTO BOOLEAN FUNCTION OF CONDITION ONLY*/
+	// CONVERT TRUTH TABLES INTO BOOLEAN FUNCTION OF CONDITION ONLY
 	if (!script) printf("Convert truth table into boolean functions of condition of vertices... ");
 	fflush(stdout);
 	if((err = boolean_function(max,bits,cpog_count,1)!= 0)){
-		printf(".error \n");
-		printf("Error on getting boolean function using Espresso. Error code: %d\n", err);
-		printf(".end_error \n");
+		printErrorCode("Error on getting boolean function using Espresso", err);
 		removeTempFiles();
 		return 7;
 	}
@@ -1193,9 +1015,7 @@ int main(int argc, char **argv){
 		fflush(stdout);
 		decode_flag = TRUE;
 		if(decoder_minimisation(bits,cpog_count) != 0){
-			printf(".error \n");
-			printf("Error on developing boolean functions of decoder.\n");
-			printf(".end_error \n");
+			printError("Error on developing boolean functions of decoder.");
 			removeTempFiles();
 			return 8;
 		}
@@ -1203,49 +1023,20 @@ int main(int argc, char **argv){
 		fflush(stdout);
 	}
 
-	/*PRINT INFORMATION ACQUIRED FROM CPOG WITH RESPECT ENCODING CONSIDERED*/
-	// debug printing
-	/*if(verbose){
-		for(c=0;c<counter;c++){
-			printf("NAME\t\tTRUTH\t\tBOOL F.\t\tCOND\t\tTRUTH\t\tBOOL F.\n");
-			printf("-----------------------------------------------------------------------------------------\n");
-			for(i=0;i<nv; i++){
-				for(j=0;j<nv;j++){
-					if(cpog[i][j].type == 'v'){
-						if(cpog[i][j].condition){
-							printf("%s:\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\n",cpog[i][j].source, cpog[i][j].truth,cpog[i][j].fun[c], cpog[i][j].cond, cpog[i][j].truth_cond,cpog[i][j].fun_cond[c]);
-							cnt_func +=2;
-						}
-						else{
-							printf("%s:\t\t%s\t\t%s\n",cpog[i][j].source, cpog[i][j].truth,cpog[i][j].fun[c]);
-							cnt_func++;
-						}
-					}
-					else{
-						printf("%s > %s:\t\t%s\t\t%s\n",cpog[i][j].source, cpog[i][j].dest, cpog[i][j].truth,cpog[i][j].fun[c]);
-						cnt_func++;
-					}
-				}
-			}
-			printf("\n");
-		}
-	}*/
-
 	gettimeofday(&end, NULL);
 	secs_used=(end.tv_sec - start.tv_sec);
 	if (!script) printf("Conversion done successfully.\n");
 	if (!script) printf("Time of conversion= %ld [s].\n",secs_used);
 
-	/*************************************************************************
-	**************BUILDING FINAL BOOLEAN FUNCTIONS FOR SYNTHESYS**************
-	*************************************************************************/
-	if (!script) printf("\n****************************************************************\n");
-	if (!script) printf("*******BUILDING FINAL BOOLEAN FUNCTIONS FOR SYNTHESYS***********\n");
-	if (!script) printf("****************************************************************\n\n");
-
+	// ========================================================================
+	// Synthesis of hardware implementation (tech. mapping if ABC is present)
+	// ========================================================================
+	if (!script) printf("\n================================================\n");
+	if (!script) printf(" Synthesis of hardware implementation (tech. mapping if ABC is present)\n");
+	if (!script) printf("================================================\n\n");
 	fflush(stdout);
-	/*REMOVE OLD DIR AND MAKE NEW ONE AND ERASE USED FILES*/
 
+	// REMOVE OLD DIR AND MAKE NEW ONE AND ERASE USED FILES
 #if defined(__linux) || defined(__APPLE__)
 	command = strdup("rm -f ");
 #else
@@ -1253,9 +1044,7 @@ int main(int argc, char **argv){
 #endif
 	command = catMem(command, TRIVIAL_ENCODING_FILE);
 	if(system(command) != 0){
-		printf(".error \n");
-		printf("Error on removing trivial encoding file.\n");
-		printf(".end_error \n");
+		printError("Error on removing trivial encoding file.");
 		removeTempFiles();
 		return 8;
 	}
@@ -1268,56 +1057,38 @@ int main(int argc, char **argv){
 #endif
 	command = catMem(command, CONSTRAINTS_FILE);
 	if(system(command) != 0){
-		printf(".error \n");
-		printf("Error on removing trivial encoding file.\n");
-		printf(".end_error \n");
+		printError("Error on removing trivial encoding file.");
 		removeTempFiles();
 		return 8;
 	}
 	free(command);
 	
 
-	//ACQUIRE NAMES OF CONDITIONS
+	// ACQUIRE NAMES OF CONDITIONS
 	if (!script) printf("Getting condition names... ");
 	fflush(stdout);
 	if(get_conditions_names()){
-		printf(".error \n");
-		printf("Error on getting condition names from CPOG representation.\n");
-		printf(".end_error \n");
+		printError("Error on getting condition names from CPOG representation.");
 		removeTempFiles();
 		return 8;
 	}
 	if (!script) printf("DONE\n");
 	fflush(stdout);
 
-	/*if (OLD){
-		for(int i=0; i<n_cond; i++){
-			free(name_cond[i]);
-			name_cond[i] = strdup("");
-			char val[10];
-			sprintf(val, "x_%d", mb+i);
-			name_cond[i] = catMem(name_cond[i],val);
-		}
-	}*/
-
-	/*START COUNTING TIME*/
+	// START COUNTING TIME
 	gettimeofday(&start, NULL);
 
 	if (!script) printf("Building final Boolean equations (uses ABC if selected)... ");
 	fflush(stdout);
 	if(!CPOG_SIZE){
 		if( (err = equations_abc(cpog_count,bits)) != 0){
-			printf(".error \n");
-			printf("Error on using ABC. Error code: %d.\n",err);
-			printf(".end_error \n");
+			printErrorCode("Error on using ABC", err);
 			removeTempFiles();
 			return 9;
 		}
 	}else{
 		if( (err = equations_abc_cpog_size(cpog_count,bits)) != 0){
-			printf(".error \n");
-			printf("Error on using ABC. Error code: %d.\n",err);
-			printf(".end_error \n");
+			printErrorCode("Error on using ABC", err);
 			removeTempFiles();
 			return 9;
 		}
@@ -1325,7 +1096,7 @@ int main(int argc, char **argv){
 	if (!script) printf("DONE\n");
 	fflush(stdout);
 
-	/*COMPUTES TIME SPENT BY FUNCTION equations_abc*/
+	// COMPUTES TIME SPENT BY FUNCTION equations_abc
 	gettimeofday(&end, NULL);
 	gettimeofday(&finish, NULL);
 	secs_used=(end.tv_sec - start.tv_sec);
@@ -1334,12 +1105,13 @@ int main(int argc, char **argv){
 	if (!script) printf("Time spent= %ld [s].\n\n",secs_used);
 	if (!script) printf("Total SCENCO run time: %ld [s].\n", total_time);
 	fflush(stdout);
-	/*************************************************************************
-	*********************PRINTING OUT STATISTICS FOR WORKCRAFT****************
-	*************************************************************************/
-	if (!script) printf("\n****************************************************************\n");
-	if (!script) printf("************PRINTING OUT STATISTICS FOR WORKCRAFT***************\n");
-	if (!script) printf("****************************************************************\n\n");
+
+	// ========================================================================
+	// Statistics generation for Workcraft
+	// ========================================================================
+	if (!script) printf("\n================================================\n");
+	if (!script) printf(" Statistics generation for Workcraft\n");
+	if (!script) printf("================================================\n\n");
 	fflush(stdout);
 
 	// IF ABC TOOL IS NOT PRESENT OUTPUT A RANDOM ENCODING
@@ -1365,14 +1137,6 @@ int main(int argc, char **argv){
 			for(k=0;k<nv;k++){
 				if(cpog[j][k].type == 'v'){
 					if(cpog[j][k].condition){
-						/*char* pred = (char*) malloc((cpog_count + 1) *sizeof(char));
-						for(int g=0; g<cpog_count; g++){
-							if (cpog[j][k].truth[g] == '0' && cpog[j][k].truth_cond[g] == '0')
-								pred[g] = '0';
-							else
-								pred[g] = '1';
-						}
-						pred[cpog_count] = '\0';*/
 						if (!script) printf("V,%s,%s,(%s) + ((%s) * (%s))\n",cpog[j][k].source,cpog[j][k].truth,cpog[j][k].fun[i], cpog[j][k].cond,cpog[j][k].fun_cond[i]);
 					}
 					else{
@@ -1410,7 +1174,6 @@ int main(int argc, char **argv){
 		}
 		if (!script) printf("\n");
 		if (!script) printf(".end_statistics \n");
-		// Removing temporary files
 		removeTempFiles();
 		return 0;
 	}
@@ -1464,8 +1227,6 @@ int main(int argc, char **argv){
 		secs_used=(very_end.tv_sec - very_start.tv_sec);
 
 		for(i=0;i<counter;i++){
-			/*if(mode == 2)
-				fprintf(fp,"%.4f %.3f\n", weights[i], area[i]);*/
 			if(area[i] == ma){
 				if (!script) printf(".area \n");
 				if (!script)printf("%.3f\n", area[i]);
@@ -1488,20 +1249,11 @@ int main(int argc, char **argv){
 					}
 				}
 				if (!script) printf("\n");
-				//printf("with %d gates and %.3f [um^2].\n", gates[i],area[i]);
 				if (!script) printf(".start_formulae \n");
 				for(j=0;j<nv; j++){
 					for(k=0;k<nv;k++){
 						if(cpog[j][k].type == 'v'){
 							if(cpog[j][k].condition){
-								/*char* pred = (char*) malloc((cpog_count + 1) *sizeof(char));
-								for(int g=0; g<cpog_count; g++){
-									if (cpog[j][k].truth[g] == '0' && cpog[j][k].truth_cond[g] == '0')
-										pred[g] = '0';
-									else
-										pred[g] = '1';
-								}
-								pred[cpog_count] = '\0';*/
 								if (!script) printf("V,%s,%s,(%s) + ((%s) * (%s))\n",cpog[j][k].source,cpog[j][k].truth,cpog[j][k].fun[i], cpog[j][k].cond,cpog[j][k].fun_cond[i]);
 							}
 							else{
