@@ -24,5 +24,12 @@ int nameTmpFiles();
 void printError(const char*);
 void printErrorCode(const char*, int);
 
+// OS dependant functions
+#if defined(__linux) || defined(__APPLE__)
+	int unixNameTmpFile(char* file);
+#else
+	int winNameTmpFile(char* file)
+#endif
+
 #endif
 
