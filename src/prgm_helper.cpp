@@ -7,8 +7,7 @@
 /*PARSE ARGUMENTS FUNCTION*/
 /*Following function parse arguments of called program.*/
 int parse_arg(int argc, char *argv[]){
-	int cur = 1, i, j;
-	char supp[500];
+	int cur = 1;
 	
 	while(cur < argc){
 		//VERBOSE MODE
@@ -112,105 +111,41 @@ int parse_arg(int argc, char *argv[]){
 			}
 		}
 		//SET ESPRESSO PATH
+		if(!strcmp(argv[cur], "-e")){
+			if( cur+1 < argc ){
+				ESPRESSO_PATH = strdup(argv[cur+1]);
 #if defined(__linux) || defined(__APPLE__)
-		if(!strcmp(argv[cur], "-e")){
-			if( cur+1 < argc ){
-				ESPRESSO_PATH = strdup(argv[cur+1]);
-				i=0; j=0;
-
-				// FIX THE PATH FOR __linux VERSION
-				while(((unsigned int)i) < strlen(ESPRESSO_PATH)){
-					if(ESPRESSO_PATH[i] != ' '){
-						supp[j++] = ESPRESSO_PATH[i];
-					}else{
-						supp[j++] = '\\';
-						supp[j++] = ' ';
-					}
-					i++;
-				}
-				supp[j] = '\0';
-
-				strcpy(ESPRESSO_PATH,supp);
-			}
-			else{
-				printf("After -e espresso's path must be inserted.\n");
-				return 7;
-			}
-		}
-#else
-		if(!strcmp(argv[cur], "-e")){
-			if( cur+1 < argc ){
-				ESPRESSO_PATH = strdup(argv[cur+1]);
-			}
-			else{
-				printf("After -e espresso's path must be inserted.\n");
-				return 7;
-			}
-		}
+				fixSpacePath(ESPRESSO_PATH);
 #endif
+			}
+			else{
+				printf("After -e espresso's path must be inserted.\n");
+				return 7;
+			}
+		}
 		
 		//SET RESULTS FOLDER PATH
-#if defined(__linux) || defined(__APPLE__)
 		if(!strcmp(argv[cur], "-res")){
 			if( cur+1 < argc ){
 				FOLDER_NAME = strdup(argv[cur+1]);
-				i=0; j=0;
-
-				// FIX THE PATH FOR __linux VERSION
-				while(((unsigned int)i) < strlen(FOLDER_NAME)){
-					if(FOLDER_NAME[i] != ' '){
-						supp[j++] = FOLDER_NAME[i];
-					}else{
-						supp[j++] = '\\';
-						supp[j++] = ' ';
-					}
-					i++;
-				}
-				supp[j] = '\0';
-
-				strcpy(FOLDER_NAME,supp);
-
-				// DEBUG PRINTING
-				if (!script) printf("FOLDER NAME TEMP: %s\n", FOLDER_NAME);
+#if defined(__linux) || defined(__APPLE__)
+				fixSpacePath(FOLDER_NAME);
+#endif
 			}
 			else{
 				printf("After -res results folder's path must be inserted.\n");
 				return 7;
 			}
 		}
-#else
-		if(!strcmp(argv[cur], "-res")){
-			if( cur+1 < argc ){
-				FOLDER_NAME = strdup(argv[cur+1]);
-			}
-			else{
-				printf("After -res, result folder's path must be inserted.\n");
-				return 7;
-			}
-		}
-#endif
 		
 		//SET ABC FOLDER
 		if(!strcmp(argv[cur], "-a")){
 			ABCFLAG = TRUE;
 			if( cur+1 < argc ){
 				ABC_PATH = strdup(argv[cur+1]);
-
-				/*i=0; j=0;
-
-				// FIX THE PATH FOR __linux VERSION
-				while(i < strlen(ABC_PATH)){
-					if(ABC_PATH[i] != ' '){
-						supp[j++] = ABC_PATH[i];
-					}else{
-						supp[j++] = '\\';
-						supp[j++] = ' ';
-					}
-					i++;
-				}
-				supp[j] = '\0';
-
-				strcpy(ABC_PATH,supp);*/
+#if defined(__linux) || defined(__APPLE__)
+				fixSpacePath(ABC_PATH);
+#endif
 			}
 			else{
 				printf("After -a abc tool must be inserted.\n");
@@ -218,84 +153,46 @@ int parse_arg(int argc, char *argv[]){
 			}
 		}
 		//SET ANY ENCODINGS
+		if(!strcmp(argv[cur], "-lib")){
+			if( cur+1 < argc ){
+				LIBRARY_FILE = strdup(argv[cur+1]);
 #if defined(__linux) || defined(__APPLE__)
-		if(!strcmp(argv[cur], "-lib")){
-			if( cur+1 < argc ){
-				LIBRARY_FILE = strdup(argv[cur+1]);
-
-				i=0; j=0;
-
-				// FIX THE PATH FOR __linux VERSION
-				while(((unsigned int)i) < strlen(LIBRARY_FILE)){
-					if(LIBRARY_FILE[i] != ' '){
-						supp[j++] = LIBRARY_FILE[i];
-					}else{
-						supp[j++] = '\\';
-						supp[j++] = ' ';
-					}
-					i++;
-				}
-				supp[j] = '\0';
-
-				strcpy(LIBRARY_FILE,supp);
-			}
-			else{
-				printf("After -lib gates library in genlib format must be inserted.\n");
-				return 9;
-			}
-		}
-#else
-		if(!strcmp(argv[cur], "-lib")){
-			if( cur+1 < argc ){
-				LIBRARY_FILE = strdup(argv[cur+1]);
-			}
-			else{
-				printf("After -lib gates library in genlib format must be inserted.\n");
-				return 9;
-			}
-		}
+				fixSpacePath(LIBRARY_FILE);
 #endif
+			}
+			else{
+				printf("After -lib gates library in genlib format must be inserted.\n");
+				return 9;
+			}
+		}
 
 		// verilog output
+		if(!strcmp(argv[cur], "-ver")){
+			VER = TRUE;
+			if( cur+1 < argc ){
+				VERILOG_FILE = strdup(argv[cur+1]);
 #if defined(__linux) || defined(__APPLE__)
-		if(!strcmp(argv[cur], "-ver")){
-			VER = TRUE;
-			if( cur+1 < argc ){
-				VERILOG_FILE = strdup(argv[cur+1]);
-
-				i=0; j=0;
-
-				// FIX THE PATH FOR __linux VERSION
-				while(((unsigned int)i) < strlen(VERILOG_FILE)){
-					if(VERILOG_FILE[i] != ' '){
-						supp[j++] = VERILOG_FILE[i];
-					}else{
-						supp[j++] = '\\';
-						supp[j++] = ' ';
-					}
-					i++;
-				}
-				supp[j] = '\0';
-
-				strcpy(VERILOG_FILE,supp);
-			}
-			else{
-				printf("After -lib gates library in genlib format must be inserted.\n");
-				return 9;
-			}
-		}
-#else
-		if(!strcmp(argv[cur], "-ver")){
-			VER = TRUE;
-			if( cur+1 < argc ){
-				VERILOG_FILE = strdup(argv[cur+1]);
+				fixSpacePath(VERILOG_FILE);
+#endif
 			}
 			else{
 				printf("After -ver an output file for the verilog must be inserted.\n");
 				return 9;
 			}
 		}
-#endif
+
+		// datapath
+		if(!strcmp(argv[cur], "-datapath")){
+			DATAPATH = TRUE;
+			DATAPATH_N = atoi(argv[cur+1]);
+			DATAPATH_UNITS = (char **) malloc(sizeof(char*) * DATAPATH_N);
+			for(int i=0; i<DATAPATH_N; i++) {
+				DATAPATH_UNITS[i] = strdup(argv[cur+2+i]);
+				fixSpacePath(DATAPATH_UNITS[i]);
+				printf("%s\n", DATAPATH_UNITS[i]);
+			}
+		}
+
 		
 		//OPTIMISE CPOG SIZE
 		if (!strcmp(argv[cur], "-cs")){
@@ -357,6 +254,7 @@ void print_help(char *prog_name){
 	printf("\t-v: selects the verbose mode of the tool.\n");
 	printf("\t-ver [verilog_output]: Output the verilog netlist into a file.\n");
 	printf("\t-version: prints version of ScEnco.\n\n");
+	printf("\t-datapath [n] module_1 module_2 ... module_n.\n\n");
 	//EXAMPLE
 	printf("Example: ");
 	printf("%s arm_m0.cpog -m min -top 1000\n", prog_name);

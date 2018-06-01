@@ -36,7 +36,7 @@ int boolean_function(int max,int bits, int cpog_count,int co){
 	command = catMem(command, ss);
 	command = catMem(command, file_out);
 #endif
-	command = catMem(command, " > ");
+	command = catMem(command, (char*)" > ");
 	command = catMem(command, BOOL_PATH);
 
 	if(!co){
@@ -335,7 +335,7 @@ int decoder_minimisation(int bits, int cpog_count){
 	command = catMem(command, ss);
 	command = catMem(command, file_out);
 #endif
-	command = catMem(command, " > ");
+	command = catMem(command, (char*)" > ");
 	command = catMem(command, BOOL_PATH);
 
 	/*ALLOCATING BASE STRUCTURES FOR DECODER*/

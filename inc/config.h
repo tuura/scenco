@@ -9,6 +9,7 @@
 #define MAX_LOG		10000	//2^(MAX_LOG) as max number of log_2 computable
 #define FILENAME_LENGTH	300	// Max length of file names
 #define ABC_LINELENGTH 	1000	// Buffer for reading ABC output file
+#define PATH_LENGTH 500
 #define MAX_NAME	100	//Max length name for each node
 #define MAX_VERT	1000	//Max number of vertices of CPOG
 #define MAX_MEMORY	100000    //Max memory available for Workcraft
@@ -122,6 +123,12 @@ typedef struct Encoding_st
 	bool inverted;
 }Encoding;
 
+typedef struct module
+{
+	char* name;
+	char** signals;
+}modVerilog;
+
 /*PROJECT INCLUDES*/
 #if defined(__linux) || defined(__APPLE__)
 	#include "global.h"
@@ -134,6 +141,7 @@ typedef struct Encoding_st
 	#include "utilities.h"
 	#include "simulated_annealing.h"
 	#include "building_cpog.h"
+	#include "verilog-parser.h"
 #else
 	#include "D:\Projects\SCENCO\inc\global.h"
 	#include "D:\Projects\SCENCO\inc\heuristic.h"
@@ -145,6 +153,7 @@ typedef struct Encoding_st
 	#include "D:\Projects\SCENCO\inc\utilities.h"
 	#include "D:\Projects\SCENCO\inc\simulated_annealing.h"
 	#include "D:\Projects\SCENCO\inc\building_cpog.h"
+	#include "D:\Projects\SCENCO\inc\verilog-parser.h"
 #endif
 
 #endif

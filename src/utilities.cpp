@@ -555,3 +555,24 @@ void printErrorCode(const char* errorMessage, int error) {
 	printf(".end_error \n");
 	return;
 }
+
+void fixSpacePath(char* path) {
+	char supp[PATH_LENGTH];
+	int i = 0;
+	int j = 0;
+
+	while(((unsigned int)i) < strlen(path)){
+		if(path[i] != ' '){
+			supp[j++] = path[i];
+		}else{
+			supp[j++] = '\\';
+			supp[j++] = ' ';
+		}
+		i++;
+	}
+	supp[j] = '\0';
+
+	strcpy(path,supp);
+
+	return;
+}

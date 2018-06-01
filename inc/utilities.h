@@ -23,6 +23,7 @@ char* catChar(char*, char);
 int nameTmpFiles();
 void printError(const char*);
 void printErrorCode(const char*, int);
+void fixSpacePath(char*);
 
 // OS dependant functions
 #if defined(__linux) || defined(__APPLE__)

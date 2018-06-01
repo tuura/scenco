@@ -23,6 +23,9 @@ char *LIBRARY_FILE;
 char *VERILOG_FILE;
 char CURRENT_PATH[stringLimit];
 char *FOLDER_NAME; 
+char **DATAPATH_UNITS;
+char **units;
+char *buffer;
 
 int **opt_diff = NULL;
 int counter = 0;
@@ -37,6 +40,8 @@ int gen_perm = 1000;
 int *custom_perm;
 int *custom_perm_back;
 int mod_bit = 2;
+int DATAPATH_N = 2;
+int *usage;
 
 //TEMPORARY FILES
 #if defined(__linux) || defined(__APPLE__)
@@ -76,6 +81,7 @@ boolean OLD = FALSE;
 boolean mod_bit_flag = FALSE;
 boolean VER = FALSE;
 boolean script = FALSE;
+boolean DATAPATH = FALSE;
 
 //ANDREY'S TOOL
 GRAPH_TYPE *g;
@@ -1295,6 +1301,13 @@ int main(int argc, char **argv){
 				if (!CPOG_SIZE){
 					useABC(verilogFiles[i]);
 					if (VER) replaceVerilogName();
+
+					//if (DATAPATH) {
+						if (buildInterface(bits) != 0){
+							printError("Error on parsing datapath units.");
+							removeTempFiles();
+						}
+					//}
 				}
 
 				removeTempFiles();
