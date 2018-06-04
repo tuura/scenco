@@ -135,7 +135,6 @@ int writeDecoupleMerge(FILE *fp, modVerilog controller, int sigs, int  ct) {
 	int decouple = 0;
 	int merge = 0;
 	char *word;
-	char *word2;
 
 	for (int i=0; i<ct; i++) {
 		if (usage[i] == 1) { // decouple
@@ -150,37 +149,52 @@ int writeDecoupleMerge(FILE *fp, modVerilog controller, int sigs, int  ct) {
 			fprintf(fp, "\t.ACK_OUT(ACK_%s_datapath));\n\n", word);
 			free(word);
 		} else { // merge
-			int rp = 1, ap = 1;
-			merge++;
-			
 			fprintf(fp, "wire REQ_%s_datapath, ACK_%s_datapath;\n", units[i], units[i]);
-			fprintf(fp, "merge%d M%d (\n", usage[i], merge);
-			for(int j=0; j<sigs; j++) {
-				int portType = recognisePortController(controller.signals[j]);
-				if ( portType < 1 || portType > 2 ) {
-					continue;
-				}
-				word = skipChar(controller.signals[j], 4);
-				word2 = getModule(word);
-				if ( !strcmp(word2, units[i]) ){
-					switch (portType) {
-						case 1:
-							fprintf(fp, "\t.REQ_IN_%d(REQ_%s_wire),\n", rp++, word);
-							break;
-						case 2:
-							fprintf(fp, "\t.ACK_IN_%d(ACK_%s_wire),\n", ap++, word);
-							break;
-					}
-				}
-				free(word);
-				free(word2);
-			}
+			catBitsMerge(fp, REQ, units[i], usage[i], controller, sigs);
+			catBitsMerge(fp, ACK, units[i], usage[i], controller, sigs);
+			fprintf(fp, "merge M%d #(%d) (\n", ++merge, usage[i]);
+			fprintf(fp, "\t.REQ_IN(REQ_%s_merge),\n", units[i]);
+			fprintf(fp, "\t.ACK_IN(ACK_%s_merge),\n", units[i]);
 			fprintf(fp, "\t.REQ_OUT(REQ_%s_datapath),\n", units[i]);
 			fprintf(fp, "\t.ACK_OUT(ACK_%s_datapath));\n\n", units[i]);
 		}
 	}
 
 	return 0;
+}
+
+void catBitsMerge(FILE *fp, Port select, char* module, int bits, modVerilog controller, int sigs) {
+	char *word;
+	char *word2;
+	int comma = 0;
+	char* prefix;
+
+	if (select == REQ) prefix = strdup("REQ_");
+	else if (select == ACK) prefix = strdup("ACK_");
+
+
+	fprintf(fp, "wire [%d:0] %s%s_merge <= {", bits-1, prefix, module);
+	for(int j=0; j<sigs; j++) {
+		int portType = recognisePortController(controller.signals[j]);
+		if ( portType != select) {
+			continue;
+		}
+		word = skipChar(controller.signals[j], 4);
+		word2 = getModule(word);
+
+		if ( !strcmp(word2, module) ){
+			if (comma) fprintf(fp, ", ");
+			fprintf(fp, "%s%s_wire", prefix, word);
+			comma = 1;
+		}
+
+		free(word);
+		free(word2);
+	}
+	fprintf(fp, "};\n");
+
+	free(prefix);
+	return;
 }
 
 char* getNameUnit(char* unit, char** signals, int sigs) {
@@ -225,21 +239,21 @@ int writeSystemInterface(FILE *fp, int bits, modVerilog controller, int sigs, in
 	//controller wires
 	for (int i=0; i<sigs; i++) {
 		char *word;
-		int portType = recognisePortController(controller.signals[i]);
+		Port portType = recognisePortController(controller.signals[i]);
 
 		switch (portType) {
-			case 1: // REQ
+			case REQ: 
 				word = skipChar(controller.signals[i],4);
 				fprintf(fp, "wire REQ_%s_wire;\n", word);
 				free(word);
 				break;
 
-			case 2: // ACK
+			case ACK: 
 				word = skipChar(controller.signals[i],4);
 				fprintf(fp, "wire ACK_%s_wire;\n", word);
 				free(word);
 				break;
-			case 5: // condition
+			case OTHER: // condition
 				fprintf(fp, "wire %s_wire;\n", controller.signals[i]);
 		}
 	}
@@ -250,34 +264,36 @@ int writeSystemInterface(FILE *fp, int bits, modVerilog controller, int sigs, in
 	fprintf(fp, "%s controller (\n", controller.name);
 	for (int i=0; i<sigs; i++) {
 		char *word;
-		int portType = recognisePortController(controller.signals[i]);
+		Port portType = recognisePortController(controller.signals[i]);
 
 		switch (portType) {
-			case 0: // code
+			case CODE:
 				fprintf(fp, "\t.%s(CODE[%d])",controller.signals[i], b++);
 				break;
 
-			case 1: // REQ
+			case REQ:
 				word = skipChar(controller.signals[i],4);
 				fprintf(fp, "\t.%s(REQ_%s_wire)", controller.signals[i], word);
 				free(word);
 				break;
 
-			case 2: // ACK
+			case ACK:
 				word = skipChar(controller.signals[i],4);
 				fprintf(fp, "\t.%s(ACK_%s_wire)", controller.signals[i], word);
 				free(word);
 				break;
 
-			case 3: // GO
+			case GO:
 				fprintf(fp,"\t.GO(GO)");
 				break;
 
-			case 4: // DONE
+			case DONE:
 				fprintf(fp,"\t.DONE(DONE)");
 				break;
+
 			default:
 				fprintf(fp,"\t.%s(%s_wire)", controller.signals[i], controller.signals[i]);
+				break;
 		}
 		if (i == sigs-1) fprintf(fp,");\n\n");
 		else fprintf(fp, ",\n");
@@ -322,7 +338,7 @@ char* skipChar(char *string, int s) {
 	return name; 
 }
 
-int recognisePortController(char* cport) {
+Port recognisePortController(char* cport) {
 	char port[MAX_PORT];
 
 	// recognise bit/GO
@@ -331,9 +347,9 @@ int recognisePortController(char* cport) {
 	}
 	port[2] = '\0';
 
-	// code bit
-	if ( !strcmp(port, "x_") ) return 0;
-	if ( !strcmp(port, "GO") ) return 3;
+	// CODE or GO bit
+	if ( !strcmp(port, "x_") ) return CODE;
+	if ( !strcmp(port, "GO") ) return GO;
 
 	// recognise REQ/ACK/DONE
 	for (int i = 2; i<4; i++) {
@@ -341,12 +357,12 @@ int recognisePortController(char* cport) {
 	}
 	port[4] = '\0';
 
-	if ( !strcmp(port, "REQ_") ) return 1;
-	if ( !strcmp(port, "ACK_") ) return 2;
-	if ( !strcmp(port, "DONE") ) return 4;
+	if ( !strcmp(port, "REQ_") ) return REQ;
+	if ( !strcmp(port, "ACK_") ) return ACK;
+	if ( !strcmp(port, "DONE") ) return DONE;
 
 	// port not recognised
-	return 5;
+	return OTHER;
 }
 
 int countDatapathUnits() {

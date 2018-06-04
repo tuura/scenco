@@ -130,6 +130,8 @@ typedef struct module
 	char** signals;
 }modVerilog;
 
+typedef enum port {CODE, REQ, ACK, GO, DONE, OTHER} Port;
+
 /*PROJECT INCLUDES*/
 #if defined(__linux) || defined(__APPLE__)
 	#include "global.h"

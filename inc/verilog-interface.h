@@ -16,13 +16,14 @@ int countDatapathUnits();
 int writeSystemInterface(FILE*, int, modVerilog, int, int);
 char* getModule(char*);
 char* skipChar(char*, int);
-int recognisePortController(char*);
+Port recognisePortController(char*);
 int getIndexModule(char*);
 int writeDecoupleMerge(FILE*, modVerilog, int, int);
 char* getNameUnit(char*, char**, int);
 int writeModuleInterface(FILE*, modVerilog, int, int, int, modVerilog);
 int lookupUnits(char*, int);
 int lookUpSignal(char *, char**, int);
+void catBitsMerge(FILE *, Port, char*, int, modVerilog, int);
 
 #endif
 
