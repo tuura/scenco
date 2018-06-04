@@ -16,6 +16,7 @@
 #define MAX_ENCODINGS	100000	//Max encodings that is possible to try
 #define MAX_RAND_ITERATIONS 20	//Number of Rand swapping for shuffling vector
 #define MAX_FAILS	10000	//Number of fails before stopping encoding generation
+#define MAX_PORT 50
 
 #define stringLimit	1000
 
@@ -141,7 +142,7 @@ typedef struct module
 	#include "utilities.h"
 	#include "simulated_annealing.h"
 	#include "building_cpog.h"
-	#include "verilog-parser.h"
+	#include "verilog-interface.h"
 #else
 	#include "D:\Projects\SCENCO\inc\global.h"
 	#include "D:\Projects\SCENCO\inc\heuristic.h"
@@ -153,7 +154,7 @@ typedef struct module
 	#include "D:\Projects\SCENCO\inc\utilities.h"
 	#include "D:\Projects\SCENCO\inc\simulated_annealing.h"
 	#include "D:\Projects\SCENCO\inc\building_cpog.h"
-	#include "D:\Projects\SCENCO\inc\verilog-parser.h"
+	#include "D:\Projects\SCENCO\inc\verilog-interface.h"
 #endif
 
 #endif

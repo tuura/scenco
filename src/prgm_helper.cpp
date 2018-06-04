@@ -193,6 +193,20 @@ int parse_arg(int argc, char *argv[]){
 			}
 		}
 
+		// verilog output
+		if(!strcmp(argv[cur], "-system")){
+			SYSTEM = TRUE;
+			if( cur+1 < argc ){
+				SYSTEM_FILE = strdup(argv[cur+1]);
+#if defined(__linux) || defined(__APPLE__)
+				fixSpacePath(SYSTEM_FILE);
+#endif
+			}
+			else{
+				printf("After -ver an output file for the verilog must be inserted.\n");
+				return 9;
+			}
+		}
 		
 		//OPTIMISE CPOG SIZE
 		if (!strcmp(argv[cur], "-cs")){
@@ -255,6 +269,7 @@ void print_help(char *prog_name){
 	printf("\t-ver [verilog_output]: Output the verilog netlist into a file.\n");
 	printf("\t-version: prints version of ScEnco.\n\n");
 	printf("\t-datapath [n] module_1 module_2 ... module_n.\n\n");
+	printf("\t-system [path]: specify path of the final system implementation.\n\n");
 	//EXAMPLE
 	printf("Example: ");
 	printf("%s arm_m0.cpog -m min -top 1000\n", prog_name);
@@ -266,7 +281,7 @@ void print_help(char *prog_name){
 }
 
 void print_version(){
-	printf("ScEnco version: 1.5.1\n");
+	printf("ScEnco version: 1.6\n");
 	return;
 }
 

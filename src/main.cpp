@@ -4,6 +4,10 @@
 	#include "D:\Projects\SCENCO\inc\config.h"
 #endif
 
+// Tool messages
+const char* VERILOG_GENERATED_MESSAGE = "// File generated automatically by ScEnco";
+const char* VERILOG_SYSTEM_NAME = "system";
+
 /*GLOBAL VARIABLES*/
 char **diff = NULL; 
 char **name_cond; 
@@ -21,6 +25,7 @@ char *ESPRESSO_PATH;
 char *ABC_PATH;
 char *LIBRARY_FILE;
 char *VERILOG_FILE;
+char *SYSTEM_FILE;
 char CURRENT_PATH[stringLimit];
 char *FOLDER_NAME; 
 char **DATAPATH_UNITS;
@@ -82,6 +87,7 @@ boolean mod_bit_flag = FALSE;
 boolean VER = FALSE;
 boolean script = FALSE;
 boolean DATAPATH = FALSE;
+boolean SYSTEM = FALSE;
 
 //ANDREY'S TOOL
 GRAPH_TYPE *g;
@@ -1302,12 +1308,16 @@ int main(int argc, char **argv){
 					useABC(verilogFiles[i]);
 					if (VER) replaceVerilogName();
 
-					//if (DATAPATH) {
+#if defined(__linux) || defined(__APPLE__)
+					if (SYSTEM) {
+						if (!script) printf("Synthesis of the interface started... ");
 						if (buildInterface(bits) != 0){
 							printError("Error on parsing datapath units.");
 							removeTempFiles();
 						}
-					//}
+						if (!script) printf("DONE\n");
+					}
+#endif
 				}
 
 				removeTempFiles();
