@@ -23,7 +23,7 @@ ENTITY example_controller IS
       b : IN STD_LOGIC_VECTOR(0 downto 0); -- binary code
 
       -- outputs
-      FINE : OUT  STD_LOGIC;
+      DONE : OUT  STD_LOGIC;
       REQ_fetch : OUT  STD_LOGIC;
       REQ_decode : OUT  STD_LOGIC;
       REQ_loadA : OUT  STD_LOGIC;
@@ -59,7 +59,7 @@ begin
    case current_state is
       -- initial state
       when s0 =>
-         FINE <= '0';
+         DONE <= '0';
          REQ_fetch <= '0';
          REQ_decode <= '0';
          REQ_loadA <= '0';
@@ -102,7 +102,7 @@ begin
             next_state <= s6;
          end if;
       when s6 =>
-         done <= '1';
+         DONE <= '1';
          if ( go = '0') then
             next_state <= s13;
          end if;
@@ -134,7 +134,7 @@ begin
             next_state <= s12;
          end if;
       when s12 =>
-         done <= '1';
+         DONE <= '1';
          if ( go = '0') then
             next_state <= s13;
          end if;
