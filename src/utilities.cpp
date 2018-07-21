@@ -533,8 +533,8 @@ int nameTmpFiles(){
 	int winNameTmpFile(char* file) {
 
 		GetTempPath(FILENAME_LENGTH,file);
-	   	BOOL_PATH[strlen(file)-1] = '\0';
-		tmpnam (TMP_NAME);
+	   	file[strlen(file)-1] = '\0';
+		tmpnam(TMP_NAME);
 		strcat(file,TMP_NAME);
 
 		return 0;

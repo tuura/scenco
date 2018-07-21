@@ -28,7 +28,7 @@ void printErrorCode(const char*, int);
 #if defined(__linux) || defined(__APPLE__)
 	int unixNameTmpFile(char* file);
 #else
-	int winNameTmpFile(char* file)
+	int winNameTmpFile(char* file);
 #endif
 
 #endif
