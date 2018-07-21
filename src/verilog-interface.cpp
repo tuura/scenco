@@ -255,6 +255,10 @@ int writeSystemInterface(FILE *fp, int bits, modVerilog controller, int sigs, in
 				break;
 			case OTHER: // condition
 				fprintf(fp, "wire %s_wire;\n", controller.signals[i]);
+				break;
+
+			default:
+				break;
 		}
 	}
 	fprintf(fp, "\n");

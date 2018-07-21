@@ -1308,7 +1308,6 @@ int main(int argc, char **argv){
 					useABC(verilogFiles[i]);
 					if (VER) replaceVerilogName();
 
-#if defined(__linux) || defined(__APPLE__)
 					if (SYSTEM) {
 						if (!script) printf("Synthesis of the interface started... ");
 						if (buildInterface(bits) != 0){
@@ -1317,7 +1316,6 @@ int main(int argc, char **argv){
 						}
 						if (!script) printf("DONE\n");
 					}
-#endif
 				}
 
 				removeTempFiles();
